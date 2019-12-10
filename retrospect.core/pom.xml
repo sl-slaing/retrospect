@@ -10,7 +10,7 @@
         <maven.compiler.target>1.11</maven.compiler.target>
     </properties>
 
-    <groupId>org.example</groupId>
+    <groupId>com.example</groupId>
     <artifactId>retrospect.core</artifactId>
     <version>1.0-SNAPSHOT</version>
 
