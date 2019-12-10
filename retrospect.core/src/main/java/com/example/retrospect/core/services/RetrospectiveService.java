@@ -1,5 +1,7 @@
 package com.example.retrospect.core.services;
 
+import com.example.retrospect.core.exceptions.NotFoundException;
+import com.example.retrospect.core.exceptions.NotPermittedException;
 import com.example.retrospect.core.managers.RetrospectiveSecurityManager;
 import com.example.retrospect.core.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +131,7 @@ public class RetrospectiveService {
             }
 
             if (observations.size() != 1) {
-                throw new RuntimeException("Observation not found");
+                throw new NotFoundException("Observation not found");
             }
 
             var observation = observations.stream().findFirst().get();
@@ -147,7 +149,7 @@ public class RetrospectiveService {
 
             var member = this.userRepository.getUser(memberUserId);
             if (member == null){
-                throw new RuntimeException("Unable to find member");
+                throw new NotFoundException("Unable to find member");
             }
 
             retrospective.addMember(member, user);
@@ -172,7 +174,7 @@ public class RetrospectiveService {
 
             var administrator = this.userRepository.getUser(administratorUserId);
             if (administrator == null){
-                throw new RuntimeException("Unable to find administrator");
+                throw new NotFoundException("Unable to find administrator");
             }
 
             retrospective.addAdministrator(administrator, user);
@@ -190,11 +192,11 @@ public class RetrospectiveService {
     private Retrospective editRetrospective(String retrospectiveId, LoggedInUser user, Consumer<Retrospective> edit){
         var retrospective = getRetrospective(retrospectiveId, user);
         if (retrospective == null) {
-            throw new RuntimeException("Retrospective not found");
+            throw new NotFoundException("Retrospective not found");
         }
 
         if (!securityManager.canEditRetrospective(retrospective, user)) {
-            throw new RuntimeException("You're not permitted to edit this retrospective");
+            throw new NotPermittedException("You're not permitted to edit this retrospective");
         }
 
         edit.accept(retrospective);
@@ -206,11 +208,11 @@ public class RetrospectiveService {
     private Retrospective administerRetrospective(String retrospectiveId, LoggedInUser user, Consumer<Retrospective> administer){
         var retrospective = getRetrospective(retrospectiveId, user);
         if (retrospective == null) {
-            throw new RuntimeException("Retrospective not found");
+            throw new NotFoundException("Retrospective not found");
         }
 
         if (!securityManager.canAdministerRetrospective(retrospective, user)) {
-            throw new RuntimeException("You're not permitted to administer this retrospective");
+            throw new NotPermittedException("You're not permitted to administer this retrospective");
         }
 
         administer.accept(retrospective);

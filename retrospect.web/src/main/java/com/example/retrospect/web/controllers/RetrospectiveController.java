@@ -1,5 +1,6 @@
 package com.example.retrospect.web.controllers;
 
+import com.example.retrospect.core.exceptions.NotFoundException;
 import com.example.retrospect.core.exceptions.NotLoggedInException;
 import com.example.retrospect.core.managers.UserSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class RetrospectiveController {
     public Object index(String id){
         var retrospective = this.service.getRetrospective(id, userSessionManager.getLoggedInUser());
         if (retrospective == null) {
-            throw new RuntimeException("Not found");
+            throw new NotFoundException("Retrospective not found");
         }
 
         return retrospective; //JSON-ify
