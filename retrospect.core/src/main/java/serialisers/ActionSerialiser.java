@@ -1,12 +1,16 @@
 package serialisers;
 
 import models.Action;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import serialisable.SerialisableAction;
 
+@Service
 public class ActionSerialiser {
     private final AuditSerialiser auditSerialiser;
     private final UserSerialiser userSerialiser;
 
+    @Autowired
     public ActionSerialiser(AuditSerialiser auditSerialiser, UserSerialiser userSerialiser) {
         this.auditSerialiser = auditSerialiser;
         this.userSerialiser = userSerialiser;

@@ -4,8 +4,11 @@ import models.HttpRequestWrapper;
 import models.HttpResponseWrapper;
 import models.LoggedInUser;
 import models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import repositories.UserRepository;
 
+@Service
 public class UserSessionManager {
     public static final String COOKIE_NAME = "RETROSPECT-USER-ID";
 
@@ -13,6 +16,7 @@ public class UserSessionManager {
     private final HttpRequestWrapper request;
     private final HttpResponseWrapper response;
 
+    @Autowired
     public UserSessionManager(UserRepository userRepository, HttpRequestWrapper request, HttpResponseWrapper response) {
         this.userRepository = userRepository;
         this.request = request;

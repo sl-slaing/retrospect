@@ -2,6 +2,8 @@ package services;
 
 import managers.RetrospectiveSecurityManager;
 import models.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import repositories.RetrospectiveRepository;
 import repositories.UserRepository;
 
@@ -9,11 +11,13 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+@Service
 public class RetrospectiveService {
     private final RetrospectiveRepository repository;
     private final RetrospectiveSecurityManager securityManager;
     private final UserRepository userRepository;
 
+    @Autowired
     public RetrospectiveService(
             UserRepository userRepository,
             RetrospectiveSecurityManager securityManager,

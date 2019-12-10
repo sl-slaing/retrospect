@@ -1,40 +1,25 @@
 package controllers;
 
-import managers.RetrospectiveSecurityManager;
 import managers.UserSessionManager;
-import models.HttpRequestWrapper;
-import models.HttpResponseWrapper;
-import repositories.RetrospectiveRepository;
-import repositories.UserRepository;
-import serialisers.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import services.RetrospectiveService;
 
+@RestController
 public class RetrospectiveController {
     private final RetrospectiveService service;
     private final UserSessionManager userSessionManager;
 
-    public RetrospectiveController() {
-        var userRepository = new UserRepository();
-        var userSerialiser = new UserSerialiser(userRepository);
-        var auditSerialiser = new AuditSerialiser(userSerialiser);
-
-        this.service = new RetrospectiveService(
-                userRepository,
-                new RetrospectiveSecurityManager(),
-                new RetrospectiveRepository(
-                        new RetrospectiveSerialiser(
-                                new ActionSerialiser(auditSerialiser, userSerialiser),
-                                new ObservationSerialiser(auditSerialiser, userSerialiser),
-                                auditSerialiser,
-                                userSerialiser))
-        );
-        this.userSessionManager = new UserSessionManager(
-                userRepository,
-                new HttpRequestWrapper(), //TODO: Scoped to each request
-                new HttpResponseWrapper()  //TODO: Scoped to each request
-        );
+    @Autowired
+    public RetrospectiveController(
+            RetrospectiveService service,
+            UserSessionManager userSessionManager) {
+        this.service = service;
+        this.userSessionManager = userSessionManager;
     }
 
+    @GetMapping("/data")
     public Object index(String id){
         var retrospective = this.service.getRetrospective(id, userSessionManager.getLoggedInUser());
         if (retrospective == null){

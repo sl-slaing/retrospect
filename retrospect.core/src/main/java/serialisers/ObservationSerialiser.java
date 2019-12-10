@@ -2,14 +2,18 @@ package serialisers;
 
 import models.Observation;
 import models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import serialisable.SerialisableObservation;
 
 import java.util.stream.Collectors;
 
+@Service
 public class ObservationSerialiser {
     private final AuditSerialiser auditSerialiser;
     private final UserSerialiser userSerialiser;
 
+    @Autowired
     public ObservationSerialiser(AuditSerialiser auditSerialiser, UserSerialiser userSerialiser) {
         this.auditSerialiser = auditSerialiser;
         this.userSerialiser = userSerialiser;

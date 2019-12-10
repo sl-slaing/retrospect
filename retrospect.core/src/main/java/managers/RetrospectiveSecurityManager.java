@@ -2,7 +2,9 @@ package managers;
 
 import models.LoggedInUser;
 import models.Retrospective;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RetrospectiveSecurityManager {
     public boolean canViewRetrospective(Retrospective retrospective, LoggedInUser user){
         var isAdministrator = retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));

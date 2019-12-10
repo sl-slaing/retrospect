@@ -1,16 +1,20 @@
 package serialisers;
 
 import models.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import serialisable.SerialisableRetrospective;
 
 import java.util.stream.Collectors;
 
+@Service
 public class RetrospectiveSerialiser {
     private final ActionSerialiser actionSerialiser;
     private final ObservationSerialiser observationSerialiser;
     private final AuditSerialiser auditSerialiser;
     private final UserSerialiser userSerialiser;
 
+    @Autowired
     public RetrospectiveSerialiser(ActionSerialiser actionSerialiser, ObservationSerialiser observationSerialiser, AuditSerialiser auditSerialiser, UserSerialiser userSerialiser) {
         this.actionSerialiser = actionSerialiser;
         this.observationSerialiser = observationSerialiser;
