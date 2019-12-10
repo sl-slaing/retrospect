@@ -2,11 +2,14 @@ package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.managers.UserSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.retrospect.core.services.RetrospectiveService;
+import org.springframework.web.context.WebApplicationContext;
 
 @RestController
+@Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class RetrospectiveController {
     private final RetrospectiveService service;
     private final UserSessionManager userSessionManager;

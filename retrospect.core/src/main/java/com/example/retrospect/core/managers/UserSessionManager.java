@@ -5,10 +5,13 @@ import com.example.retrospect.core.models.HttpResponseWrapper;
 import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import com.example.retrospect.core.repositories.UserRepository;
+import org.springframework.web.context.WebApplicationContext;
 
 @Service
+@Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class UserSessionManager {
     public static final String COOKIE_NAME = "RETROSPECT-USER-ID";
 
