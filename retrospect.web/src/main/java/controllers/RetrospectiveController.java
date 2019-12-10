@@ -4,7 +4,6 @@ import managers.RetrospectiveSecurityManager;
 import managers.UserSessionManager;
 import models.HttpRequestWrapper;
 import models.HttpResponseWrapper;
-import models.Retrospective;
 import repositories.RetrospectiveRepository;
 import repositories.UserRepository;
 import serialisers.*;
