@@ -5,7 +5,7 @@ import models.Retrospective;
 
 public class RetrospectiveSecurityManager {
     public boolean canViewRetrospective(Retrospective retrospective, LoggedInUser user){
-        boolean isAdministrator = retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));
+        var isAdministrator = retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));
         if (isAdministrator){
             return true;
         }
@@ -14,7 +14,7 @@ public class RetrospectiveSecurityManager {
     }
 
     public boolean canEditRetrospective(Retrospective retrospective, LoggedInUser user) {
-        boolean isAdministrator = retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));
+        var isAdministrator = retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));
         if (isAdministrator){
             return true;
         }

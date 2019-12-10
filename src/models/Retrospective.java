@@ -135,7 +135,7 @@ public class Retrospective implements Identifiable {
     }
 
     public void removeAction(String actionId, LoggedInUser user) {
-        AtomicBoolean actionDeleted = new AtomicBoolean(false);
+        var actionDeleted = new AtomicBoolean(false);
 
         Function<Action, Action> setDeleted = action -> {
             if (action.isDeleted()){
@@ -147,7 +147,7 @@ public class Retrospective implements Identifiable {
             return action;
         };
 
-        ImmutableList<Action> newActions = new ImmutableList<>(actions.stream().map(action ->
+        var newActions = new ImmutableList<>(actions.stream().map(action ->
                 action.getId().equals(actionId)
                         ? setDeleted.apply(action)
                         : action));
@@ -159,7 +159,7 @@ public class Retrospective implements Identifiable {
     }
 
     private ImmutableList<Observation> removeObservation(ImmutableList<Observation> originalObservations, String observationId, LoggedInUser user, String typeOfObservation) {
-        AtomicBoolean observationDeleted = new AtomicBoolean(false);
+        var observationDeleted = new AtomicBoolean(false);
 
         Function<Observation, Observation> setDeleted = observation -> {
             if (observation.isDeleted()){
@@ -171,7 +171,7 @@ public class Retrospective implements Identifiable {
             return observation;
         };
 
-        ImmutableList<Observation> newObservations = new ImmutableList<>(originalObservations.stream().map(observation ->
+        var newObservations = new ImmutableList<>(originalObservations.stream().map(observation ->
                 observation.getId().equals(observationId)
                         ? setDeleted.apply(observation)
                         : observation));

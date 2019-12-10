@@ -17,7 +17,7 @@ public class UserSerialiser {
     }
 
     public User deserialise(String id){
-        User user = userRepository.getUser(id);
+        var user = userRepository.getUser(id);
 
         if (user == null){
             return new NotFoundUser(id);

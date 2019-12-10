@@ -8,7 +8,6 @@ import repositories.UserRepository;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public class RetrospectiveService {
     private final RetrospectiveRepository repository;
@@ -25,7 +24,7 @@ public class RetrospectiveService {
     }
 
     public Retrospective getRetrospective(String retrospectiveId, LoggedInUser user){
-        Retrospective retrospective = repository.getRetrospective(retrospectiveId);
+        var retrospective = repository.getRetrospective(retrospectiveId);
         if (securityManager.canViewRetrospective(retrospective, user)) {
             return retrospective;
         } else {
@@ -35,8 +34,8 @@ public class RetrospectiveService {
 
     public Retrospective addObservation(String retrospectiveId, String type, String title, LoggedInUser user) {
         return editRetrospective(retrospectiveId, user, retrospective -> {
-            Audit audit = new Audit(OffsetDateTime.now(), user);
-            Observation observation = new Observation(Guid.next(), title, audit, false, Collections.emptyList());
+            var audit = new Audit(OffsetDateTime.now(), user);
+            var observation = new Observation(Guid.next(), title, audit, false, Collections.emptyList());
 
             if (type == null) {
                 throw new RuntimeException("Invalid Observation type");
@@ -64,7 +63,7 @@ public class RetrospectiveService {
                 throw new RuntimeException("Invalid Observation type");
             }
 
-            Observation observation = observations.stream()
+            var observation = observations.stream()
                     .filter(o -> o.getId().equals(observationId))
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Observation not found"));
@@ -89,8 +88,8 @@ public class RetrospectiveService {
 
     public Retrospective addAction(String retrospectiveId, String title, LoggedInUser user, String ticketAddress, Identifiable assignedTo) {
         return editRetrospective(retrospectiveId, user, retrospective -> {
-            Audit audit = new Audit(OffsetDateTime.now(), user);
-            Action action = new Action(Guid.next(), title, audit, false, ticketAddress, assignedTo);
+            var audit = new Audit(OffsetDateTime.now(), user);
+            var action = new Action(Guid.next(), title, audit, false, ticketAddress, assignedTo);
 
             retrospective.addAction(action, user);
         });
@@ -98,7 +97,7 @@ public class RetrospectiveService {
 
     public Retrospective updateAction(String retrospectiveId, String actionId, LoggedInUser user, Consumer<Action> command){
         return editRetrospective(retrospectiveId, user, retrospective -> {
-            Action action = retrospective.getActions(false).stream()
+            var action = retrospective.getActions(false).stream()
                     .filter(o -> o.getId().equals(actionId))
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Action not found"));
@@ -129,20 +128,20 @@ public class RetrospectiveService {
                 throw new RuntimeException("Observation not found");
             }
 
-            Observation observation = observations.stream().findFirst().get();
+            var observation = observations.stream().findFirst().get();
             observation.toggleVote(user);
         });
     }
 
     public Retrospective addMember(String retrospectiveId, String memberUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            boolean alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getId().equals(memberUserId));
+            var alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getId().equals(memberUserId));
 
             if (alreadyAMember){
                 return;
             }
 
-            User member = this.userRepository.getUser(memberUserId);
+            var member = this.userRepository.getUser(memberUserId);
             if (member == null){
                 throw new RuntimeException("Unable to find member");
             }
@@ -153,7 +152,7 @@ public class RetrospectiveService {
 
     public Retrospective removeMember(String retrospectiveId, String memberUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            Stream<Identifiable> membersToRemove = retrospective.getMembers().stream().filter(m -> m.getId().equals(memberUserId));
+            var membersToRemove = retrospective.getMembers().stream().filter(m -> m.getId().equals(memberUserId));
 
             membersToRemove.forEach(member -> retrospective.removeMember(member, user));
         });
@@ -161,13 +160,13 @@ public class RetrospectiveService {
 
     public Retrospective addAdministrator(String retrospectiveId, String administratorUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            boolean alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getId().equals(administratorUserId));
+            var alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getId().equals(administratorUserId));
 
             if (alreadyAMember){
                 return;
             }
 
-            User administrator = this.userRepository.getUser(administratorUserId);
+            var administrator = this.userRepository.getUser(administratorUserId);
             if (administrator == null){
                 throw new RuntimeException("Unable to find administrator");
             }
@@ -178,14 +177,14 @@ public class RetrospectiveService {
 
     public Retrospective removeAdministrator(String retrospectiveId, String administratorUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            Stream<Identifiable> membersToRemove = retrospective.getMembers().stream().filter(m -> m.getId().equals(administratorUserId));
+            var membersToRemove = retrospective.getMembers().stream().filter(m -> m.getId().equals(administratorUserId));
 
             membersToRemove.forEach(administrator -> retrospective.removeAdministrator(administrator, user));
         });
     }
 
     private Retrospective editRetrospective(String retrospectiveId, LoggedInUser user, Consumer<Retrospective> edit){
-        Retrospective retrospective = getRetrospective(retrospectiveId, user);
+        var retrospective = getRetrospective(retrospectiveId, user);
         if (retrospective == null) {
             throw new RuntimeException("Retrospective not found");
         }
@@ -201,7 +200,7 @@ public class RetrospectiveService {
     }
 
     private Retrospective administerRetrospective(String retrospectiveId, LoggedInUser user, Consumer<Retrospective> administer){
-        Retrospective retrospective = getRetrospective(retrospectiveId, user);
+        var retrospective = getRetrospective(retrospectiveId, user);
         if (retrospective == null) {
             throw new RuntimeException("Retrospective not found");
         }

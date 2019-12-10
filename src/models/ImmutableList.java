@@ -38,14 +38,14 @@ public class ImmutableList<T> {
 
     @SafeVarargs
     public final ImmutableList<T> except(T... items){
-        Set<T> itemSet = new HashSet<>(Arrays.asList(items));
+        var itemSet = new HashSet<>(Arrays.asList(items));
 
         return except(itemSet::contains);
     }
 
     @SafeVarargs
     public final ImmutableList<T> union(T... additionalItems){
-        Set<T> existing = new HashSet<>(this.items);
+        var existing = new HashSet<>(this.items);
 
         existing.addAll(Arrays.asList(additionalItems));
 
@@ -54,7 +54,7 @@ public class ImmutableList<T> {
 
     @SafeVarargs
     public final ImmutableList<T> concat(T... additionalItems) {
-        List<T> existing = new ArrayList<>(this.items);
+        var existing = new ArrayList<>(this.items);
         existing.addAll(Arrays.asList(additionalItems));
 
         return new ImmutableList<>(existing);

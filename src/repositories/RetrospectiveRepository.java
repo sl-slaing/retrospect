@@ -21,12 +21,12 @@ public class RetrospectiveRepository {
             return null;
         }
 
-        SerialisableRetrospective retrospective = retrospectives.get(id);
+        var retrospective = retrospectives.get(id);
         return serialiser.deserialise(retrospective);
     }
 
     public void addOrReplace(Retrospective retrospective){
-        SerialisableRetrospective serialisable = serialiser.serialise(retrospective);
+        var serialisable = serialiser.serialise(retrospective);
 
         retrospectives.put(serialisable.getId(), serialisable);
     }

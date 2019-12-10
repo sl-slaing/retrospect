@@ -16,7 +16,7 @@ public class ObservationSerialiser {
     }
 
     public SerialisableObservation serialise(Observation observation){
-        SerialisableObservation serialisable = new SerialisableObservation();
+        var serialisable = new SerialisableObservation();
         serialisable.setId(observation.getId());
         serialisable.setTitle(observation.getTitle());
         serialisable.setVotes(observation.getVotes().stream().map(User::getId).collect(Collectors.toList()));

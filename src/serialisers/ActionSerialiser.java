@@ -13,7 +13,7 @@ public class ActionSerialiser {
     }
 
     public SerialisableAction serialise(Action action){
-        SerialisableAction serialisable = new SerialisableAction();
+        var serialisable = new SerialisableAction();
         serialisable.setAssignedTo(userSerialiser.serialise(action.getAssignedTo()));
         serialisable.setAudit(auditSerialiser.serialise(action.getAudit()));
         serialisable.setId(action.getId());

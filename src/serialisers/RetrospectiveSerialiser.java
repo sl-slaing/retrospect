@@ -19,7 +19,7 @@ public class RetrospectiveSerialiser {
     }
 
     public SerialisableRetrospective serialise(Retrospective retrospective){
-        SerialisableRetrospective serialisable = new SerialisableRetrospective();
+        var serialisable = new SerialisableRetrospective();
 
         serialisable.setId(retrospective.getId());
         serialisable.setAdministrators(retrospective.getAdministrators().stream().map(userSerialiser::serialise).collect(Collectors.toList()));

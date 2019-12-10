@@ -28,12 +28,12 @@ public class UserSessionManager {
     }
 
     public LoggedInUser getLoggedInUser(){
-        String cookieValue = request.getCookie(COOKIE_NAME);
+        var cookieValue = request.getCookie(COOKIE_NAME);
         if (cookieValue == null || cookieValue.equals("")){
             throw new RuntimeException("No user is logged in");
         }
 
-        User user = userRepository.getUser(cookieValue);
+        var user = userRepository.getUser(cookieValue);
         if (user == null){
             throw new RuntimeException("Logged in user doesn't exist");
         }

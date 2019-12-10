@@ -15,9 +15,9 @@ public class RetrospectiveController {
     private final UserSessionManager userSessionManager;
 
     public RetrospectiveController() {
-        UserRepository userRepository = new UserRepository();
-        UserSerialiser userSerialiser = new UserSerialiser(userRepository);
-        AuditSerialiser auditSerialiser = new AuditSerialiser(userSerialiser);
+        var userRepository = new UserRepository();
+        var userSerialiser = new UserSerialiser(userRepository);
+        var auditSerialiser = new AuditSerialiser(userSerialiser);
 
         this.service = new RetrospectiveService(
                 userRepository,
@@ -37,7 +37,7 @@ public class RetrospectiveController {
     }
 
     public Object index(String id){
-        Retrospective retrospective = this.service.getRetrospective(id, userSessionManager.getLoggedInUser());
+        var retrospective = this.service.getRetrospective(id, userSessionManager.getLoggedInUser());
         if (retrospective == null){
             throw new RuntimeException("Not found");
         }
