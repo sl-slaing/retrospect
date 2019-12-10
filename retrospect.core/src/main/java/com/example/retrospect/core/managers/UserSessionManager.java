@@ -1,5 +1,6 @@
 package com.example.retrospect.core.managers;
 
+import com.example.retrospect.core.exceptions.NotLoggedInException;
 import com.example.retrospect.core.models.HttpRequestWrapper;
 import com.example.retrospect.core.models.HttpResponseWrapper;
 import com.example.retrospect.core.models.LoggedInUser;
@@ -37,12 +38,12 @@ public class UserSessionManager {
     public LoggedInUser getLoggedInUser(){
         var cookieValue = request.getCookie(COOKIE_NAME);
         if (cookieValue == null || cookieValue.equals("")){
-            throw new RuntimeException("No user is logged in");
+            throw new NotLoggedInException("No user is logged in");
         }
 
         var user = userRepository.getUser(cookieValue);
         if (user == null){
-            throw new RuntimeException("Logged in user doesn't exist");
+            throw new NotLoggedInException("Logged in user doesn't exist");
         }
 
         return new LoggedInUser(user.getId());
