@@ -1,7 +1,7 @@
 package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
-import com.example.retrospect.core.managers.UserSessionManager;
+import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.core.models.User;
 import com.example.retrospect.core.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

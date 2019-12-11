@@ -1,4 +1,4 @@
-package com.example.retrospect.core.managers;
+package com.example.retrospect.web.managers;
 
 import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.User;
