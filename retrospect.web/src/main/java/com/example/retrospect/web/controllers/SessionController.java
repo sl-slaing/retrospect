@@ -39,4 +39,9 @@ public class SessionController {
 
         userSessionManager.login(user, "/data");
     }
+
+    @GetMapping("/logout")
+    public void logout(){
+        userSessionManager.logout();
+    }
 }

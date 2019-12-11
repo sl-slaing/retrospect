@@ -47,16 +47,20 @@ public class QueryStringUserSessionManager implements UserSessionManager {
 
     @Override
     public void logout() {
-        var pattern = Pattern.compile("([?&]" + QUERY_STRING_NAME + "=.+)");
-        var matcher = pattern.matcher(request.getUri());
+        var pattern = Pattern.compile("(.*)(&?" + QUERY_STRING_NAME + "=[^&]+)(.*)", Pattern.CASE_INSENSITIVE);
+        String queryString = request.getQueryString();
+        var matcher = pattern.matcher(queryString);
 
         if (!matcher.matches()){
             return;
         }
 
-        var newUri = matcher.replaceAll("");
+        var newQueryString = matcher.replaceAll("$1$3").replace("&&", "&");
+        if (!newQueryString.equals("")){
+            newQueryString = "?" + newQueryString;
+        }
         try {
-            response.redirect(newUri);
+            response.redirect(request.getUri() + newQueryString);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
