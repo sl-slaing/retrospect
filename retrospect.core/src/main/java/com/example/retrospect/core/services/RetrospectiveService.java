@@ -12,6 +12,7 @@ import com.example.retrospect.core.repositories.UserRepository;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Service
 public class RetrospectiveService {
@@ -219,5 +220,10 @@ public class RetrospectiveService {
 
         repository.addOrReplace(retrospective);
         return retrospective;
+    }
+
+    public Stream<Retrospective> getAllRetrospectives(LoggedInUser user) {
+        return repository.getAll()
+                .filter(retro -> this.securityManager.canViewRetrospective(retro, user));
     }
 }

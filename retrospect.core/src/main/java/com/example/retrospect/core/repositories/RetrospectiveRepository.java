@@ -8,6 +8,7 @@ import com.example.retrospect.core.serialisers.RetrospectiveSerialiser;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Service
 public class RetrospectiveRepository {
@@ -33,5 +34,11 @@ public class RetrospectiveRepository {
         var serialisable = serialiser.serialise(retrospective);
 
         retrospectives.put(serialisable.getId(), serialisable);
+    }
+
+    public Stream<Retrospective> getAll() {
+        return retrospectives.values()
+                .stream()
+                .map(serialiser::deserialise);
     }
 }
