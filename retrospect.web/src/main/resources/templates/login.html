@@ -1,0 +1,11 @@
+<form action="/login" method="post">
+    <label>
+        Username
+        <input name="username" th:value="${request.username}" />
+    </label>
+    <div th:if="${request.error != ''}">
+        <span th:text="${request.error}"></span>
+    </div>
+    <input type="hidden" name="returnUrl" th:value="${request.returnUrl}" />
+    <button>Login</button>
+</form>

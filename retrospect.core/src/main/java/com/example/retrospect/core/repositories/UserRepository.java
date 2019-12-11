@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserRepository {
     public User getUser(String username){
+        if (!username.startsWith("s")){
+            return null;
+        }
+
         var displayName = username.substring(0, 1).toUpperCase() + " " + username.substring(1, 2).toUpperCase() + username.substring(2);
 
         return new User(username, displayName, username + "@scottlogic.com");
