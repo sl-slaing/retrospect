@@ -1,7 +1,7 @@
 package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
-import com.example.retrospect.core.exceptions.NotLoggedInException;
+import com.example.retrospect.core.managers.CookieUserSessionManager;
 import com.example.retrospect.core.managers.UserSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
