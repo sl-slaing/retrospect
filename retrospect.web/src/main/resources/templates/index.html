@@ -1,8 +1,16 @@
 <html>
     <head>
         <title>Retrospect</title>
+        <link rel="stylesheet" type="text/css" href="/styles/index.css" />
     </head>
     <body>
-        
+        <h3>Retrospect</h3>
+        <div class="">
+            <th:block th:each="retrospective : ${data}">
+                <a th:text="${retrospective.id}">
+
+                </a>
+            </th:block>
+        </div>
     </body>
 </html>
