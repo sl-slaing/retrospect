@@ -1,6 +1,5 @@
 package com.example.retrospect.web.managers;
 
-import com.example.retrospect.web.exceptions.NotLoggedInException;
 import com.example.retrospect.core.models.HttpRequestWrapper;
 import com.example.retrospect.core.models.HttpResponseWrapper;
 import com.example.retrospect.core.models.LoggedInUser;
@@ -72,17 +71,17 @@ public class QueryStringUserSessionManager implements UserSessionManager {
         var matcher = pattern.matcher(request.getQueryString());
 
         if (!matcher.matches()){
-            throw new NotLoggedInException("Not logged in");
+            return null;
         }
 
         var username = matcher.group(1);
         if (username == null || username.equals("")){
-            throw new NotLoggedInException("Not logged in.");
+            return null;
         }
 
         var user = userRepository.getUser(username);
         if (user == null){
-            throw new NotLoggedInException("Logged in user doesn't exist");
+            return null;
         }
 
         return new LoggedInUser(username);

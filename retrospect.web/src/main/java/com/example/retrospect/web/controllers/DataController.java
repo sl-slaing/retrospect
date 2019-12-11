@@ -31,18 +31,24 @@ public class DataController {
 
     @GetMapping("/data")
     public List<RetrospectiveOverview> index(){
-        return this.service.getAllRetrospectives(userSessionManager.getLoggedInUser())
+        var loggedInUser = userSessionManager.getLoggedInUser();
+        if (loggedInUser == null) {
+            userSessionManager.logout();
+        }
+
+        return this.service.getAllRetrospectives(loggedInUser)
                 .map(RetrospectiveOverview::new)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/data/{id}")
     public RetrospectiveViewModel index(@PathVariable String id){
-        if (id == null){
-            return null;
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        if (loggedInUser == null) {
+            userSessionManager.logout();
         }
 
-        var loggedInUser = userSessionManager.getLoggedInUser();
         var retrospective = this.service.getRetrospective(id, loggedInUser);
         if (retrospective == null) {
             throw new NotFoundException("Retrospective not found");

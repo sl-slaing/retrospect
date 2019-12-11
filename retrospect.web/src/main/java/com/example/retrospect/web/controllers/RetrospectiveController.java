@@ -1,6 +1,7 @@
 package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.web.managers.UserSessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class RetrospectiveController {
     private final UserSessionManager userSessionManager;
 
+    @Autowired
     public RetrospectiveController(UserSessionManager userSessionManager) {
         this.userSessionManager = userSessionManager;
     }
@@ -24,6 +26,6 @@ public class RetrospectiveController {
             return new ModelAndView("redirect:/login", "request", null);
         }
 
-        return new ModelAndView("redirect:/data", "request", null);
+        return new ModelAndView("index", "index", null);
     }
 }
