@@ -26,6 +26,10 @@ public class RetrospectiveController {
 
     @GetMapping("/data")
     public Object index(String id){
+        if (id == null){
+            return null;
+        }
+
         var retrospective = this.service.getRetrospective(id, userSessionManager.getLoggedInUser());
         if (retrospective == null) {
             throw new NotFoundException("Retrospective not found");

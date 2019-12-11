@@ -28,5 +28,13 @@ public class HttpRequestWrapper {
                 .map(Cookie::getValue)
                 .orElse(null);
     }
+
+    public String getUri() {
+        return request.getRequestURI();
+    }
+
+    public String getQueryString(){
+        return request.getQueryString() == null ? "" : request.getQueryString();
+    }
 }
 

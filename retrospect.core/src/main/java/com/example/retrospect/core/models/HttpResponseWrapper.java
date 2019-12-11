@@ -6,6 +6,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
@@ -32,5 +33,9 @@ public class HttpResponseWrapper {
         cookie.setMaxAge(0);
 
         response.addCookie(cookie);
+    }
+
+    public void redirect(String uri) throws IOException {
+        response.sendRedirect(uri);
     }
 }
