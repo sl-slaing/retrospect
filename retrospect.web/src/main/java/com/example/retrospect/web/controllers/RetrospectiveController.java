@@ -6,6 +6,8 @@ import com.example.retrospect.core.managers.UserSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.retrospect.core.services.RetrospectiveService;
 import org.springframework.web.context.WebApplicationContext;
@@ -24,8 +26,8 @@ public class RetrospectiveController {
         this.userSessionManager = userSessionManager;
     }
 
-    @GetMapping("/data")
-    public Object index(String id){
+    @GetMapping("/data/{id}")
+    public Object index(@PathVariable String id){
         if (id == null){
             return null;
         }

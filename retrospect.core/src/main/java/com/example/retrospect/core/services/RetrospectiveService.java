@@ -31,7 +31,7 @@ public class RetrospectiveService {
 
     public Retrospective getRetrospective(String retrospectiveId, LoggedInUser user){
         var retrospective = repository.getRetrospective(retrospectiveId);
-        if (securityManager.canViewRetrospective(retrospective, user)) {
+        if (retrospective != null && securityManager.canViewRetrospective(retrospective, user)) {
             return retrospective;
         } else {
             return null;
