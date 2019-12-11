@@ -1,14 +1,11 @@
 package com.example.retrospect.web.controllers;
 
-import com.example.retrospect.core.exceptions.NotFoundException;
 import com.example.retrospect.web.managers.UserSessionManager;
-import com.example.retrospect.core.models.User;
 import com.example.retrospect.core.repositories.UserRepository;
 import com.example.retrospect.web.models.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
