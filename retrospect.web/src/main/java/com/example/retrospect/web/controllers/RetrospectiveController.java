@@ -1,10 +1,10 @@
 package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
-import com.example.retrospect.web.managers.UserSessionManager;
-import com.example.retrospect.core.models.Retrospective;
 import com.example.retrospect.core.services.RetrospectiveService;
+import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.web.viewmodels.RetrospectiveOverview;
+import com.example.retrospect.web.viewmodels.RetrospectiveViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,16 +37,17 @@ public class RetrospectiveController {
     }
 
     @GetMapping("/data/{id}")
-    public Retrospective index(@PathVariable String id){
+    public RetrospectiveViewModel index(@PathVariable String id){
         if (id == null){
             return null;
         }
 
-        var retrospective = this.service.getRetrospective(id, userSessionManager.getLoggedInUser());
+        var loggedInUser = userSessionManager.getLoggedInUser();
+        var retrospective = this.service.getRetrospective(id, loggedInUser);
         if (retrospective == null) {
             throw new NotFoundException("Retrospective not found");
         }
 
-        return retrospective; //JSON-ify
+        return new RetrospectiveViewModel(retrospective, loggedInUser);
     }
 }

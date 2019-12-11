@@ -11,8 +11,8 @@ public class Retrospective implements Identifiable {
     private ImmutableList<Action> actions;
     private ImmutableList<Observation> wentWell;
     private ImmutableList<Observation> couldBeBetter;
-    private ImmutableList<Identifiable> administrators;
-    private ImmutableList<Identifiable> members;
+    private ImmutableList<User> administrators;
+    private ImmutableList<User> members;
 
     public Retrospective(
             String id,
@@ -20,8 +20,8 @@ public class Retrospective implements Identifiable {
             ImmutableList<Action> actions,
             ImmutableList<Observation> wentWell,
             ImmutableList<Observation> couldBeBetter,
-            ImmutableList<Identifiable> administrators,
-            ImmutableList<Identifiable> members) {
+            ImmutableList<User> administrators,
+            ImmutableList<User> members) {
         if (audit == null){
             throw new RuntimeException("Cannot create a Retrospective without any audit");
         }
@@ -83,30 +83,30 @@ public class Retrospective implements Identifiable {
                 : couldBeBetter.except(Observation::isDeleted);
     }
 
-    public ImmutableList<Identifiable> getAdministrators() {
+    public ImmutableList<User> getAdministrators() {
         return administrators;
     }
 
-    public ImmutableList<Identifiable> getMembers() {
+    public ImmutableList<User> getMembers() {
         return members;
     }
 
-    public void addAdministrator(Identifiable administrator, LoggedInUser user) {
+    public void addAdministrator(User administrator, LoggedInUser user) {
         this.administrators = this.getMembers().union(administrator);
         this.audit.update(user, "Administrator added");
     }
 
-    public void removeAdministrator(Identifiable administrator, LoggedInUser user){
+    public void removeAdministrator(User administrator, LoggedInUser user){
         this.administrators = this.getMembers().except(administrator);
         this.audit.update(user, "Administrator removed");
     }
 
-    public void addMember(Identifiable member, LoggedInUser user) {
+    public void addMember(User member, LoggedInUser user) {
         this.members = this.getMembers().union(member);
         this.audit.update(user, "Member added");
     }
 
-    public void removeMember(Identifiable member, LoggedInUser user) {
+    public void removeMember(User member, LoggedInUser user) {
         this.members = this.getMembers().except(member);
         this.audit.update(user, "Member removed");
     }
