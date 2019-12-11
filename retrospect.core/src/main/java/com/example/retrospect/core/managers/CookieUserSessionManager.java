@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.example.retrospect.core.repositories.UserRepository;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
+
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class CookieUserSessionManager implements UserSessionManager {
@@ -28,8 +30,13 @@ public class CookieUserSessionManager implements UserSessionManager {
     }
 
     @Override
-    public void login(User user){
+    public void login(User user, String redirectUrl){
         response.setSessionCookie(COOKIE_NAME, user.getId());
+        try {
+            response.redirect(redirectUrl);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

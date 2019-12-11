@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Primary
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class QueryStringUserSessionManager implements UserSessionManager {
-    public static final String QUERY_STRING_NAME = "USER";
+    public static final String QUERY_STRING_NAME = "user";
 
     private final UserRepository userRepository;
     private final HttpRequestWrapper request;
@@ -33,14 +33,13 @@ public class QueryStringUserSessionManager implements UserSessionManager {
     }
 
     @Override
-    public void login(User user) {
-        var uri = request.getUri();
-        var queryStringDelimiter = uri.contains("?")
+    public void login(User user, String redirectUrl) {
+        var queryStringDelimiter = redirectUrl.contains("?")
                 ? "&"
                 : "?";
 
         try {
-            response.redirect(uri + queryStringDelimiter + QUERY_STRING_NAME + "=" + user.getId());
+            response.redirect(redirectUrl + queryStringDelimiter + QUERY_STRING_NAME + "=" + user.getId());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,11 +68,16 @@ public class QueryStringUserSessionManager implements UserSessionManager {
         var matcher = pattern.matcher(request.getQueryString());
 
         if (!matcher.matches()){
-            throw new NotLoggedInException("Logged in user doesn't exist");
+            throw new NotLoggedInException("Not logged in");
         }
 
         var username = matcher.group(1);
         if (username == null || username.equals("")){
+            throw new NotLoggedInException("Not logged in.");
+        }
+
+        var user = userRepository.getUser(username);
+        if (user == null){
             throw new NotLoggedInException("Logged in user doesn't exist");
         }
 

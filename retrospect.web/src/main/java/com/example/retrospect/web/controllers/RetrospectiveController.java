@@ -1,15 +1,14 @@
 package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
-import com.example.retrospect.core.managers.CookieUserSessionManager;
 import com.example.retrospect.core.managers.UserSessionManager;
+import com.example.retrospect.core.models.Retrospective;
+import com.example.retrospect.core.services.RetrospectiveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.retrospect.core.services.RetrospectiveService;
 import org.springframework.web.context.WebApplicationContext;
 
 @RestController
@@ -27,7 +26,7 @@ public class RetrospectiveController {
     }
 
     @GetMapping("/data/{id}")
-    public Object index(@PathVariable String id){
+    public Retrospective index(@PathVariable String id){
         if (id == null){
             return null;
         }
