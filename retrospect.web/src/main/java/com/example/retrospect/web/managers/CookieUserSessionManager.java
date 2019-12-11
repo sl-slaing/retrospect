@@ -1,6 +1,6 @@
 package com.example.retrospect.web.managers;
 
-import com.example.retrospect.core.exceptions.NotLoggedInException;
+import com.example.retrospect.web.exceptions.NotLoggedInException;
 import com.example.retrospect.core.models.HttpRequestWrapper;
 import com.example.retrospect.core.models.HttpResponseWrapper;
 import com.example.retrospect.core.models.LoggedInUser;
