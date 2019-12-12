@@ -18,7 +18,7 @@
         <div class="workspace">
             <div class="vertically-centered">
                 <th:block th:each="retrospective : ${viewModel.retrospectives}">
-                    <a th:href="${'#' + retrospective.id}" class="block-flow-item hover-shadow bold-content">
+                    <a th:href="${'/retrospective/' + retrospective.id}" class="block-flow-item hover-shadow bold-content">
                         <div th:text="${retrospective.id}"></div>
                         <div th:text="${retrospective.createdOn}"></div>
                         <div class="ignore-whitespace">

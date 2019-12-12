@@ -43,7 +43,7 @@ public class RetrospectiveViewModel {
         return retrospective.getAdministrators().stream().anyMatch(admin -> admin.equals(loggedInUser));
     }
 
-    public UserViewModel getLoggedInUser() {
+    public UserViewModel getUser() {
         return new UserViewModel(loggedInUser);
     }
 }

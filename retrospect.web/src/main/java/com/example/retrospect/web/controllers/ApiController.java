@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
-public class DataController {
+public class ApiController {
     private final RetrospectiveService service;
     private final UserSessionManager userSessionManager;
 
     @Autowired
-    public DataController(
+    public ApiController(
             RetrospectiveService service,
             UserSessionManager userSessionManager) {
         this.service = service;
@@ -51,10 +51,5 @@ public class DataController {
         }
 
         return new RetrospectiveViewModel(retrospective, loggedInUser);
-    }
-
-    @RequestMapping("/user")
-    public Principal user(Principal principal) {
-        return principal;
     }
 }

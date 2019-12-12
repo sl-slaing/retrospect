@@ -9,40 +9,22 @@
         <div class="vertically-centered">
             <div class="white-panel error-panel">
                 <h4>Error occurred</h4>
-                <table>
-                    <tr>
-                        <td>Date</td>
-                        <td th:text="${timestamp}"/>
-                    </tr>
-                    <tr>
-                        <td>Path</td>
-                        <td th:text="${path}"/>
-                    </tr>
-                    <tr>
-                        <td>Error</td>
-                        <td th:text="${error}"/>
-                    </tr>
-                    <tr>
-                        <td>Status</td>
-                        <td th:text="${status}"/>
-                    </tr>
-                    <tr>
-                        <td>Message</td>
-                        <td th:text="${message}"/>
-                    </tr>
-                    <tr>
-                        <td>Exception</td>
-                        <td th:text="${exception}"/>
-                    </tr>
-                    <tr>
-                        <td>Trace</td>
-                        <td>
-                            <pre th:text="${trace}"/>
-                        </td>
-                    </tr>
-                </table>
-                <hr />
-                <a href="/retro">Back to list</a>
+                <ol>
+                    <li th:text="${timestamp}"></li>
+                    <li>
+                        <a th:href="${path}" th:text="${path}"></a>
+                    </li>
+                    <li>
+                        <span th:text="${status + '-'}"></span>
+                        <span th:text="${error}"></span>
+                    </li>
+                    <li th:text="${message}"></li>
+                    <li th:text="${exception}"></li>
+                    <li>
+                       <div class="overflow pre-text" th:text="${trace}"></div>
+                    </li>
+                </ol>
+                <a href="/list">Back to list</a>
             </div>
         </div>
     </div>

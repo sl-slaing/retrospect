@@ -1,0 +1,52 @@
+<html>
+<head>
+    <title>Retrospect</title>
+    <link rel="stylesheet" type="text/css" href="/styles/index.css" />
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+</head>
+<body>
+<h3 class="center heading">
+    <span>Retrospect</span>
+</h3>
+<img th:src="${viewModel.user.avatarUrl}" class="avatar" onClick="toggleMenu(this)" />
+<div class="menu">
+    <span class="menu-item menu-item-heading" th:text="${viewModel.user.displayName}"></span>
+    <span class="menu-item menu-item-note" th:text="${'Logged in with ' + viewModel.user.provider}"></span>
+    <a href="#" class="menu-item menu-item-clickable" onClick="logout()">Logout</a>
+</div>
+<div class="workspace">
+    <div class="vertically-centered">
+
+    </div>
+</div>
+<script>
+            $.ajaxSetup({
+                beforeSend : function(xhr, settings) {
+                  if (settings.type == 'POST' || settings.type == 'PUT'
+                      || settings.type == 'DELETE') {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/
+                        .test(settings.url))) {
+                      // Only send the token to relative URLs i.e. locally.
+                      xhr.setRequestHeader("X-XSRF-TOKEN",
+                          Cookies.get('XSRF-TOKEN'));
+                    }
+                  }
+                }
+            });
+
+            var logout = function() {
+                $.post("/logout", function() {
+                    document.location.href = "/";
+                })
+                return true;
+            }
+
+            var toggleMenu = function(avatar){
+                avatar.className = avatar.className.indexOf("show-menu") != -1
+                    ? avatar.className.replace("show-menu")
+                    : avatar.className + " show-menu";
+            }
+        </script>
+</body>
+</html>

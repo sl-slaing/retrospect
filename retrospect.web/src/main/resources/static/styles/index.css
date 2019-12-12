@@ -224,3 +224,21 @@ a{
 .menu-item + .menu-item{
     border-top: 1px solid #cccccc;
 }
+
+.error-panel {
+    background: #fff8f8;
+}
+
+.error-panel li {
+    font-size: 12px;
+}
+
+.overflow {
+    overflow: auto;
+    max-width: 800px;
+    max-height: 500px;
+}
+
+.pre-text{
+    white-space: pre
+}
