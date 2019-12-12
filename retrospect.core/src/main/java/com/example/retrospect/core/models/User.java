@@ -6,13 +6,13 @@ public class User implements Identifiable {
     protected String userName;
     protected String displayName;
     protected String emailAddress;
-    private final String avatar;
+    private final String avatarUrl;
 
-    public User(String userName, String displayName, String emailAddress, String avatar) {
+    public User(String userName, String displayName, String emailAddress, String avatarUrl) {
         this.userName = userName;
         this.displayName = displayName;
         this.emailAddress = emailAddress;
-        this.avatar = avatar;
+        this.avatarUrl = avatarUrl;
     }
 
     @Override
@@ -33,8 +33,8 @@ public class User implements Identifiable {
         return emailAddress;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 }
 

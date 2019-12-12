@@ -1,6 +1,5 @@
 package com.example.retrospect.web.viewmodels;
 
-import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.Retrospective;
 
 import java.time.format.DateTimeFormatter;
@@ -8,9 +7,9 @@ import java.time.format.FormatStyle;
 
 public class RetrospectiveOverview {
     private final Retrospective retrospective;
-    private final LoggedInUser user;
+    private final UserViewModel user;
 
-    public RetrospectiveOverview(Retrospective retrospective, LoggedInUser user) {
+    public RetrospectiveOverview(Retrospective retrospective, UserViewModel user) {
         this.retrospective = retrospective;
         this.user = user;
     }

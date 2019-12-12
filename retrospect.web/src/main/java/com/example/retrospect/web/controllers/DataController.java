@@ -5,6 +5,7 @@ import com.example.retrospect.core.services.RetrospectiveService;
 import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.web.viewmodels.RetrospectiveOverview;
 import com.example.retrospect.web.viewmodels.RetrospectiveViewModel;
+import com.example.retrospect.web.viewmodels.UserViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +36,9 @@ public class DataController {
     public List<RetrospectiveOverview> index(){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
+        var user = new UserViewModel(loggedInUser);
         return this.service.getAllRetrospectives(loggedInUser)
-                .map(retro -> new RetrospectiveOverview(retro, loggedInUser))
+                .map(retro -> new RetrospectiveOverview(retro, user))
                 .collect(Collectors.toList());
     }
 
@@ -49,7 +51,7 @@ public class DataController {
             throw new NotFoundException("Retrospective not found");
         }
 
-        return new RetrospectiveViewModel(retrospective, loggedInUser);
+        return new RetrospectiveViewModel(retrospective, new UserViewModel(loggedInUser));
     }
 
     @RequestMapping("/user")

@@ -20,4 +20,8 @@ public class UserViewModel {
     public String getEmailAddress(){
         return user.getEmailAddress();
     }
+
+    public String getAvatarUrl(){
+        return user.getAvatarUrl();
+    }
 }

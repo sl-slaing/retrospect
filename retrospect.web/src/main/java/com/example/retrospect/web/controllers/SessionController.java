@@ -16,8 +16,7 @@ public class SessionController {
     private final UserSessionManager userSessionManager;
 
     @Autowired
-    public SessionController(
-            UserSessionManager userSessionManager) {
+    public SessionController(UserSessionManager userSessionManager) {
         this.userSessionManager = userSessionManager;
     }
 
