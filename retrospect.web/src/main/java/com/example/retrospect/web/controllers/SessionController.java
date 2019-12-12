@@ -24,8 +24,8 @@ public class SessionController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/login")
-    public ModelAndView login(@RequestParam(required = false) String returnUrl){
+    @GetMapping("/")
+    public ModelAndView session(@RequestParam(required = false) String returnUrl){
 
         var request = new LoginRequest();
         request.setReturnUrl(returnUrl);
@@ -33,8 +33,8 @@ public class SessionController {
         return new ModelAndView("login", "request", request);
     }
 
-    @PostMapping("/login")
-    public ModelAndView login(@ModelAttribute LoginRequest request){
+    @PostMapping("/session")
+    public ModelAndView session(@ModelAttribute LoginRequest request){
         var user = userRepository.getUser(request.getUsername());
         if (user == null){
             request.setError("User not found");
@@ -43,7 +43,7 @@ public class SessionController {
 
         var returnUrl = request.getReturnUrl();
         if (returnUrl == null || returnUrl.equals("")){
-            returnUrl = "/";
+            returnUrl = "/retro";
         }
 
         userSessionManager.login(user, returnUrl);

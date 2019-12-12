@@ -25,12 +25,12 @@ public class RetrospectiveController {
         this.service = service;
     }
 
-    @GetMapping("/")
+    @GetMapping("/retro")
     public ModelAndView index(){
         var user = userSessionManager.getLoggedInUser();
 
         if (user == null){
-            return new ModelAndView("redirect:/login", "request", null);
+            return new ModelAndView("redirect:/", "request", null);
         }
 
         var retrospectives = service.getAllRetrospectives(user)
