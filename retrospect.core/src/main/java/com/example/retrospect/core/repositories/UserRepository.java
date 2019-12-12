@@ -12,6 +12,6 @@ public class UserRepository {
 
         var displayName = username.substring(0, 1).toUpperCase() + " " + username.substring(1, 2).toUpperCase() + username.substring(2);
 
-        return new User(username, displayName, username + "@scottlogic.com");
+        return new User(username, displayName, username + "@scottlogic.com", null);
     }
 }

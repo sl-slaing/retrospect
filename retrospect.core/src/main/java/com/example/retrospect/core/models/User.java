@@ -6,11 +6,13 @@ public class User implements Identifiable {
     protected String userName;
     protected String displayName;
     protected String emailAddress;
+    private final String avatar;
 
-    public User(String userName, String displayName, String emailAddress) {
+    public User(String userName, String displayName, String emailAddress, String avatar) {
         this.userName = userName;
         this.displayName = displayName;
         this.emailAddress = emailAddress;
+        this.avatar = avatar;
     }
 
     @Override
@@ -29,6 +31,10 @@ public class User implements Identifiable {
 
     public String getEmailAddress() {
         return emailAddress;
+    }
+
+    public String getAvatar() {
+        return avatar;
     }
 }
 

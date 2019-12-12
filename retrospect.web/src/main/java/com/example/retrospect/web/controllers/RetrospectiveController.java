@@ -39,6 +39,6 @@ public class RetrospectiveController {
 
         var viewModel = new RetrospectiveOverviewsViewModel(retrospectives, user);
 
-        return new ModelAndView("index", "viewModel", viewModel);
+        return new ModelAndView("retro", "viewModel", viewModel);
     }
 }

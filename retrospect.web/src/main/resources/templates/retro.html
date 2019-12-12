@@ -2,9 +2,14 @@
     <head>
         <title>Retrospect</title>
         <link rel="stylesheet" type="text/css" href="/styles/index.css" />
+        <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
     </head>
     <body>
-        <h3 class="center heading" th:text="${'Retrospect: ' + viewModel.user.displayName}"></h3>
+        <h3 class="center heading">
+            <span th:text="${'Retrospect: ' + viewModel.user.displayName}"></span>
+            <button onClick="logout()">Logout</button>
+        </h3>
         <div class="workspace">
             <div class="vertically-centered">
                 <th:block th:each="retrospective : ${viewModel.retrospectives}">
@@ -23,5 +28,27 @@
                 </a>
             </div>
         </div>
+        <script>
+            $.ajaxSetup({
+                beforeSend : function(xhr, settings) {
+                  if (settings.type == 'POST' || settings.type == 'PUT'
+                      || settings.type == 'DELETE') {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/
+                        .test(settings.url))) {
+                      // Only send the token to relative URLs i.e. locally.
+                      xhr.setRequestHeader("X-XSRF-TOKEN",
+                          Cookies.get('XSRF-TOKEN'));
+                    }
+                  }
+                }
+            });
+
+            var logout = function() {
+                $.post("/logout", function() {
+                    document.location.href = "/";
+                })
+                return true;
+            }
+        </script>
     </body>
 </html>

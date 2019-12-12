@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +34,6 @@ public class DataController {
     @GetMapping("/data")
     public List<RetrospectiveOverview> index(){
         var loggedInUser = userSessionManager.getLoggedInUser();
-        if (loggedInUser == null) {
-            userSessionManager.logout();
-        }
 
         return this.service.getAllRetrospectives(loggedInUser)
                 .map(retro -> new RetrospectiveOverview(retro, loggedInUser))
@@ -45,15 +44,16 @@ public class DataController {
     public RetrospectiveViewModel index(@PathVariable String id){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        if (loggedInUser == null) {
-            userSessionManager.logout();
-        }
-
         var retrospective = this.service.getRetrospective(id, loggedInUser);
         if (retrospective == null) {
             throw new NotFoundException("Retrospective not found");
         }
 
         return new RetrospectiveViewModel(retrospective, loggedInUser);
+    }
+
+    @RequestMapping("/user")
+    public Principal user(Principal principal) {
+        return principal;
     }
 }
