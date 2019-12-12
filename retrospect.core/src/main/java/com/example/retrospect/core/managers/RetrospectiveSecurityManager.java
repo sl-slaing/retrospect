@@ -7,24 +7,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class RetrospectiveSecurityManager {
     public boolean canViewRetrospective(Retrospective retrospective, LoggedInUser user){
-        var isAdministrator = retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));
+        var isAdministrator = retrospective.getAdministrators().stream().anyMatch(admin -> admin.equals(user));
         if (isAdministrator){
             return true;
         }
 
-        return retrospective.getMembers().stream().anyMatch(id -> id.getId().equals(user.getId()));
+        return retrospective.getMembers().stream().anyMatch(member -> member.equals(user));
     }
 
     public boolean canEditRetrospective(Retrospective retrospective, LoggedInUser user) {
-        var isAdministrator = retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));
+        var isAdministrator = retrospective.getAdministrators().stream().anyMatch(admin -> admin.equals(user));
         if (isAdministrator){
             return true;
         }
 
-        return retrospective.getMembers().stream().anyMatch(id -> id.getId().equals(user.getId()));
+        return retrospective.getMembers().stream().anyMatch(member -> member.equals(user));
     }
 
     public boolean canAdministerRetrospective(Retrospective retrospective, LoggedInUser user) {
-        return retrospective.getAdministrators().stream().anyMatch(id -> id.getId().equals(user.getId()));
+        return retrospective.getAdministrators().stream().anyMatch(admin -> admin.equals(user));
     }
 }

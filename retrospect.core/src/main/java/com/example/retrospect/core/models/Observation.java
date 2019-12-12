@@ -63,14 +63,14 @@ public class Observation implements Identifiable {
 
     public void toggleVote(LoggedInUser user) {
         if (hasVoted(user)){
-            votes = votes.except(v -> v.getId().equals(user.getId()));
+            votes = votes.except(voter -> voter.equals(user));
         } else {
             votes = votes.union(user);
         }
     }
 
     public boolean hasVoted(Identifiable user){
-        return votes.stream().anyMatch(v -> v.getId().equals(user.getId()));
+        return votes.stream().anyMatch(voter -> voter.equals(user));
     }
 }
 

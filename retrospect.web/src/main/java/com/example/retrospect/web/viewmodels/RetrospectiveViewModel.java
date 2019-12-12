@@ -40,6 +40,6 @@ public class RetrospectiveViewModel {
     }
 
     public boolean isAdministrator(){
-        return retrospective.getAdministrators().stream().anyMatch(a -> a.getId().equals(loggedInUser.getId()));
+        return retrospective.getAdministrators().stream().anyMatch(admin -> admin.equals(loggedInUser));
     }
 }
