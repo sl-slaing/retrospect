@@ -38,8 +38,7 @@ public class RetrospectiveController {
                 .map(retro -> new RetrospectiveOverview(retro, user))
                 .collect(Collectors.toList());
 
-        var userViewModel = new UserViewModel(user);
-        var viewModel = new RetrospectiveOverviewsViewModel(retrospectives, userViewModel);
+        var viewModel = new RetrospectiveOverviewsViewModel(retrospectives, user);
 
         return new ModelAndView("retro", "viewModel", viewModel);
     }

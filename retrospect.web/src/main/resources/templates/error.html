@@ -1,0 +1,50 @@
+<html>
+<head>
+    <title>Retrospect</title>
+    <link rel="stylesheet" type="text/css" href="/styles/index.css" />
+</head>
+<body>
+    <h3 class="center heading">Retrospect</h3>
+    <div class="workspace">
+        <div class="vertically-centered">
+            <div class="white-panel error-panel">
+                <h4>Error occurred</h4>
+                <table>
+                    <tr>
+                        <td>Date</td>
+                        <td th:text="${timestamp}"/>
+                    </tr>
+                    <tr>
+                        <td>Path</td>
+                        <td th:text="${path}"/>
+                    </tr>
+                    <tr>
+                        <td>Error</td>
+                        <td th:text="${error}"/>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td th:text="${status}"/>
+                    </tr>
+                    <tr>
+                        <td>Message</td>
+                        <td th:text="${message}"/>
+                    </tr>
+                    <tr>
+                        <td>Exception</td>
+                        <td th:text="${exception}"/>
+                    </tr>
+                    <tr>
+                        <td>Trace</td>
+                        <td>
+                            <pre th:text="${trace}"/>
+                        </td>
+                    </tr>
+                </table>
+                <hr />
+                <a href="/retro">Back to list</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

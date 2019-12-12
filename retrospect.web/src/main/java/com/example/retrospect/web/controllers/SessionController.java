@@ -2,6 +2,7 @@ package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.web.models.LoginRequest;
+import com.example.retrospect.web.viewmodels.ErrorViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
