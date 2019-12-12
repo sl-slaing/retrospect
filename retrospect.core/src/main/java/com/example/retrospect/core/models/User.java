@@ -5,13 +5,13 @@ public class User implements Identifiable {
 
     protected String userName;
     protected String displayName;
-    protected String emailAddress;
+    private final String provider;
     private final String avatarUrl;
 
-    public User(String userName, String displayName, String emailAddress, String avatarUrl) {
+    public User(String userName, String displayName, String avatarUrl, String provider) {
         this.userName = userName;
         this.displayName = displayName;
-        this.emailAddress = emailAddress;
+        this.provider = provider;
         this.avatarUrl = avatarUrl;
     }
 
@@ -29,8 +29,8 @@ public class User implements Identifiable {
         return displayName;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getProvider() {
+        return provider;
     }
 
     public String getAvatarUrl() {

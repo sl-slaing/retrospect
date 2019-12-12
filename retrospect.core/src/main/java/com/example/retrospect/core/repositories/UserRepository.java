@@ -3,15 +3,23 @@ package com.example.retrospect.core.repositories;
 import com.example.retrospect.core.models.User;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
 @Service
 public class UserRepository {
+    private static final Map<String, User> database = new HashMap<>();
+
     public User getUser(String username){
-        if (!username.startsWith("s")){
-            return null;
-        }
+        return database.getOrDefault(username, null);
+    }
 
-        var displayName = username.substring(0, 1).toUpperCase() + " " + username.substring(1, 2).toUpperCase() + username.substring(2);
+    public void addOrUpdateUserDetails(User user) {
+        database.put(user.getId(), user);
+    }
 
-        return new User(username, displayName, username + "@scottlogic.com", null);
+    public Stream<User> getAllUsers(){
+        return database.values().stream();
     }
 }

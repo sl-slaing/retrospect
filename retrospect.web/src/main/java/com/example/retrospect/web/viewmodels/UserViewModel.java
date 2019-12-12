@@ -17,8 +17,8 @@ public class UserViewModel {
         return user.getDisplayName();
     }
 
-    public String getEmailAddress(){
-        return user.getEmailAddress();
+    public String getProvider(){
+        return user.getProvider();
     }
 
     public String getAvatarUrl(){

@@ -7,9 +7,14 @@
     </head>
     <body>
         <h3 class="center heading">
-            <span th:text="${'Retrospect: ' + viewModel.user.displayName}"></span>
-            <button onClick="logout()">Logout</button>
+            <span>Retrospect</span>
         </h3>
+        <img th:src="${viewModel.user.avatarUrl}" class="avatar" onClick="toggleMenu(this)" />
+        <div class="menu">
+            <span class="menu-item menu-item-heading" th:text="${viewModel.user.displayName}"></span>
+            <span class="menu-item menu-item-note" th:text="${'Logged in with ' + viewModel.user.provider}"></span>
+            <a href="#" class="menu-item menu-item-clickable" onClick="logout()">Logout</a>
+        </div>
         <div class="workspace">
             <div class="vertically-centered">
                 <th:block th:each="retrospective : ${viewModel.retrospectives}">
@@ -48,6 +53,12 @@
                     document.location.href = "/";
                 })
                 return true;
+            }
+
+            var toggleMenu = function(avatar){
+                avatar.className = avatar.className.indexOf("show-menu") != -1
+                    ? avatar.className.replace("show-menu")
+                    : avatar.className + " show-menu";
             }
         </script>
     </body>

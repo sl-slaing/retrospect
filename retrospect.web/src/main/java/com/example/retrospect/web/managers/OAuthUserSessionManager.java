@@ -2,6 +2,8 @@ package com.example.retrospect.web.managers;
 
 import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.User;
+import com.example.retrospect.core.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -13,6 +15,13 @@ import java.util.Map;
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class OAuthUserSessionManager implements UserSessionManager {
+    private final UserRepository repository;
+
+    @Autowired
+    public OAuthUserSessionManager(UserRepository repository) {
+        this.repository = repository;
+    }
+
     @Override
     public LoggedInUser getLoggedInUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -24,9 +33,11 @@ public class OAuthUserSessionManager implements UserSessionManager {
         var userDetails = (Map<String, String>)oAuthAuthentication.getUserAuthentication().getDetails();
         var username = userDetails.get("login");
         var displayName = userDetails.get("name");
-        var emailAddress = userDetails.get("email");
         var avatar = userDetails.get("avatar_url");
 
-        return new LoggedInUser(new User(username, displayName, emailAddress, avatar));
+        var user = new User(username, displayName, avatar, "github");
+        repository.addOrUpdateUserDetails(user);
+
+        return new LoggedInUser(user);
     }
 }
