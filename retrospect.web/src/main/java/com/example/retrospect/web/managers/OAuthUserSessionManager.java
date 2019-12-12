@@ -35,7 +35,7 @@ public class OAuthUserSessionManager implements UserSessionManager {
         var displayName = userDetails.get("name");
         var avatar = userDetails.get("avatar_url");
 
-        var user = new User(username, displayName, avatar, "github");
+        var user = new User(username, displayName, avatar, "GitHub");
         repository.addOrUpdateUserDetails(user);
 
         return new LoggedInUser(user);

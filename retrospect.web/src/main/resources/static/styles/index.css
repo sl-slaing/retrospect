@@ -113,53 +113,6 @@ a{
     display: flex;
 }
 
-.error-message {
-    color: #883333;
-    padding: 15px 0px;
-    display: flex;
-}
-
-.error-message:before {
-    content: "";
-    background: #ff0000;
-    position: relative;
-    transform: rotate(-45deg);
-    height: 50px;
-    width: 50px;
-    display: block;
-    align-content: center;
-    text-align: center;
-}
-
-.error-message > span {
-    margin-left: 5px;
-    line-height: 35px;
-}
-
-.error-message > span:before {
-    content: "!";
-    font-size: 40px;
-    font-weight: bold;
-    color: #ffffff;
-    position: relative;
-    left: -36px;
-    top: 7px;
-}
-
-button {
-    border: 0px;
-    background-color: #aaaaaa;
-    color: #008800;
-    font-weight: bold;
-    margin: 5px 0px;
-    padding: 0px 30px;
-    line-height: 25px;
-}
-
-.force-wrap{
-    flex-basis: 100%;
-}
-
 .white-panel{
     padding: 20px;
     background: #ffffff;
