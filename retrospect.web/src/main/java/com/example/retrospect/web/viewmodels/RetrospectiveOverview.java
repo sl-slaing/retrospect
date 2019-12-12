@@ -1,5 +1,6 @@
 package com.example.retrospect.web.viewmodels;
 
+import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.Retrospective;
 
 import java.time.format.DateTimeFormatter;
@@ -7,9 +8,9 @@ import java.time.format.FormatStyle;
 
 public class RetrospectiveOverview {
     private final Retrospective retrospective;
-    private final UserViewModel user;
+    private final LoggedInUser user;
 
-    public RetrospectiveOverview(Retrospective retrospective, UserViewModel user) {
+    public RetrospectiveOverview(Retrospective retrospective, LoggedInUser user) {
         this.retrospective = retrospective;
         this.user = user;
     }
@@ -38,6 +39,14 @@ public class RetrospectiveOverview {
 
     public boolean getCreatedBySelf(){
         return retrospective.getAudit().getCreatedBy().equals(this.user);
+    }
+
+    public String getCreatedByAvatarUrl(){
+        return retrospective.getAudit().getCreatedBy().getAvatarUrl();
+    }
+
+    public String getLastUpdatedByAvatarUrl(){
+        return retrospective.getAudit().getLastUpdatedBy().getAvatarUrl();
     }
 
     public String getId(){

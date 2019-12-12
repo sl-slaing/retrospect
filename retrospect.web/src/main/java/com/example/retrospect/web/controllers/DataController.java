@@ -36,9 +36,8 @@ public class DataController {
     public List<RetrospectiveOverview> index(){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var user = new UserViewModel(loggedInUser);
         return this.service.getAllRetrospectives(loggedInUser)
-                .map(retro -> new RetrospectiveOverview(retro, user))
+                .map(retro -> new RetrospectiveOverview(retro, loggedInUser))
                 .collect(Collectors.toList());
     }
 
@@ -51,7 +50,7 @@ public class DataController {
             throw new NotFoundException("Retrospective not found");
         }
 
-        return new RetrospectiveViewModel(retrospective, new UserViewModel(loggedInUser));
+        return new RetrospectiveViewModel(retrospective, loggedInUser);
     }
 
     @RequestMapping("/user")

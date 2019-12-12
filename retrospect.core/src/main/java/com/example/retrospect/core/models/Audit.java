@@ -4,9 +4,9 @@ import java.time.OffsetDateTime;
 
 public class Audit {
     private OffsetDateTime createdOn;
-    private Identifiable createdBy;
+    private User createdBy;
     private OffsetDateTime lastUpdatedOn;
-    private Identifiable lastUpdatedBy;
+    private User lastUpdatedBy;
     private String lastChange;
 
     public Audit(OffsetDateTime createdOn, LoggedInUser createdBy) {
@@ -17,7 +17,7 @@ public class Audit {
         this.lastChange = "Created";
     }
 
-    public Audit(OffsetDateTime createdOn, Identifiable createdBy, OffsetDateTime lastUpdatedOn, Identifiable lastUpdatedBy, String lastChange) {
+    public Audit(OffsetDateTime createdOn, User createdBy, OffsetDateTime lastUpdatedOn, User lastUpdatedBy, String lastChange) {
         this.createdOn = createdOn;
         this.createdBy = createdBy;
         this.lastUpdatedOn = lastUpdatedOn;
@@ -35,7 +35,7 @@ public class Audit {
         return createdOn;
     }
 
-    public Identifiable getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
@@ -43,7 +43,7 @@ public class Audit {
         return lastUpdatedOn;
     }
 
-    public Identifiable getLastUpdatedBy() {
+    public User getLastUpdatedBy() {
         return lastUpdatedBy;
     }
 

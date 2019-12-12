@@ -34,11 +34,11 @@ public class RetrospectiveController {
             return new ModelAndView("redirect:/", "request", null);
         }
 
-        var userViewModel = new UserViewModel(user);
         var retrospectives = service.getAllRetrospectives(user)
-                .map(retro -> new RetrospectiveOverview(retro, userViewModel))
+                .map(retro -> new RetrospectiveOverview(retro, user))
                 .collect(Collectors.toList());
 
+        var userViewModel = new UserViewModel(user);
         var viewModel = new RetrospectiveOverviewsViewModel(retrospectives, userViewModel);
 
         return new ModelAndView("retro", "viewModel", viewModel);

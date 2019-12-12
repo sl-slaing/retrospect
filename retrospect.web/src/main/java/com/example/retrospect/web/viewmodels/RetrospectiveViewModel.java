@@ -1,5 +1,6 @@
 package com.example.retrospect.web.viewmodels;
 
+import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.Retrospective;
 
 import java.util.List;
@@ -7,9 +8,9 @@ import java.util.stream.Collectors;
 
 public class RetrospectiveViewModel {
     private final Retrospective retrospective;
-    private final UserViewModel loggedInUser;
+    private final LoggedInUser loggedInUser;
 
-    public RetrospectiveViewModel(Retrospective retrospective, UserViewModel loggedInUser) {
+    public RetrospectiveViewModel(Retrospective retrospective, LoggedInUser loggedInUser) {
         this.retrospective = retrospective;
         this.loggedInUser = loggedInUser;
     }
@@ -43,6 +44,6 @@ public class RetrospectiveViewModel {
     }
 
     public UserViewModel getLoggedInUser() {
-        return loggedInUser;
+        return new UserViewModel(loggedInUser);
     }
 }
