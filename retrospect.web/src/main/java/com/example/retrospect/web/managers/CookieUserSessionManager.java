@@ -55,6 +55,6 @@ public class CookieUserSessionManager implements UserSessionManager {
             return null;
         }
 
-        return new LoggedInUser(user.getId());
+        return new LoggedInUser(user);
     }
 }

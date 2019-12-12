@@ -1,3 +1,195 @@
 body{
-    background: #eeeeee;
+    background: #dddddd;
+    padding: 5px;
+    margin: 0px;
+    overflow: none;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    color: #444444;
+    font-family: Arial;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+}
+
+a{
+    color: inherit;
+    text-decoration: inherit;
+}
+
+.center{
+    text-align: center;
+}
+
+.heading {
+    color: #008800;
+}
+
+.workspace {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.vertically-centered {
+    display: flex;
+    overflow: auto;
+    padding: 5px;
+
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.block-flow-item{
+    display: flex;
+    height: 150px;
+    width: 150px;
+    text-align: center;
+    background: #ffffff;
+    padding: 5px;
+    margin: 5px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.bold-content{
+    font-weight: bold;
+}
+
+.dark {
+    background-color: #aaaaaa;
+}
+
+.hover-shadow:hover{
+    box-shadow: 3px 3px 3px #888888;
+
+    color: #008800;
+}
+
+.extra-large-font{
+    font-size: 50px;
+}
+
+.positive{
+    color: #008800;
+}
+
+.positive:before{
+    content: "+";
+}
+
+.negative{
+    color: #880000;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.negative:before{
+    content: "-";
+    position: relative;
+    top: -1px;
+}
+
+.result{
+    color: #aaaa00;
+}
+
+.result:before{
+    content: " : ";
+}
+
+.ignore-whitespace{
+    display: flex;
+}
+
+.error-message {
+    color: #883333;
+    padding: 15px 0px;
+    display: flex;
+}
+
+.error-message:before {
+    content: "";
+    background: #ff0000;
+    position: relative;
+    transform: rotate(-45deg);
+    height: 50px;
+    width: 50px;
+    display: block;
+    align-content: center;
+    text-align: center;
+}
+
+.error-message > span {
+    margin-left: 5px;
+    line-height: 35px;
+}
+
+.error-message > span:before {
+    content: "!";
+    font-size: 40px;
+    font-weight: bold;
+    color: #ffffff;
+    position: relative;
+    left: -36px;
+    top: 7px;
+}
+
+button {
+    border: 0px;
+    background-color: #aaaaaa;
+    color: #008800;
+    font-weight: bold;
+    margin: 5px 0px;
+    padding: 0px 30px;
+    line-height: 25px;
+}
+
+.force-wrap{
+    flex-basis: 100%;
+}
+
+.white-panel{
+    padding: 20px;
+    background: #ffffff;
+    margin: 5px;
+}
+
+.login-with{
+    display: block;
+    border: 1px solid #dddddd;
+    line-height: 40px;
+    padding: 0px 20px;
+    font-weight: bold;
+}
+
+.login-with:hover{
+    border: 1px solid #008800;
+}
+
+.github{
+    padding-left: 50px;
+    background: url('https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-size: contain;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    align-items: center;
 }

@@ -2,6 +2,8 @@ package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.services.RetrospectiveService;
 import com.example.retrospect.web.managers.UserSessionManager;
+import com.example.retrospect.web.viewmodels.RetrospectiveOverview;
+import com.example.retrospect.web.viewmodels.RetrospectiveOverviewsViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -31,7 +33,12 @@ public class RetrospectiveController {
             return new ModelAndView("redirect:/login", "request", null);
         }
 
-        var retrospectives = service.getAllRetrospectives(user);
-        return new ModelAndView("index", "data", retrospectives.collect(Collectors.toList()));
+        var retrospectives = service.getAllRetrospectives(user)
+                .map(retro -> new RetrospectiveOverview(retro, user))
+                .collect(Collectors.toList());
+
+        var viewModel = new RetrospectiveOverviewsViewModel(retrospectives, user);
+
+        return new ModelAndView("index", "viewModel", viewModel);
     }
 }

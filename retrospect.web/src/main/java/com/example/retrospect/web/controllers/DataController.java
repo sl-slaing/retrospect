@@ -37,7 +37,7 @@ public class DataController {
         }
 
         return this.service.getAllRetrospectives(loggedInUser)
-                .map(RetrospectiveOverview::new)
+                .map(retro -> new RetrospectiveOverview(retro, loggedInUser))
                 .collect(Collectors.toList());
     }
 

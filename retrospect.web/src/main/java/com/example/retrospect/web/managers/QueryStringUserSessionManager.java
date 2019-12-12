@@ -84,6 +84,6 @@ public class QueryStringUserSessionManager implements UserSessionManager {
             return null;
         }
 
-        return new LoggedInUser(username);
+        return new LoggedInUser(user);
     }
 }

@@ -4,13 +4,24 @@
         <link rel="stylesheet" type="text/css" href="/styles/index.css" />
     </head>
     <body>
-        <h3>Retrospect</h3>
-        <div class="">
-            <th:block th:each="retrospective : ${data}">
-                <a th:text="${retrospective.id}">
-
+        <h3 class="center heading" th:text="${'Retrospect: ' + viewModel.user.displayName}"></h3>
+        <div class="workspace">
+            <div class="vertically-centered">
+                <th:block th:each="retrospective : ${viewModel.retrospectives}">
+                    <a th:href="${'#' + retrospective.id}" class="block-flow-item hover-shadow bold-content">
+                        <div th:text="${retrospective.id}"></div>
+                        <div th:text="${retrospective.createdOn}"></div>
+                        <div class="ignore-whitespace">
+                            <span class="positive" th:text="${retrospective.wentWellCount}"></span>
+                            <span class="negative" th:text="${retrospective.couldBeBetterCount}"></span>
+                            <span class="result" th:text="${retrospective.actionCount}"></span>
+                        </div>
+                    </a>
+                </th:block>
+                <a href="#new" class="block-flow-item dark hover-shadow bold-content extra-large-font">
+                    <span>+</span>
                 </a>
-            </th:block>
+            </div>
         </div>
     </body>
 </html>

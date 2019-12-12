@@ -26,7 +26,7 @@ public class Application {
 
     @PostConstruct
     public void postConstruct(){
-        var slaing = new LoggedInUser("slaing");
+        var slaing = new LoggedInUser(new User("slaing", "", ""));
         var createdBySlaing = new Audit(OffsetDateTime.now(), slaing);
 
         repository.addOrReplace(
@@ -37,6 +37,6 @@ public class Application {
                         new ImmutableList<>(Collections.emptyList()),
                         new ImmutableList<>(Collections.emptyList()),
                         new ImmutableList<>(Collections.singletonList(slaing)),
-                        new ImmutableList<>(Collections.singletonList(new LoggedInUser("stennant")))));
+                        new ImmutableList<>(Collections.singletonList(new User("stennant", "", "")))));
     }
 }
