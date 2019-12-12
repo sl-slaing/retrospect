@@ -43,7 +43,7 @@ public class SessionController {
 
         var returnUrl = request.getReturnUrl();
         if (returnUrl == null || returnUrl.equals("")){
-            returnUrl = "/data";
+            returnUrl = "/";
         }
 
         userSessionManager.login(user, returnUrl);
