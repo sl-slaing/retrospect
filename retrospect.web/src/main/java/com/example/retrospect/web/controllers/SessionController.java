@@ -25,7 +25,7 @@ public class SessionController {
 
         var user = userSessionManager.getLoggedInUser();
         if (user != null){
-            new ModelAndView("redirect:/retro", "request", null);
+            return new ModelAndView("redirect:/retro", "request", null);
         }
 
         var request = new LoginRequest();

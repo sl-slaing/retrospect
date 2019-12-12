@@ -11,15 +11,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class OAuthUserSessionManager implements UserSessionManager {
     private final UserRepository repository;
+    private final ClientResourcesManager clientResourcesManager;
 
     @Autowired
-    public OAuthUserSessionManager(UserRepository repository) {
+    public OAuthUserSessionManager(
+            UserRepository repository,
+            ClientResourcesManager clientResourcesManager) {
         this.repository = repository;
+        this.clientResourcesManager = clientResourcesManager;
     }
 
     @Override
@@ -31,13 +36,17 @@ public class OAuthUserSessionManager implements UserSessionManager {
 
         var oAuthAuthentication = (OAuth2Authentication)SecurityContextHolder.getContext().getAuthentication();
         var userDetails = (Map<String, String>)oAuthAuthentication.getUserAuthentication().getDetails();
-        var username = userDetails.get("login");
-        var displayName = userDetails.get("name");
-        var avatar = userDetails.get("avatar_url");
+        var provider = getProvider(oAuthAuthentication);
 
-        var user = new User(username, displayName, avatar, "GitHub");
+        var user = provider.getUser(userDetails);
         repository.addOrUpdateUserDetails(user);
 
         return new LoggedInUser(user);
+    }
+
+    private ClientResources getProvider(OAuth2Authentication oAuthAuthentication) {
+        var request = oAuthAuthentication.getOAuth2Request();
+        var clientId = request.getClientId();
+        return clientResourcesManager.getClientResource(clientId);
     }
 }

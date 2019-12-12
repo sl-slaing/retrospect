@@ -2,7 +2,7 @@ body{
     background: #dddddd;
     padding: 5px;
     margin: 0px;
-    overflow: none;
+    overflow: hidden;
     position: absolute;
     top: 0px;
     bottom: 0px;
@@ -125,6 +125,8 @@ a{
     line-height: 40px;
     padding: 0px 20px;
     font-weight: bold;
+    width: 150px;
+    margin: 2px 0px;
 }
 
 .login-with:hover{
@@ -135,8 +137,16 @@ a{
     padding-left: 50px;
     background: url('https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png');
     background-repeat: no-repeat;
-    background-position: center left;
-    background-size: contain;
+    background-position: 0px center;
+    background-size: 40px 40px;
+}
+
+.facebook{
+    padding-left: 50px;
+    background: url('https://en.facebookbrand.com/wp-content/uploads/2019/04/f_logo_RGB-Hex-Blue_512.png');
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-size: 30px 30px;
 }
 
 .list {
