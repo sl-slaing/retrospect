@@ -36,7 +36,6 @@ a{
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: center;
-    flex-grow: 1;
 }
 
 .vertically-centered {
@@ -47,6 +46,16 @@ a{
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+vertically-stretched{
+    display: flex;
+    overflow: auto;
+    padding: 5px;
+
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: stretch;
 }
 
 .block-flow-item{
@@ -241,4 +250,120 @@ a{
 
 .pre-text{
     white-space: pre
+}
+
+.relative{
+    position: relative;
+}
+
+.absolute-fill{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+}
+
+.columns{
+    display: flex;
+    flex-direction: row;
+}
+
+.column{
+    padding: 5px 0px;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: start;
+    align-content: stretch;
+}
+
+.flex-grow{
+    flex-grow: 1;
+}
+
+.column-content {
+    overflow: auto;
+    padding-left: 5px;
+    padding-right: 3px;
+    margin-right: 2px;
+}
+
+.column > h4 {
+    margin: 5px 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #008800;
+}
+
+.column:first-child {
+    margin-left: 0px;
+}
+
+.column + .column {
+    margin-left: 5px;
+}
+
+
+.white-back {
+    background: #ffffff;
+}
+
+.observation {
+    background: #eeeeee;
+    padding: 8px;
+    margin: 3px 0px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    position: relative;
+}
+
+.observation:first-child{
+    margin-top: 0px;
+}
+
+.observation:last-child{
+    margin-bottom: 0px;
+}
+
+.space-for-vote{
+    padding-right: 45px;
+}
+
+.votes{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ffffff;
+    line-height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.voted {
+    background: #008800;
+    color: #ffffff;
+}
+
+@media screen and (max-width: 600px), (orientation: portrait) {
+    .column + .column {
+        margin-left: 0px;
+        margin-top: 5px;
+    }
+
+    .absolute-fill {
+        position: inherit;
+    }
+
+    .columns {
+        flex-direction: column;
+        position: absolute;
+    }
+
+    .workspace {
+        overflow: auto;
+    }
 }

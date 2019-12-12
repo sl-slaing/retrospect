@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootApplication(scanBasePackages = "com.example.retrospect")
 @EnableOAuth2Client
@@ -54,17 +56,27 @@ public class Application extends WebSecurityConfigurerAdapter {
     @PostConstruct
     public void postConstruct(){
         var slaing = new LoggedInUser(new User("sl-slaing", "", "", null));
+        var stennant = new LoggedInUser(new User("stennant", "", "", null));
         var createdBySlaing = new Audit(OffsetDateTime.now(), slaing);
+        var createdBySTennant = new Audit(OffsetDateTime.now(), stennant);
+
+        var observation1 = new Observation("1232", "title-1", createdBySlaing, false, Collections.singletonList(slaing));
+        var observation2 = new Observation("1233", "title-2", createdBySlaing, false, Collections.emptyList());
+        var observation3 = new Observation("1234", "title-3", createdBySTennant, false, Collections.emptyList());
+        var observation4 = new Observation("1235", "title-4", createdBySlaing, false, Collections.singletonList(slaing));
+        var observation5 = new Observation("1235", "title-5", createdBySlaing, false, Collections.singletonList(slaing));
+        var observation6 = new Observation("1236", "title-6", createdBySlaing, false, Collections.emptyList());
+        var observation7 = new Observation("1237", "title-7", createdBySTennant, false, Collections.emptyList());
 
         repository.addOrReplace(
                 new Retrospective(
                         "123",
                         createdBySlaing,
                         new ImmutableList<>(Collections.singletonList(new Action("1231", "action-1", createdBySlaing, false, "jira/456", slaing))),
-                        new ImmutableList<>(Collections.emptyList()),
+                        new ImmutableList<>(Stream.of(observation1, observation2, observation3, observation4, observation5, observation6, observation7).collect(Collectors.toList())),
                         new ImmutableList<>(Collections.emptyList()),
                         new ImmutableList<>(Collections.singletonList(slaing)),
-                        new ImmutableList<>(Collections.singletonList(new User("stennant", "", "", null)))));
+                        new ImmutableList<>(Collections.singletonList(stennant))));
     }
 
     @Override

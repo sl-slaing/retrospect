@@ -1,6 +1,7 @@
 package com.example.retrospect.web.viewmodels;
 
 import com.example.retrospect.core.models.LoggedInUser;
+import com.example.retrospect.core.models.Observation;
 import com.example.retrospect.core.models.Retrospective;
 
 import java.util.List;
@@ -24,15 +25,24 @@ public class RetrospectiveViewModel {
     }
 
     public List<ActionViewModel> getActions(){
-        return retrospective.getActions(false).stream().map(ActionViewModel::new).collect(Collectors.toList());
+        return retrospective.getActions(false)
+                .stream()
+                .map(ActionViewModel::new)
+                .collect(Collectors.toList());
     }
 
     public List<ObservationViewModel> getCouldBeBetter(){
-        return retrospective.getCouldBeBetter(false).stream().map(ObservationViewModel::new).collect(Collectors.toList());
+        return retrospective.getCouldBeBetter(false)
+                .stream()
+                .map((Observation observation) -> new ObservationViewModel(observation, loggedInUser))
+                .collect(Collectors.toList());
     }
 
     public List<ObservationViewModel> getWentWell(){
-        return retrospective.getWentWell(false).stream().map(ObservationViewModel::new).collect(Collectors.toList());
+        return retrospective.getWentWell(false)
+                .stream()
+                .map((Observation observation) -> new ObservationViewModel(observation, loggedInUser))
+                .collect(Collectors.toList());
     }
 
     public List<UserViewModel> getMembers(){
