@@ -1,4 +1,4 @@
-package com.example.retrospect.web.startup;
+package com.example.retrospect.web;
 
 import com.example.retrospect.core.models.*;
 import com.example.retrospect.core.repositories.RetrospectiveRepository;
