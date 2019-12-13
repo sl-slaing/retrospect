@@ -5,21 +5,15 @@ import com.example.retrospect.core.services.RetrospectiveService;
 import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.web.viewmodels.RetrospectiveOverview;
 import com.example.retrospect.web.viewmodels.RetrospectiveViewModel;
-import com.example.retrospect.web.viewmodels.UserViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class ApiController {
     private final RetrospectiveService service;
     private final UserSessionManager userSessionManager;

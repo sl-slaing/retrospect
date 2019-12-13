@@ -1,20 +1,15 @@
 package com.example.retrospect.web.managers;
 
 import com.example.retrospect.core.models.LoggedInUser;
-import com.example.retrospect.core.models.User;
 import com.example.retrospect.core.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
-@Scope(value = WebApplicationContext.SCOPE_REQUEST)
 public class OAuthUserSessionManager implements UserSessionManager {
     private final UserRepository repository;
     private final ClientResourcesManager clientResourcesManager;

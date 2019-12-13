@@ -93,7 +93,7 @@ public class RetrospectiveService {
         });
     }
 
-    public Retrospective addAction(String retrospectiveId, String title, LoggedInUser user, String ticketAddress, Identifiable assignedTo) {
+    public Retrospective addAction(String retrospectiveId, String title, LoggedInUser user, String ticketAddress, User assignedTo) {
         return editRetrospective(retrospectiveId, user, retrospective -> {
             var audit = new Audit(OffsetDateTime.now(), user);
             var action = new Action(Guid.next(), title, audit, false, ticketAddress, assignedTo);
@@ -142,7 +142,7 @@ public class RetrospectiveService {
 
     public Retrospective addMember(String retrospectiveId, String memberUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            var alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getId().equals(memberUserId));
+            var alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getUsername().equals(memberUserId));
 
             if (alreadyAMember){
                 return;
@@ -159,7 +159,7 @@ public class RetrospectiveService {
 
     public Retrospective removeMember(String retrospectiveId, String memberUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            var membersToRemove = retrospective.getMembers().stream().filter(m -> m.getId().equals(memberUserId));
+            var membersToRemove = retrospective.getMembers().stream().filter(m -> m.getUsername().equals(memberUserId));
 
             membersToRemove.forEach(member -> retrospective.removeMember(member, user));
         });
@@ -167,7 +167,7 @@ public class RetrospectiveService {
 
     public Retrospective addAdministrator(String retrospectiveId, String administratorUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            var alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getId().equals(administratorUserId));
+            var alreadyAMember = retrospective.getMembers().stream().anyMatch(m -> m.getUsername().equals(administratorUserId));
 
             if (alreadyAMember){
                 return;
@@ -184,7 +184,7 @@ public class RetrospectiveService {
 
     public Retrospective removeAdministrator(String retrospectiveId, String administratorUserId, LoggedInUser user){
         return administerRetrospective(retrospectiveId, user, retrospective -> {
-            var membersToRemove = retrospective.getMembers().stream().filter(m -> m.getId().equals(administratorUserId));
+            var membersToRemove = retrospective.getMembers().stream().filter(m -> m.getUsername().equals(administratorUserId));
 
             membersToRemove.forEach(administrator -> retrospective.removeAdministrator(administrator, user));
         });

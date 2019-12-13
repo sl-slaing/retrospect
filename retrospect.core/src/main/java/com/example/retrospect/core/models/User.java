@@ -1,8 +1,6 @@
 package com.example.retrospect.core.models;
 
-public class User implements Identifiable {
-    public static final String TYPE_NAME = "USER";
-
+public class User {
     protected String userName;
     protected String displayName;
     private final String provider;
@@ -15,14 +13,8 @@ public class User implements Identifiable {
         this.avatarUrl = avatarUrl;
     }
 
-    @Override
-    public String getId() {
+    public String getUsername() {
         return userName;
-    }
-
-    @Override
-    public String getType() {
-        return TYPE_NAME;
     }
 
     public String getDisplayName() {
@@ -35,6 +27,16 @@ public class User implements Identifiable {
 
     public String getAvatarUrl() {
         return avatarUrl;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if (!(other instanceof User)){
+            return false;
+        }
+
+        var user = (User)other;
+        return user.getUsername().equals(getUsername());
     }
 }
 

@@ -9,8 +9,8 @@ public class UserViewModel {
         this.user = user;
     }
 
-    public String getId(){
-        return user.getId();
+    public String getUsername(){
+        return user.getUsername();
     }
 
     public String getDisplayName(){

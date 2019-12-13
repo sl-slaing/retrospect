@@ -1,6 +1,5 @@
 package com.example.retrospect.core.serialisers;
 
-import com.example.retrospect.core.models.Identifiable;
 import com.example.retrospect.core.models.NotFoundUser;
 import com.example.retrospect.core.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,8 @@ public class UserSerialiser {
         this.userRepository = userRepository;
     }
 
-    public String serialise(Identifiable user){
-        return user.getId();
+    public String serialise(User user){
+        return user.getUsername();
     }
 
     public User deserialise(String id){

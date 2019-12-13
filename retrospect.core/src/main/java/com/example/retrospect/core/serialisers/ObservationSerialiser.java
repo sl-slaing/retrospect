@@ -23,7 +23,7 @@ public class ObservationSerialiser {
         var serialisable = new SerialisableObservation();
         serialisable.setId(observation.getId());
         serialisable.setTitle(observation.getTitle());
-        serialisable.setVotes(observation.getVotes().stream().map(User::getId).collect(Collectors.toList()));
+        serialisable.setVotes(observation.getVotes().stream().map(User::getUsername).collect(Collectors.toList()));
         serialisable.setDeleted(observation.isDeleted());
         serialisable.setAudit(auditSerialiser.serialise(observation.getAudit()));
 

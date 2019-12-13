@@ -16,7 +16,7 @@ public class UserRepository {
     }
 
     public void addOrUpdateUserDetails(User user) {
-        database.put(user.getId(), user);
+        database.put(user.getUsername(), user);
     }
 
     public Stream<User> getAllUsers(){

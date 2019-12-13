@@ -128,13 +128,23 @@ public class Application extends WebSecurityConfigurerAdapter {
     @Bean
     @ConfigurationProperties("github")
     public ClientResources github() {
-        return clientResourcesManager.add(new ClientResources("github", Application::createGithub));
+        var github = new ClientResources("github", Application::createGithub);
+        if (github.exists()){
+            return clientResourcesManager.add(github);
+        }
+
+        return github;
     }
 
     @Bean
     @ConfigurationProperties("facebook")
     public ClientResources facebook() {
-        return clientResourcesManager.add(new ClientResources("facebook", Application::createUserFromFacebook));
+        var facebook = new ClientResources("facebook", Application::createUserFromFacebook);
+        if (facebook.exists()){
+            return clientResourcesManager.add(facebook);
+        }
+
+        return facebook;
     }
 
     private static User createUserFromFacebook(Map<String, String> userDetails){

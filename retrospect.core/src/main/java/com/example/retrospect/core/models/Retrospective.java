@@ -3,9 +3,7 @@ package com.example.retrospect.core.models;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-public class Retrospective implements Identifiable {
-    public static final String TYPE_NAME = "RETROSPECTIVE";
-
+public class Retrospective {
     private String id;
     private Audit audit;
     private ImmutableList<Action> actions;
@@ -51,14 +49,8 @@ public class Retrospective implements Identifiable {
         }
     }
 
-    @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public String getType() {
-        return TYPE_NAME;
     }
 
     public Audit getAudit() {

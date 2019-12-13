@@ -1,16 +1,14 @@
 package com.example.retrospect.core.models;
 
-public class Action implements Identifiable {
-    public static final String TYPE_NAME = "ACTION";
-
+public class Action {
     private String id;
     private String title;
     private Audit audit;
     private boolean deleted;
     private String ticketAddress;
-    private Identifiable assignedTo;
+    private User assignedTo;
 
-    public Action(String id, String title, Audit audit, boolean deleted, String ticketAddress, Identifiable assignedTo) {
+    public Action(String id, String title, Audit audit, boolean deleted, String ticketAddress, User assignedTo) {
         if (audit == null){
             throw new RuntimeException("Cannot create an Action without any audit");
         }
@@ -23,14 +21,8 @@ public class Action implements Identifiable {
         this.assignedTo = assignedTo;
     }
 
-    @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public String getType() {
-        return TYPE_NAME;
     }
 
     public String getTitle() {
@@ -64,11 +56,11 @@ public class Action implements Identifiable {
         this.audit.update(user, "Update ticket address");
     }
 
-    public Identifiable getAssignedTo() {
+    public User getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(Identifiable assignedTo, LoggedInUser user) {
+    public void setAssignedTo(User assignedTo, LoggedInUser user) {
         this.assignedTo = assignedTo;
         this.audit.update(user, "Update assignee");
     }

@@ -38,4 +38,8 @@ public class ClientResources {
     public User getUser(Map<String, String> userDetails) {
         return createUser.apply(userDetails);
     }
+
+    public boolean exists(){
+        return client != null && client.getId() != null;
+    }
 }

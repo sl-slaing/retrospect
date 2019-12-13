@@ -2,8 +2,7 @@ package com.example.retrospect.core.models;
 
 import java.util.List;
 
-public class Observation implements Identifiable {
-    public static final String TYPE_NAME = "OBSERVATION";
+public class Observation {
     public static final String WENT_WELL = "WENT_WELL";
     public static final String COULD_BE_BETTER = "COULD_BE_BETTER";
 
@@ -25,14 +24,8 @@ public class Observation implements Identifiable {
         this.votes = new ImmutableList<>(votes);
     }
 
-    @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public String getType() {
-        return TYPE_NAME;
     }
 
     public String getTitle() {
@@ -69,7 +62,7 @@ public class Observation implements Identifiable {
         }
     }
 
-    public boolean hasVoted(Identifiable user){
+    public boolean hasVoted(User user){
         return votes.stream().anyMatch(voter -> voter.equals(user));
     }
 }

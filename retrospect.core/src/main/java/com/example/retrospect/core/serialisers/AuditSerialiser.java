@@ -17,9 +17,9 @@ public class AuditSerialiser {
     public SerialisableAudit serialise(Audit audit){
         var serialisable = new SerialisableAudit();
         serialisable.setCreatedOn(audit.getCreatedOn());
-        serialisable.setCreatedBy(audit.getCreatedBy().getId());
+        serialisable.setCreatedBy(audit.getCreatedBy().getUsername());
         serialisable.setLastUpdatedOn(audit.getLastUpdatedOn());
-        serialisable.setLastUpdatedBy(audit.getLastUpdatedBy().getId());
+        serialisable.setLastUpdatedBy(audit.getLastUpdatedBy().getUsername());
         serialisable.setLastChange(audit.getLastChange());
 
         return serialisable;
