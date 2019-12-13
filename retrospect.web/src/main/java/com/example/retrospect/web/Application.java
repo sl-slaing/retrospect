@@ -84,7 +84,7 @@ public class Application extends WebSecurityConfigurerAdapter {
         http
             .antMatcher("/**")
             .authorizeRequests()
-                .antMatchers("/", "/login**", "/styles/**", "/webjars/**", "/error**", "/access-denied")
+                .antMatchers("/", "/login**", "/data/loginProviders", "/styles/**", "/webjars/**", "/error**")
                 .permitAll()
             .anyRequest()
                 .authenticated()
@@ -128,38 +128,30 @@ public class Application extends WebSecurityConfigurerAdapter {
     @Bean
     @ConfigurationProperties("github")
     public ClientResources github() {
-        var github = new ClientResources("github", Application::createGithub);
-        if (github.exists()){
-            return clientResourcesManager.add(github);
-        }
-
-        return github;
+        var github = new ClientResources(Application::createGithub);
+        return clientResourcesManager.add(github);
     }
 
     @Bean
     @ConfigurationProperties("facebook")
     public ClientResources facebook() {
-        var facebook = new ClientResources("facebook", Application::createUserFromFacebook);
-        if (facebook.exists()){
-            return clientResourcesManager.add(facebook);
-        }
-
-        return facebook;
+        var facebook = new ClientResources(Application::createUserFromFacebook);
+        return clientResourcesManager.add(facebook);
     }
 
-    private static User createUserFromFacebook(Map<String, String> userDetails){
+    private static User createUserFromFacebook(Map<String, String> userDetails, String providerDisplayName){
         var username = userDetails.get("username");
         var displayName = userDetails.get("name");
         var avatar = userDetails.get("picture");
 
-        return new User(username, displayName, avatar, "Facebook");
+        return new User(username, displayName, avatar, providerDisplayName);
     }
 
-    private static User createGithub(Map<String, String> userDetails){
+    private static User createGithub(Map<String, String> userDetails, String providerDisplayName){
         var username = userDetails.get("login");
         var displayName = userDetails.get("name");
         var avatar = userDetails.get("avatar_url");
 
-        return new User(username, displayName, avatar, "GitHub");
+        return new User(username, displayName, avatar, providerDisplayName);
     }
 }

@@ -2,7 +2,9 @@ package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
 import com.example.retrospect.core.services.RetrospectiveService;
+import com.example.retrospect.web.managers.ClientResourcesManager;
 import com.example.retrospect.web.managers.UserSessionManager;
+import com.example.retrospect.web.viewmodels.LoginProviderViewModel;
 import com.example.retrospect.web.viewmodels.RetrospectiveOverview;
 import com.example.retrospect.web.viewmodels.RetrospectiveOverviewsViewModel;
 import com.example.retrospect.web.viewmodels.RetrospectiveViewModel;
@@ -18,11 +20,16 @@ import java.util.stream.Collectors;
 public class MvcController {
     private final UserSessionManager userSessionManager;
     private final RetrospectiveService service;
+    private final ClientResourcesManager clientResourcesManager;
 
     @Autowired
-    public MvcController(UserSessionManager userSessionManager, RetrospectiveService service) {
+    public MvcController(
+            UserSessionManager userSessionManager,
+            RetrospectiveService service,
+            ClientResourcesManager clientResourcesManager) {
         this.userSessionManager = userSessionManager;
         this.service = service;
+        this.clientResourcesManager = clientResourcesManager;
     }
 
     @GetMapping("/list")
@@ -52,12 +59,16 @@ public class MvcController {
     }
 
     @GetMapping("/")
-    public String home(){
+    public ModelAndView home(){
         var user = userSessionManager.getLoggedInUser();
         if (user != null){
-            return "redirect:/list";
+            return new ModelAndView("redirect:/list");
         }
 
-        return "home";
+        var viewModels = clientResourcesManager.getAllClientResources()
+                .map(LoginProviderViewModel::new)
+                .collect(Collectors.toList());
+
+        return new ModelAndView("home", "viewModel", viewModels);
     }
 }

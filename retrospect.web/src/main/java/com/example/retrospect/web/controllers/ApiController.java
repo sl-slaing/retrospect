@@ -2,7 +2,9 @@ package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
 import com.example.retrospect.core.services.RetrospectiveService;
+import com.example.retrospect.web.managers.ClientResourcesManager;
 import com.example.retrospect.web.managers.UserSessionManager;
+import com.example.retrospect.web.viewmodels.LoginProviderViewModel;
 import com.example.retrospect.web.viewmodels.RetrospectiveOverview;
 import com.example.retrospect.web.viewmodels.RetrospectiveViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +19,16 @@ import java.util.stream.Collectors;
 public class ApiController {
     private final RetrospectiveService service;
     private final UserSessionManager userSessionManager;
+    private final ClientResourcesManager clientResourcesManager;
 
     @Autowired
     public ApiController(
             RetrospectiveService service,
-            UserSessionManager userSessionManager) {
+            UserSessionManager userSessionManager,
+            ClientResourcesManager clientResourcesManager) {
         this.service = service;
         this.userSessionManager = userSessionManager;
+        this.clientResourcesManager = clientResourcesManager;
     }
 
     @GetMapping("/data")
@@ -45,5 +50,12 @@ public class ApiController {
         }
 
         return new RetrospectiveViewModel(retrospective, loggedInUser);
+    }
+
+    @GetMapping("/data/loginProviders")
+    public List<LoginProviderViewModel> loginProviders(){
+        return clientResourcesManager.getAllClientResources()
+                .map(LoginProviderViewModel::new)
+                .collect(Collectors.toList());
     }
 }

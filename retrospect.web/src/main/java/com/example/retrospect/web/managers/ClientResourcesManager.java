@@ -16,7 +16,7 @@ public class ClientResourcesManager {
     }
 
     public Stream<ClientResources> getAllClientResources(){
-        return clientResources.stream();
+        return clientResources.stream().filter(ClientResources::exists);
     }
 
     public ClientResources getClientResource(String clientId){

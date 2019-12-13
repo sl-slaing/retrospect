@@ -6,14 +6,12 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class ClientResources {
-    private final String name;
-    private final Function<Map<String, String>, User> createUser;
+    private final BiFunction<Map<String, String>, String, User> createUser;
 
-    public ClientResources(String loginPathName, Function<Map<String, String>, User> createUser) {
-        this.name = loginPathName;
+    public ClientResources(BiFunction<Map<String, String>, String, User> createUser) {
         this.createUser = createUser;
     }
 
@@ -23,6 +21,9 @@ public class ClientResources {
     @NestedConfigurationProperty
     private ResourceServerProperties resource = new ResourceServerProperties();
 
+    @NestedConfigurationProperty
+    private NameConfiguration name = new NameConfiguration();
+
     public AuthorizationCodeResourceDetails getClient() {
         return client;
     }
@@ -31,15 +32,23 @@ public class ClientResources {
         return resource;
     }
 
+    public NameConfiguration getName(){
+        return name;
+    }
+
     public String getLoginPath() {
-        return "/login/" + name;
+        return "/login/" + name.getProvider();
+    }
+
+    public String getDisplayName() {
+        return name.getDisplay();
     }
 
     public User getUser(Map<String, String> userDetails) {
-        return createUser.apply(userDetails);
+        return createUser.apply(userDetails, getDisplayName());
     }
 
     public boolean exists(){
-        return client != null && client.getId() != null;
+        return client != null && client.getClientId() != null;
     }
 }

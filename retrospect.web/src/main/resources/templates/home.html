@@ -10,8 +10,9 @@
         <div class="white-panel">
             <h4 class="center">Login with:</h4>
             <div class="list">
-                <a class="login-with facebook" href="/login/facebook">Facebook</a>
-                <a class="login-with github" href="/login/github">GitHub</a>
+                <th:block th:each="provider : ${viewModel}">
+                    <a th:class="${'login-with ' + provider.className}" th:href="${provider.loginPath}" th:text="${provider.displayName}"></a>
+                </th:block>
             </div>
         </div>
     </div>
