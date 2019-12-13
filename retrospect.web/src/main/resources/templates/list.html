@@ -15,7 +15,7 @@
             <span class="menu-item menu-item-note" th:text="${'Logged in with ' + viewModel.user.provider}"></span>
             <a href="#" class="menu-item menu-item-clickable" onClick="logout()">Logout</a>
         </div>
-        <div class="workspace">
+        <div class="workspace relative flex-grow">
             <div class="vertically-centered">
                 <th:block th:each="retrospective : ${viewModel.retrospectives}">
                     <a th:href="${'/retrospective/' + retrospective.id}" class="block-flow-item hover-shadow bold-content">
