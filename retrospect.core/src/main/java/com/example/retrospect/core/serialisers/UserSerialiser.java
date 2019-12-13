@@ -16,10 +16,18 @@ public class UserSerialiser {
     }
 
     public String serialise(User user){
+        if (user == null){
+            return null;
+        }
+
         return user.getUsername();
     }
 
     public User deserialise(String id){
+        if (id == null){
+            return null;
+        }
+
         var user = userRepository.getUser(id);
 
         if (user == null){

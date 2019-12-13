@@ -1,27 +1,25 @@
 package com.example.retrospect.core.serialisable;
 
-import java.time.OffsetDateTime;
-
 public class SerialisableAudit {
-    private OffsetDateTime createdOn;
-    private OffsetDateTime lastUpdatedOn;
+    private String createdOn;
+    private String lastUpdatedOn;
     private String lastUpdatedBy;
     private String createdBy;
     private String lastChange;
 
-    public OffsetDateTime getCreatedOn() {
+    public String getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(OffsetDateTime createdOn) {
+    public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
     }
 
-    public OffsetDateTime getLastUpdatedOn() {
+    public String getLastUpdatedOn() {
         return lastUpdatedOn;
     }
 
-    public void setLastUpdatedOn(OffsetDateTime lastUpdatedOn) {
+    public void setLastUpdatedOn(String lastUpdatedOn) {
         this.lastUpdatedOn = lastUpdatedOn;
     }
 

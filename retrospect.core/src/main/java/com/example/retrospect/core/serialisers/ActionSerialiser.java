@@ -24,6 +24,9 @@ public class ActionSerialiser {
         serialisable.setTicketAddress(action.getTicketAddress());
         serialisable.setTitle(action.getTitle());
         serialisable.setDeleted(action.isDeleted());
+        serialisable.setFromActionId(action.getFromActionId());
+        serialisable.setFromObservationId(action.getFromObservationId());
+        serialisable.setComplete(action.getComplete());
 
         return serialisable;
     }
@@ -35,7 +38,9 @@ public class ActionSerialiser {
                 auditSerialiser.deserialise(action.getAudit()),
                 action.isDeleted(),
                 action.getTicketAddress(),
-                userSerialiser.deserialise(action.getAssignedTo())
-        );
+                userSerialiser.deserialise(action.getAssignedTo()),
+                action.getFromActionId(),
+                action.getFromObservationId(),
+                action.isComplete());
     }
 }

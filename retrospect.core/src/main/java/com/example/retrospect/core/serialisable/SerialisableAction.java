@@ -7,6 +7,9 @@ public class SerialisableAction {
     private String assignedTo;
     private SerialisableAudit audit;
     private boolean deleted;
+    private String fromActionId;
+    private boolean complete;
+    private String fromObservationId;
 
     public String getId() {
         return id;
@@ -54,5 +57,29 @@ public class SerialisableAction {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getFromActionId() {
+        return fromActionId;
+    }
+
+    public void setFromActionId(String fromActionId) {
+        this.fromActionId = fromActionId;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
+
+    public void setFromObservationId(String fromObservationId) {
+        this.fromObservationId = fromObservationId;
+    }
+
+    public String getFromObservationId() {
+        return fromObservationId;
     }
 }

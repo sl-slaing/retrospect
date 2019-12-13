@@ -26,6 +26,8 @@ public class RetrospectiveSerialiser {
         var serialisable = new SerialisableRetrospective();
 
         serialisable.setId(retrospective.getId());
+        serialisable.setReadableId(retrospective.getReadableId());
+        serialisable.setPreviousRetrospectiveId(retrospective.getPreviousRetrospectiveId());
         serialisable.setAdministrators(retrospective.getAdministrators().stream().map(userSerialiser::serialise).collect(Collectors.toList()));
         serialisable.setMembers(retrospective.getMembers().stream().map(userSerialiser::serialise).collect(Collectors.toList()));
         serialisable.setActions(retrospective.getActions(true).stream().map(actionSerialiser::serialise).collect(Collectors.toList()));
@@ -39,6 +41,8 @@ public class RetrospectiveSerialiser {
     public Retrospective deserialise(SerialisableRetrospective retrospective){
         return new Retrospective(
                 retrospective.getId(),
+                retrospective.getReadableId(),
+                retrospective.getPreviousRetrospectiveId(),
                 auditSerialiser.deserialise(retrospective.getAudit()),
                 new ImmutableList<>(retrospective.getActions().stream().map(actionSerialiser::deserialise)),
                 new ImmutableList<>(retrospective.getWentWell().stream().map(observationSerialiser::deserialise)),

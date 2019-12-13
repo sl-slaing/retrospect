@@ -16,4 +16,28 @@ public class ActionViewModel {
     public String getTitle(){
         return action.getTitle();
     }
+
+    public String getFromActionId() {
+        return action.getFromActionId();
+    }
+
+    public String getFromObservationId() {
+        return action.getFromObservationId();
+    }
+
+    public String getTicketAddress() {
+        return action.getTicketAddress();
+    }
+
+    public boolean getComplete() {
+        return action.getComplete();
+    }
+
+    public long getSortIdentifier() {
+        return action.getAudit().getCreatedOn().toEpochSecond();
+    }
+
+    public UserViewModel getAssignedTo() {
+        return action.getAssignedTo() != null ? new UserViewModel(action.getAssignedTo()) : null;
+    }
 }

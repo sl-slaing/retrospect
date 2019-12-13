@@ -3,6 +3,8 @@ package com.example.retrospect.web.viewmodels;
 import com.example.retrospect.core.models.LoggedInUser;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RetrospectiveOverviewsViewModel {
     private final List<RetrospectiveOverview> retrospectives;
@@ -13,8 +15,10 @@ public class RetrospectiveOverviewsViewModel {
         this.user = user;
     }
 
-    public List<RetrospectiveOverview> getRetrospectives() {
-        return retrospectives;
+    public Map<String, RetrospectiveOverview> getRetrospectives() {
+        return retrospectives
+                .stream()
+                .collect(Collectors.toMap(RetrospectiveOverview::getId, r -> r));
     }
 
     public UserViewModel getUser() {

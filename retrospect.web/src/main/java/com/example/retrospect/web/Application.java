@@ -1,7 +1,6 @@
 package com.example.retrospect.web;
 
-import com.example.retrospect.core.models.*;
-import com.example.retrospect.core.repositories.RetrospectiveRepository;
+import com.example.retrospect.core.models.User;
 import com.example.retrospect.web.managers.AccessDeniedAuthenticationEntryPoint;
 import com.example.retrospect.web.managers.ClientResources;
 import com.example.retrospect.web.managers.ClientResourcesManager;
@@ -19,64 +18,31 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SpringBootApplication(scanBasePackages = "com.example.retrospect")
 @EnableOAuth2Client
 public class Application extends WebSecurityConfigurerAdapter {
 
-    private final RetrospectiveRepository repository;
     private final ClientResourcesManager clientResourcesManager;
+    private final OAuth2ClientContext clientContext;
 
     @Autowired
-    OAuth2ClientContext oauth2ClientContext;
-
-    @Autowired
-    public Application(RetrospectiveRepository repository, ClientResourcesManager clientResourcesManager) {
-        this.repository = repository;
+    public Application(ClientResourcesManager clientResourcesManager, OAuth2ClientContext clientContext) {
         this.clientResourcesManager = clientResourcesManager;
+        this.clientContext = clientContext;
     }
 
     public static void main(String[] args){
         SpringApplication.run(Application.class, args);
-    }
-
-    @PostConstruct
-    public void postConstruct(){
-        var slaing = new LoggedInUser(new User("sl-slaing", "", "", null));
-        var stennant = new LoggedInUser(new User("stennant", "", "", null));
-        var createdBySlaing = new Audit(OffsetDateTime.now(), slaing);
-        var createdBySTennant = new Audit(OffsetDateTime.now(), stennant);
-
-        var observation1 = new Observation("1232", "title-1", createdBySlaing, false, Collections.singletonList(slaing));
-        var observation2 = new Observation("1233", "title-2", createdBySlaing, false, Collections.emptyList());
-        var observation3 = new Observation("1234", "title-3", createdBySTennant, false, Collections.emptyList());
-        var observation4 = new Observation("1235", "title-4", createdBySlaing, false, Collections.singletonList(slaing));
-        var observation5 = new Observation("1235", "title-5", createdBySlaing, false, Collections.singletonList(slaing));
-        var observation6 = new Observation("1236", "title-6", createdBySlaing, false, Collections.emptyList());
-        var observation7 = new Observation("1237", "title-7", createdBySTennant, false, Collections.emptyList());
-
-        repository.addOrReplace(
-                new Retrospective(
-                        "123",
-                        createdBySlaing,
-                        new ImmutableList<>(Collections.singletonList(new Action("1231", "action-1", createdBySlaing, false, "jira/456", slaing))),
-                        new ImmutableList<>(Stream.of(observation1, observation2, observation3, observation4, observation5, observation6, observation7).collect(Collectors.toList())),
-                        new ImmutableList<>(Collections.emptyList()),
-                        new ImmutableList<>(Collections.singletonList(slaing)),
-                        new ImmutableList<>(Collections.singletonList(stennant))));
     }
 
     @Override
@@ -84,7 +50,7 @@ public class Application extends WebSecurityConfigurerAdapter {
         http
             .antMatcher("/**")
             .authorizeRequests()
-                .antMatchers("/", "/login**", "/data/loginProviders", "/styles/**", "/webjars/**", "/error**")
+                .antMatchers("/", "/login**", "/loginProviders", "/styles/**", "/webjars/**", "/error**", "/built/**")
                 .permitAll()
             .anyRequest()
                 .authenticated()
@@ -107,13 +73,16 @@ public class Application extends WebSecurityConfigurerAdapter {
     }
 
     private Filter ssoFilter(ClientResources client, String path) {
-        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
-        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
+        var filter = new OAuth2ClientAuthenticationProcessingFilter(path);
+        var template = new OAuth2RestTemplate(client.getClient(), clientContext);
         filter.setRestTemplate(template);
-        UserInfoTokenServices tokenServices = new UserInfoTokenServices(
+
+        var tokenServices = new UserInfoTokenServices(
                 client.getResource().getUserInfoUri(), client.getClient().getClientId());
         tokenServices.setRestTemplate(template);
+
         filter.setTokenServices(tokenServices);
+        filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/"));
         return filter;
     }
 

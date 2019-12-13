@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.retrospect.core.serialisable.SerialisableAudit;
 
+import java.time.OffsetDateTime;
+
 @Service
 public class AuditSerialiser {
     private final UserSerialiser userSerialiser;
@@ -16,9 +18,9 @@ public class AuditSerialiser {
 
     public SerialisableAudit serialise(Audit audit){
         var serialisable = new SerialisableAudit();
-        serialisable.setCreatedOn(audit.getCreatedOn());
+        serialisable.setCreatedOn(audit.getCreatedOn().toString());
         serialisable.setCreatedBy(audit.getCreatedBy().getUsername());
-        serialisable.setLastUpdatedOn(audit.getLastUpdatedOn());
+        serialisable.setLastUpdatedOn(audit.getLastUpdatedOn().toString());
         serialisable.setLastUpdatedBy(audit.getLastUpdatedBy().getUsername());
         serialisable.setLastChange(audit.getLastChange());
 
@@ -27,9 +29,9 @@ public class AuditSerialiser {
 
     public Audit deserialise(SerialisableAudit audit){
         return new Audit(
-                audit.getCreatedOn(),
+                OffsetDateTime.parse(audit.getCreatedOn()),
                 userSerialiser.deserialise(audit.getCreatedBy()),
-                audit.getLastUpdatedOn(),
+                OffsetDateTime.parse(audit.getLastUpdatedOn()),
                 userSerialiser.deserialise(audit.getLastUpdatedBy()),
                 audit.getLastChange()
         );

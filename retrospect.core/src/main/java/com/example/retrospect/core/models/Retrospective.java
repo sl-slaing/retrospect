@@ -1,10 +1,13 @@
 package com.example.retrospect.core.models;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class Retrospective {
     private String id;
+    private String previousRetrospectiveId;
+    private String readableId;
     private Audit audit;
     private ImmutableList<Action> actions;
     private ImmutableList<Observation> wentWell;
@@ -14,17 +17,21 @@ public class Retrospective {
 
     public Retrospective(
             String id,
+            String readableId,
+            String previousRetrospectiveId,
             Audit audit,
             ImmutableList<Action> actions,
             ImmutableList<Observation> wentWell,
             ImmutableList<Observation> couldBeBetter,
             ImmutableList<User> administrators,
             ImmutableList<User> members) {
+        this.readableId = readableId;
         if (audit == null){
             throw new RuntimeException("Cannot create a Retrospective without any audit");
         }
 
         this.id = id;
+        this.previousRetrospectiveId = previousRetrospectiveId;
         this.audit = audit;
         this.actions = actions;
         this.wentWell = wentWell;
@@ -51,6 +58,14 @@ public class Retrospective {
 
     public String getId() {
         return id;
+    }
+
+    public String getPreviousRetrospectiveId() {
+        return this.previousRetrospectiveId;
+    }
+
+    public String getReadableId() {
+        return readableId;
     }
 
     public Audit getAudit() {
@@ -119,7 +134,7 @@ public class Retrospective {
     }
 
     public void removeCouldBeBetter(String observationId, LoggedInUser user) {
-        this.wentWell = removeObservation(this.couldBeBetter, observationId, user, "could be better");
+        this.couldBeBetter = removeObservation(this.couldBeBetter, observationId, user, "could be better");
     }
 
     public void removeWentWell(String observationId, LoggedInUser user) {
@@ -174,6 +189,43 @@ public class Retrospective {
         }
 
         return originalObservations;
+    }
+
+    public Observation getObservation(String observationId, String type) {
+        ImmutableList<Observation> observations;
+
+        switch (type) {
+            case Observation.COULD_BE_BETTER:
+                observations = this.couldBeBetter;
+                break;
+            case Observation.WENT_WELL:
+                observations = this.wentWell;
+                break;
+            default:
+                throw new RuntimeException("Unrecognised observation type");
+        }
+
+        return observations.stream().filter(o -> o.getId().equals(observationId)).findFirst().orElse(null);
+    }
+
+    public Action getAction(String actionId) {
+        return actions.stream().filter(o -> o.getId().equals(actionId)).findFirst().orElse(null);
+    }
+
+    public void setAdministrators(List<User> administrators) {
+        this.administrators = new ImmutableList<>(administrators.stream());
+    }
+
+    public void setMembers(List<User> members) {
+        this.members = new ImmutableList<>(members.stream());
+    }
+
+    public void setReadableId(String readableId) {
+        this.readableId = readableId;
+    }
+
+    public void setPreviousRetrospectiveId(String previousRetrospectiveId) {
+        this.previousRetrospectiveId = previousRetrospectiveId;
     }
 }
 

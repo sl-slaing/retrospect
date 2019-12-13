@@ -4,6 +4,8 @@ import java.util.List;
 
 public class SerialisableRetrospective {
     private String id;
+    private String readableId;
+    private String previousRetrospectiveId;
     private List<String> administrators;
     private List<String> members;
     private List<SerialisableAction> actions;
@@ -17,6 +19,22 @@ public class SerialisableRetrospective {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getReadableId() {
+        return readableId;
+    }
+
+    public void setReadableId(String readableId) {
+        this.readableId = readableId;
+    }
+
+    public String getPreviousRetrospectiveId() {
+        return previousRetrospectiveId;
+    }
+
+    public void setPreviousRetrospectiveId(String id) {
+        this.previousRetrospectiveId = id;
     }
 
     public List<String> getAdministrators() {

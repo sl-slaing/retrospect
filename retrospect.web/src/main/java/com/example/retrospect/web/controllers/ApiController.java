@@ -1,18 +1,17 @@
 package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
+import com.example.retrospect.core.models.User;
+import com.example.retrospect.core.repositories.UserRepository;
 import com.example.retrospect.core.services.RetrospectiveService;
 import com.example.retrospect.web.managers.ClientResourcesManager;
 import com.example.retrospect.web.managers.UserSessionManager;
-import com.example.retrospect.web.viewmodels.LoginProviderViewModel;
-import com.example.retrospect.web.viewmodels.RetrospectiveOverview;
-import com.example.retrospect.web.viewmodels.RetrospectiveViewModel;
+import com.example.retrospect.web.models.*;
+import com.example.retrospect.web.viewmodels.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -20,27 +19,30 @@ public class ApiController {
     private final RetrospectiveService service;
     private final UserSessionManager userSessionManager;
     private final ClientResourcesManager clientResourcesManager;
+    private final UserRepository userRepository;
 
     @Autowired
     public ApiController(
             RetrospectiveService service,
             UserSessionManager userSessionManager,
-            ClientResourcesManager clientResourcesManager) {
+            ClientResourcesManager clientResourcesManager,
+            UserRepository userRepository) {
         this.service = service;
         this.userSessionManager = userSessionManager;
         this.clientResourcesManager = clientResourcesManager;
+        this.userRepository = userRepository;
     }
 
-    @GetMapping("/data")
-    public List<RetrospectiveOverview> index(){
+    @GetMapping("/retrospective")
+    public Map<String, RetrospectiveOverview> index(){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
         return this.service.getAllRetrospectives(loggedInUser)
                 .map(retro -> new RetrospectiveOverview(retro, loggedInUser))
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(RetrospectiveOverview::getId, r -> r));
     }
 
-    @GetMapping("/data/{id}")
+    @GetMapping("/retrospective/{id}")
     public RetrospectiveViewModel index(@PathVariable String id){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
@@ -49,13 +51,136 @@ public class ApiController {
             throw new NotFoundException("Retrospective not found");
         }
 
-        return new RetrospectiveViewModel(retrospective, loggedInUser);
+        var previousRetrospective = retrospective.getPreviousRetrospectiveId() != null
+                ? this.service.getRetrospective(retrospective.getPreviousRetrospectiveId(), loggedInUser)
+                : null;
+
+        return new RetrospectiveViewModel(retrospective, previousRetrospective, loggedInUser);
     }
 
-    @GetMapping("/data/loginProviders")
-    public List<LoginProviderViewModel> loginProviders(){
-        return clientResourcesManager.getAllClientResources()
-                .map(LoginProviderViewModel::new)
-                .collect(Collectors.toList());
+    @PostMapping("/observation/vote")
+    public ObservationViewModel vote(@RequestBody(required = false) VoteRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        var observation = this.service.applyVote(
+                request.getRetrospectiveId(),
+                request.getObservationId(),
+                request.getObservationType(),
+                loggedInUser);
+
+        return new ObservationViewModel(observation, loggedInUser, request.getObservationType());
+    }
+
+    @PostMapping("/observation/update")
+    public ObservationViewModel updateObservation(@RequestBody(required = false) UpdateObservationRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        var observation = this.service.updateObservation(
+                request.getRetrospectiveId(),
+                request.getObservationId(),
+                request.getObservationType(),
+                loggedInUser,
+                ob -> ob.setTitle(request.getTitle(), loggedInUser));
+
+        return new ObservationViewModel(observation, loggedInUser, request.getObservationType());
+    }
+
+    @PostMapping("/observation/create")
+    public ObservationViewModel createObservation(@RequestBody(required = false) UpdateObservationRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        var observation = this.service.addObservation(
+                request.getRetrospectiveId(),
+                request.getObservationType(),
+                request.getTitle(),
+                loggedInUser);
+
+        return new ObservationViewModel(observation, loggedInUser, request.getObservationType());
+    }
+
+    @DeleteMapping("/observation")
+    public void deleteObservation(@RequestBody(required = false) UpdateObservationRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        this.service.removeObservation(
+                request.getRetrospectiveId(),
+                request.getObservationId(),
+                request.getObservationType(),
+                loggedInUser);
+    }
+
+    @PostMapping("/retrospective/create")
+    public RetrospectiveOverview createRetrospective(@RequestBody(required = false) UpdateRetrospectiveRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        var retrospective = this.service.addRetrospective(
+                request.getPreviousRetrospectiveId(),
+                request.getReadableId(),
+                request.getMembers(),
+                request.getAdministrators(),
+                loggedInUser);
+
+        return new RetrospectiveOverview(retrospective, loggedInUser);
+    }
+
+    @PostMapping("/retrospective/administration")
+    public RetrospectiveOverview administerRetrospective(@RequestBody(required = false) AdministerRetrospectiveRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        var retrospective = this.service.applyAdministrationDetails(request, loggedInUser);
+
+        return new RetrospectiveOverview(retrospective, loggedInUser);
+    }
+
+    @DeleteMapping("/retrospective")
+    public void deleteRetrospective(@RequestBody(required = false) UpdateRetrospectiveRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        this.service.removeRetrospective(
+                request.getId(),
+                loggedInUser);
+    }
+
+    @GetMapping("/users")
+    public Map<String, UserViewModel> users(){
+        return userRepository.getAllUsers()
+                .collect(Collectors.toMap(User::getUsername, UserViewModel::new));
+    }
+
+    @GetMapping("/loginProviders")
+    public LoginProvidersViewModel loginProviders(){
+        return new LoginProvidersViewModel(
+                clientResourcesManager.getAllClientResources()
+                    .map(LoginProviderViewModel::new)
+                    .collect(Collectors.toList()),
+                userSessionManager.getLoggedInUser());
+    }
+
+    @PostMapping("/action/update")
+    public ActionViewModel updateAction(@RequestBody(required = false) UpdateActionRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        var action = this.service.updateAction(request, loggedInUser);
+
+        return new ActionViewModel(action);
+    }
+
+    @PostMapping("/action/create")
+    public ActionViewModel createAction(@RequestBody(required = false) UpdateActionRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        var action = this.service.addAction(request, loggedInUser);
+
+        return new ActionViewModel(action);
+    }
+
+    @DeleteMapping("/action")
+    public void deleteAction(@RequestBody(required = false) UpdateActionRequest request){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        this.service.removeAction(
+                request.getRetrospectiveId(),
+                request.getActionId(),
+                loggedInUser);
     }
 }

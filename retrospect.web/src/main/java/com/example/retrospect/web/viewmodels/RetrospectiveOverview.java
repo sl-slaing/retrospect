@@ -52,4 +52,12 @@ public class RetrospectiveOverview {
     public String getId(){
         return retrospective.getId();
     }
+
+    public String getReadableId() {
+        return retrospective.getReadableId();
+    }
+
+    public long getSortIdentifier() {
+        return retrospective.getAudit().getCreatedOn().toEpochSecond();
+    }
 }

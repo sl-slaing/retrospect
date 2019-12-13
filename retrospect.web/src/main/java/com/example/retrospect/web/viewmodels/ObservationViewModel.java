@@ -6,10 +6,12 @@ import com.example.retrospect.core.models.Observation;
 public class ObservationViewModel {
     private final Observation observation;
     private final LoggedInUser user;
+    private final String type;
 
-    public ObservationViewModel(Observation observation, LoggedInUser user) {
+    public ObservationViewModel(Observation observation, LoggedInUser user, String type) {
         this.observation = observation;
         this.user = user;
+        this.type = type;
     }
 
     public String getId(){
@@ -24,7 +26,15 @@ public class ObservationViewModel {
         return observation.getVotes().size();
     }
 
+    public String getType() {
+        return type;
+    }
+
     public boolean getHasVoted(){
         return observation.hasVoted(user);
+    }
+
+    public long getSortIdentifier() {
+        return observation.getAudit().getCreatedOn().toEpochSecond();
     }
 }
