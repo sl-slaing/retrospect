@@ -145,14 +145,23 @@ public class RetrospectiveService {
 
     public void removeObservation(String retrospectiveId, String observationId, String type, LoggedInUser user){
         editRetrospective(retrospectiveId, user, retrospective -> {
-            if (type == null) {
-                throw new RuntimeException("Invalid Observation type");
-            } else if (type.equals(Observation.COULD_BE_BETTER)) {
-                retrospective.removeCouldBeBetter(observationId, user);
-            } else if (type.equals(Observation.WENT_WELL)) {
-                retrospective.removeWentWell(observationId, user);
+
+            var observation = retrospective.getObservation(observationId, type);
+            if (observation == null || observation.isDeleted()) {
+                return;
+            }
+
+            if (observation.getAudit().getCreatedBy().equals(user)
+                    || retrospective.getAdministrators().stream().anyMatch(adm -> adm.equals(user))) {
+                if (type.equals(Observation.COULD_BE_BETTER)) {
+                    retrospective.removeCouldBeBetter(observationId, user);
+                } else if (type.equals(Observation.WENT_WELL)) {
+                    retrospective.removeWentWell(observationId, user);
+                } else {
+                    throw new RuntimeException("Invalid Observation type");
+                }
             } else {
-                throw new RuntimeException("Invalid Observation type");
+                throw new NotPermittedException("Only creators and administrators can delete observations");
             }
         });
     }
@@ -199,7 +208,22 @@ public class RetrospectiveService {
     }
 
     public void removeAction(String retrospectiveId, String actionId, LoggedInUser user) {
-        editRetrospective(retrospectiveId, user, retrospective -> retrospective.removeAction(actionId, user));
+        editRetrospective(
+                retrospectiveId,
+                user,
+                retrospective -> {
+                    var action = retrospective.getAction(actionId);
+                    if (action == null || action.isDeleted()) {
+                        return;
+                    }
+
+                    if (action.getAudit().getCreatedBy().equals(user)
+                    || retrospective.getAdministrators().stream().anyMatch(adm -> adm.equals(user))) {
+                        retrospective.removeAction(actionId, user);
+                    } else {
+                        throw new NotPermittedException("Only creators and administrators can delete actions");
+                    }
+                });
     }
 
     public Observation applyVote(String retrospectiveId, String observationId, String type, LoggedInUser user){
