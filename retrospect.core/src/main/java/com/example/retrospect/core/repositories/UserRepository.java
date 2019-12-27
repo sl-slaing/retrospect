@@ -7,25 +7,14 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @Service
-public class UserRepository extends PersistenceRepository<User> {
-    private final DataStorage file;
+public class UserRepository {
+    private final DataStorage<User> storage;
 
     public UserRepository() {
-        file = new FileStorage("users");
+        storage = new FileStorage<>("users", UserRepository::deserialiseValue);
     }
 
-    @Override
-    protected Map<String, User> loadData() {
-        return loadDataFromFile(file);
-    }
-
-    @Override
-    protected void saveData(Map<String, User> data) {
-        saveDataToFile(file, data);
-    }
-
-    @Override
-    protected User deserialiseValue(Map<String, Object> map) {
+    private static User deserialiseValue(Map<String, Object> map) {
         return new User(
                 (String)map.get("username"),
                 (String)map.get("displayName"),
@@ -35,14 +24,14 @@ public class UserRepository extends PersistenceRepository<User> {
     }
 
     public User getUser(String username){
-        return getData().getOrDefault(username, null);
+        return storage.getOne(username);
     }
 
     public void addOrUpdateUserDetails(User user) {
-        updateData(data -> data.put(user.getUsername(), user));
+        storage.addOrUpdate(user.getUsername(), user);
     }
 
     public Stream<User> getAllUsers(){
-        return getData().values().stream();
+        return storage.getAll();
     }
 }

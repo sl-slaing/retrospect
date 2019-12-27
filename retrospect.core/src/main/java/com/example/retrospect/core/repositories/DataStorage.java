@@ -1,13 +1,10 @@
 package com.example.retrospect.core.repositories;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.stream.Stream;
 
-public interface DataStorage {
-    InputStream openRead() throws IOException;
-
-    OutputStream openWrite() throws IOException;
-
-    boolean canRead();
+public interface DataStorage<T> {
+    T getOne(String key);
+    void addOrUpdate(String key, T value);
+    Stream<T> getAll();
+    void remove(String key);
 }

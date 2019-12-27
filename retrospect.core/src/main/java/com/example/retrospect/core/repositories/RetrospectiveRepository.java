@@ -15,23 +15,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class RetrospectiveRepository extends PersistenceRepository<SerialisableRetrospective> {
+public class RetrospectiveRepository {
     private final RetrospectiveSerialiser serialiser;
-    private final DataStorage file;
+    private final DataStorage<SerialisableRetrospective> storage;
 
     @Autowired
     public RetrospectiveRepository(RetrospectiveSerialiser serialiser) {
         this.serialiser = serialiser;
 
-        file = new FileStorage("retrospectives");
+        storage = new FileStorage<>("retrospectives", this::deserialiseValue);
     }
 
-    @Override
-    protected Map<String, SerialisableRetrospective> loadData() {
-        return loadDataFromFile(file);
-    }
-
-    @Override
     protected SerialisableRetrospective deserialiseValue(Map<String, Object> map) {
         var retro = new SerialisableRetrospective();
         retro.setId((String)map.get("id"));
@@ -92,34 +86,23 @@ public class RetrospectiveRepository extends PersistenceRepository<SerialisableR
                 .collect(Collectors.toList());
     }
 
-    @Override
-    protected void saveData(Map<String, SerialisableRetrospective> data) {
-        saveDataToFile(file, data);
-    }
-
     public Retrospective getRetrospective(String id){
-        if (!getData().containsKey(id)){
-            return null;
-        }
-
-        var retrospective = getData().get(id);
-        return serialiser.deserialise(retrospective);
+        var serialisable = storage.getOne(id);
+        return serialisable != null
+                ? serialiser.deserialise(serialisable)
+                : null;
     }
 
     public void addOrReplace(Retrospective retrospective){
-        updateData(data ->
-                data.put(
-                        retrospective.getId(),
-                        serialiser.serialise(retrospective)));
+        storage.addOrUpdate(retrospective.getId(), serialiser.serialise(retrospective));
     }
 
     public Stream<Retrospective> getAll() {
-        return getData().values()
-                .stream()
+        return storage.getAll()
                 .map(serialiser::deserialise);
     }
 
     public void remove(String retrospectiveId) {
-        updateData(data -> data.remove(retrospectiveId));
+        storage.remove(retrospectiveId);
     }
 }
