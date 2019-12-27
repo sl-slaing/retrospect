@@ -4,6 +4,8 @@ import com.example.retrospect.core.models.User;
 import com.example.retrospect.web.managers.AccessDeniedAuthenticationEntryPoint;
 import com.example.retrospect.web.managers.ClientResources;
 import com.example.retrospect.web.managers.ClientResourcesManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,6 +41,7 @@ public class Application extends WebSecurityConfigurerAdapter {
 
     private final ClientResourcesManager clientResourcesManager;
     private final OAuth2ClientContext clientContext;
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Autowired
     public Application(ClientResourcesManager clientResourcesManager, OAuth2ClientContext clientContext) {
@@ -115,10 +118,16 @@ public class Application extends WebSecurityConfigurerAdapter {
     @SuppressWarnings("unused")
     @Bean
     public RedisConnectionFactory redisConnectionFactory(){
+        var redisServerHost = System.getProperty("RedisServerAddress");
+        var redisServerPort = System.getProperty("RedisServerPort");
+
         var config = new RedisStandaloneConfiguration(
-                "localhost",
-                6379
+                redisServerHost != null ? redisServerHost : "localhost",
+                redisServerPort != null ? Integer.parseInt(redisServerPort) : 6379
         );
+
+        logger.info("Using redis-server - " + config.getHostName() + ":" + config.getPort());
+
         return new LettuceConnectionFactory(config);
     }
 

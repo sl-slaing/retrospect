@@ -2,7 +2,7 @@
   <configuration default="false" name="retrospect.web" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.example.retrospect.web.Application" />
     <module name="retrospect.web" />
-    <option name="VM_PARAMETERS" value="-DDataStoragePath=C:\temp\retrospect\" />
+    <option name="VM_PARAMETERS" value="-DDataStoragePath=C:\temp\retrospect\ -DRedisServerAddress=localhost -DRedisServerPort=6379" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/retrospect.web" />
     <method v="2">
       <option name="Make" enabled="true" />
