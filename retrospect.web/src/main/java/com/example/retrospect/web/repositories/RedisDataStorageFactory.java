@@ -2,8 +2,6 @@ package com.example.retrospect.web.repositories;
 
 import com.example.retrospect.core.repositories.DataStorage;
 import com.example.retrospect.core.repositories.DataStorageFactory;
-import com.example.retrospect.core.serialisable.SerialisableRetrospective;
-import com.example.retrospect.core.serialisable.SerialisableUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -21,28 +19,19 @@ public class RedisDataStorageFactory implements DataStorageFactory {
 
     @Override
     public <T> DataStorage<T> getStorage(Class<T> clazz) {
-        if (clazz.equals(SerialisableUser.class)) {
-            return (DataStorage<T>)getUserDataStorage();
+        var typeName = clazz.getSimpleName().toLowerCase();
+        if (typeName.startsWith("serialisable")){
+            typeName = typeName.replaceFirst("serialisable", "");
         }
 
-        if (clazz.equals(SerialisableRetrospective.class)) {
-            return (DataStorage<T>)getRetrospectiveDataStorage();
-        }
-
-        throw new RuntimeException("Unknown data type");
-    }
-
-    private DataStorage<SerialisableRetrospective> getRetrospectiveDataStorage() {
         return new RedisDataStorage<>(
                 jedis,
-                "retrospectives",
-                SerialisableRetrospective.class);
+                pluralise(typeName),
+                clazz
+        );
     }
 
-    private DataStorage<SerialisableUser> getUserDataStorage() {
-        return new RedisDataStorage<>(
-                jedis,
-                "users",
-                SerialisableUser.class);
+    private static String pluralise(String typeName) {
+        return typeName + "s";
     }
 }
