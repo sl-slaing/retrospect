@@ -16,6 +16,8 @@ const Action = ({ action, overrideRetrospectiveId, retrospectiveId, readonly, co
     const [ complete, setComplete ] = useState(action.complete);
     const [ assignedTo, setAssignedTo ] = useState(action.assignedTo);
     const [ saveRequired, setSaveRequired ] = useState(false);
+    const KEY_CODE_ENTER = 13;
+    const KEY_CODE_ESCAPE = 27;
 
     const onStartEditing = (e) => {
         if (updating || readonly) {
@@ -113,6 +115,16 @@ const Action = ({ action, overrideRetrospectiveId, retrospectiveId, readonly, co
         copyAction(action);
     }
 
+    const onKeyUp = (e) => {
+        if (e.keyCode === KEY_CODE_ENTER) {
+            e.preventDefault();
+            onTextualChangeComplete(e);
+        } else if (e.keyCode === KEY_CODE_ESCAPE){
+            setEditing(false);
+            setTitle(action.title);
+        }
+    }
+
     const currentUsers = {};
     if (assignedTo){
         currentUsers[assignedTo.username] = assignedTo;
@@ -126,7 +138,7 @@ const Action = ({ action, overrideRetrospectiveId, retrospectiveId, readonly, co
     }
 
     const titleDisplay = editing 
-        ? <textarea className="action-title font-reset" autoFocus onChange={onTitleChange} style={{height: displayHeight + 'px'}} onBlur={onTextualChangeComplete} value={title} />
+        ? <textarea className="action-title font-reset" autoFocus onChange={onTitleChange} style={{height: displayHeight + 'px'}} onKeyUp={onKeyUp} onBlur={onTextualChangeComplete} value={title} />
         : <a className="action-title" onClick={onStartEditing}>{title}</a>
 
     const ticketAddressDisplay = readonly

@@ -10,6 +10,8 @@ const Observation = ({ observation, retrospectiveId, copyAction, copyText, marke
     const [ editing, setEditing ] = useState(false);
     const [ displayHeight, setDisplayHeight ] = useState(0);
     const [ title, setTitle ] = useState(observation.title);
+    const KEY_CODE_ENTER = 13;
+    const KEY_CODE_ESCAPE = 27;
 
     const toggleVotes = (e) => {
         e.preventDefault();
@@ -114,6 +116,16 @@ const Observation = ({ observation, retrospectiveId, copyAction, copyText, marke
                 });
     }
 
+    const onKeyUp = (e) => {
+        if (e.keyCode === KEY_CODE_ENTER) {
+            e.preventDefault();
+            onTitleChangeComplete(e);
+        } else if (e.keyCode === KEY_CODE_ESCAPE){
+            setEditing(false);
+            setTitle(observation.title);
+        }
+    }
+
     const onCopy = (e) => {
         e.preventDefault();
 
@@ -121,7 +133,7 @@ const Observation = ({ observation, retrospectiveId, copyAction, copyText, marke
     }
 
     const titleDisplay = editing 
-        ? <textarea className="observation-title font-reset space-for-delete" autoFocus onChange={onTitleChange} style={{height: displayHeight + 'px'}} onBlur={onTitleChangeComplete} value={title} />
+        ? <textarea className="observation-title font-reset space-for-delete" autoFocus onChange={onTitleChange} style={{height: displayHeight + 'px'}} onKeyUp={onKeyUp} onBlur={onTitleChangeComplete} value={title} />
         : <a className="observation-title space-for-delete" onClick={onStartEditing}>{title}</a>
 
     return (<div className="observation space-for-vote">

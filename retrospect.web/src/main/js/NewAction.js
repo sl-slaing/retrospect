@@ -58,6 +58,7 @@ const NewAction = ({ retrospectiveId, showAvatarMenu, continueEditing, setContin
 
     const onKeyUp = (e) => {
         if (e.keyCode === KEY_CODE_ENTER) {
+            e.preventDefault();
             setContinueEditing("action");
             continueEditing = "action";
             onTitleChangeComplete(e);
