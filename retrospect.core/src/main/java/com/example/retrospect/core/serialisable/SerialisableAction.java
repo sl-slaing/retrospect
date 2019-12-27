@@ -1,5 +1,9 @@
 package com.example.retrospect.core.serialisable;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class SerialisableAction {
     private String id;
     private String title;
@@ -81,5 +85,26 @@ public class SerialisableAction {
 
     public String getFromObservationId() {
         return fromObservationId;
+    }
+
+    public static List<SerialisableAction> deserialiseFromListOfMaps(List<Map> actions) {
+        return actions.stream()
+                .map(SerialisableAction::deserialiseFromMap)
+                .collect(Collectors.toList());
+    }
+
+    private static SerialisableAction deserialiseFromMap(Map actionData) {
+        var action = new SerialisableAction();
+        action.setId((String)actionData.get("id"));
+        action.setTitle((String)actionData.get("title"));
+        action.setTicketAddress((String)actionData.get("ticketAddress"));
+        action.setAssignedTo((String)actionData.get("assignedTo"));
+        action.setAudit(SerialisableAudit.deserialiseFromMap((Map<String, Object>)actionData.get("audit")));
+        action.setDeleted((boolean)actionData.get("deleted"));
+        action.setFromActionId((String)actionData.get("fromActionId"));
+        action.setFromObservationId((String)actionData.get("fromObservationId"));
+        action.setComplete((boolean)actionData.get("complete"));
+
+        return action;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.retrospect.core.serialisable;
 
 import java.util.List;
+import java.util.Map;
 
 public class SerialisableRetrospective {
     private String id;
@@ -83,5 +84,20 @@ public class SerialisableRetrospective {
 
     public void setAudit(SerialisableAudit audit) {
         this.audit = audit;
+    }
+
+    public static SerialisableRetrospective deserialiseFromMap(Map<String, Object> map) {
+        var retro = new SerialisableRetrospective();
+        retro.setId((String)map.get("id"));
+        retro.setReadableId((String)map.get("readableId"));
+        retro.setPreviousRetrospectiveId((String)map.get("previousRetrospectiveId"));
+        retro.setAdministrators((List<String>)map.get("administrators"));
+        retro.setMembers((List<String>)map.get("members"));
+        retro.setActions(SerialisableAction.deserialiseFromListOfMaps((List<Map>)map.get("actions")));
+        retro.setWentWell(SerialisableObservation.deserialiseFromListOfMaps((List<Map>)map.get("wentWell")));
+        retro.setCouldBeBetter(SerialisableObservation.deserialiseFromListOfMaps((List<Map>)map.get("couldBeBetter")));
+        retro.setAudit(SerialisableAudit.deserialiseFromMap((Map<String, Object>)map.get("audit")));
+
+        return retro;
     }
 }

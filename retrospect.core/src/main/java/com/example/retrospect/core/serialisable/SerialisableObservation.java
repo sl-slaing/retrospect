@@ -1,6 +1,8 @@
 package com.example.retrospect.core.serialisable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SerialisableObservation {
     private String id;
@@ -47,5 +49,22 @@ public class SerialisableObservation {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public static List<SerialisableObservation> deserialiseFromListOfMaps(List<Map> observations) {
+        return observations.stream()
+                .map(SerialisableObservation::deserialiseFromMap)
+                .collect(Collectors.toList());
+    }
+
+    private static SerialisableObservation deserialiseFromMap(Map observationData) {
+        var observation = new SerialisableObservation();
+        observation.setId((String)observationData.get("id"));
+        observation.setTitle((String)observationData.get("title"));
+        observation.setAudit(SerialisableAudit.deserialiseFromMap((Map<String, Object>)observationData.get("audit")));
+        observation.setVotes((List<String>)observationData.get("votes"));
+        observation.setDeleted((boolean)observationData.get("deleted"));
+
+        return observation;
     }
 }
