@@ -2,14 +2,23 @@ package com.example.retrospect.web.repositories;
 
 import com.example.retrospect.core.models.User;
 import com.example.retrospect.core.repositories.DataStorage;
-import com.example.retrospect.core.repositories.FileStorage;
+import com.example.retrospect.core.repositories.DataStorageFactory;
 import com.example.retrospect.core.serialisable.SerialisableRetrospective;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 
 @Service
-public class DataStorageFactory implements com.example.retrospect.core.repositories.DataStorageFactory {
+@Primary
+public class RedisDataStorageFactory implements DataStorageFactory {
+    private final Jedis jedis;
+
+    public RedisDataStorageFactory(Jedis jedis) {
+        this.jedis = jedis;
+    }
+
     @Override
     public <T> DataStorage<T> getStorage(Class<T> clazz) {
         if (clazz.equals(User.class)) {
@@ -24,11 +33,17 @@ public class DataStorageFactory implements com.example.retrospect.core.repositor
     }
 
     private DataStorage<SerialisableRetrospective> getRetrospectiveDataStorage() {
-        return new FileStorage<>("retrospectives", SerialisableRetrospective::deserialiseFromMap);
+        return new RedisDataStorage<>(
+                jedis,
+                "retrospectives",
+                SerialisableRetrospective::deserialiseFromMap);
     }
 
     private DataStorage<User> getUserDataStorage() {
-        return new FileStorage<>("users", DataStorageFactory::deserialiseUser);
+        return new RedisDataStorage<>(
+                jedis,
+                "users",
+                RedisDataStorageFactory::deserialiseUser);
     }
 
     private static User deserialiseUser(Map<String, Object> map) {

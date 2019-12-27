@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.filter.CompositeFilter;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
@@ -117,7 +118,13 @@ public class Application extends WebSecurityConfigurerAdapter {
 
     @SuppressWarnings("unused")
     @Bean
-    public RedisConnectionFactory redisConnectionFactory(){
+    public Jedis getJedis(RedisStandaloneConfiguration config){
+        return new Jedis(config.getHostName(), config.getPort());
+    }
+
+    @SuppressWarnings("unused")
+    @Bean
+    public RedisStandaloneConfiguration getRedisConfig(){
         var redisServerHost = System.getProperty("RedisServerAddress");
         var redisServerPort = System.getProperty("RedisServerPort");
 
@@ -127,7 +134,12 @@ public class Application extends WebSecurityConfigurerAdapter {
         );
 
         logger.info("Using redis-server - " + config.getHostName() + ":" + config.getPort());
+        return config;
+    }
 
+    @SuppressWarnings("unused")
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory(RedisStandaloneConfiguration config){
         return new LettuceConnectionFactory(config);
     }
 
