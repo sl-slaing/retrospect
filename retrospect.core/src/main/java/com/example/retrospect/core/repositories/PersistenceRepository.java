@@ -2,7 +2,6 @@ package com.example.retrospect.core.repositories;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,13 +42,13 @@ public abstract class PersistenceRepository<T> {
         saveData();
     }
 
-    protected Map<String, T> loadDataFromFile(File file){
-        if (!file.exists()){
+    protected Map<String, T> loadDataFromFile(FileStorage storage){
+        if (!storage.canRead()){
             return new HashMap<>();
         }
 
         try {
-            Map<String, Map<String, Object>> mapOfMaps = objectMapper.readValue(file, HashMap.class);
+            Map<String, Map<String, Object>> mapOfMaps = objectMapper.readValue(storage.openRead(), HashMap.class);
             return mapOfMaps.entrySet()
                     .stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> deserialiseValue(entry.getValue())));
@@ -58,9 +57,9 @@ public abstract class PersistenceRepository<T> {
         }
     }
 
-    protected void saveDataToFile(File file, Map<String, T> data){
+    protected void saveDataToFile(FileStorage storage, Map<String, T> data){
         try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(storage.openWrite(), data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

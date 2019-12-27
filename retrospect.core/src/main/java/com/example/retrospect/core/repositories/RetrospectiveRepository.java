@@ -9,8 +9,6 @@ import com.example.retrospect.core.serialisers.RetrospectiveSerialiser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,14 +17,13 @@ import java.util.stream.Stream;
 @Service
 public class RetrospectiveRepository extends PersistenceRepository<SerialisableRetrospective> {
     private final RetrospectiveSerialiser serialiser;
-    private final File file;
+    private final FileStorage file;
 
     @Autowired
     public RetrospectiveRepository(RetrospectiveSerialiser serialiser) {
         this.serialiser = serialiser;
 
-        var dataStoragePath = System.getProperty("DataStoragePath");
-        file = Path.of(dataStoragePath).resolve("retrospectives.json").toFile();
+        file = new FileStorage("retrospectives.json");
     }
 
     @Override

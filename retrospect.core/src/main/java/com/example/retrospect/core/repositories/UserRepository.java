@@ -3,18 +3,15 @@ package com.example.retrospect.core.repositories;
 import com.example.retrospect.core.models.User;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Stream;
 
 @Service
 public class UserRepository extends PersistenceRepository<User> {
-    private final File file;
+    private final FileStorage file;
 
     public UserRepository() {
-        var dataStoragePath = System.getProperty("DataStoragePath");
-        file = Path.of(dataStoragePath).resolve("users.json").toFile();
+        file = new FileStorage("users.json");
     }
 
     @Override
