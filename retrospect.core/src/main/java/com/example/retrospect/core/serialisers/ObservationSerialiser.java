@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 @Service
 public class ObservationSerialiser {
     private final AuditSerialiser auditSerialiser;
-    private final UserSerialiser userSerialiser;
+    private final UserNameSerialiser userNameSerialiser;
 
     @Autowired
-    public ObservationSerialiser(AuditSerialiser auditSerialiser, UserSerialiser userSerialiser) {
+    public ObservationSerialiser(AuditSerialiser auditSerialiser, UserNameSerialiser userNameSerialiser) {
         this.auditSerialiser = auditSerialiser;
-        this.userSerialiser = userSerialiser;
+        this.userNameSerialiser = userNameSerialiser;
     }
 
     public SerialisableObservation serialise(Observation observation){
@@ -36,7 +36,7 @@ public class ObservationSerialiser {
                 observation.getTitle(),
                 auditSerialiser.deserialise(observation.getAudit()),
                 observation.isDeleted(),
-                observation.getVotes().stream().map(userSerialiser::deserialise).collect(Collectors.toList())
+                observation.getVotes().stream().map(userNameSerialiser::deserialise).collect(Collectors.toList())
         );
     }
 }

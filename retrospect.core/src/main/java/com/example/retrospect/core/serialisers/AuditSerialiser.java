@@ -9,11 +9,11 @@ import java.time.OffsetDateTime;
 
 @Service
 public class AuditSerialiser {
-    private final UserSerialiser userSerialiser;
+    private final UserNameSerialiser userNameSerialiser;
 
     @Autowired
-    public AuditSerialiser(UserSerialiser userSerialiser) {
-        this.userSerialiser = userSerialiser;
+    public AuditSerialiser(UserNameSerialiser userNameSerialiser) {
+        this.userNameSerialiser = userNameSerialiser;
     }
 
     public SerialisableAudit serialise(Audit audit){
@@ -30,9 +30,9 @@ public class AuditSerialiser {
     public Audit deserialise(SerialisableAudit audit){
         return new Audit(
                 OffsetDateTime.parse(audit.getCreatedOn()),
-                userSerialiser.deserialise(audit.getCreatedBy()),
+                userNameSerialiser.deserialise(audit.getCreatedBy()),
                 OffsetDateTime.parse(audit.getLastUpdatedOn()),
-                userSerialiser.deserialise(audit.getLastUpdatedBy()),
+                userNameSerialiser.deserialise(audit.getLastUpdatedBy()),
                 audit.getLastChange()
         );
     }

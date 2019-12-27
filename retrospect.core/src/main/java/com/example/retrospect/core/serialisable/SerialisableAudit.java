@@ -48,15 +48,4 @@ public class SerialisableAudit {
     public void setLastChange(String lastChange) {
         this.lastChange = lastChange;
     }
-
-    public static SerialisableAudit deserialiseFromMap(Map<String, Object> auditData) {
-        var audit = new SerialisableAudit();
-        audit.setCreatedBy((String)auditData.get("createdBy"));
-        audit.setLastUpdatedBy((String)auditData.get("lastUpdatedBy"));
-        audit.setLastChange((String)auditData.get("lastChange"));
-        audit.setCreatedOn((String)auditData.get("createdOn"));
-        audit.setLastUpdatedOn((String)auditData.get("lastUpdatedOn"));
-
-        return audit;
-    }
 }

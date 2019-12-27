@@ -8,17 +8,17 @@ import com.example.retrospect.core.serialisable.SerialisableAction;
 @Service
 public class ActionSerialiser {
     private final AuditSerialiser auditSerialiser;
-    private final UserSerialiser userSerialiser;
+    private final UserNameSerialiser userNameSerialiser;
 
     @Autowired
-    public ActionSerialiser(AuditSerialiser auditSerialiser, UserSerialiser userSerialiser) {
+    public ActionSerialiser(AuditSerialiser auditSerialiser, UserNameSerialiser userNameSerialiser) {
         this.auditSerialiser = auditSerialiser;
-        this.userSerialiser = userSerialiser;
+        this.userNameSerialiser = userNameSerialiser;
     }
 
     public SerialisableAction serialise(Action action){
         var serialisable = new SerialisableAction();
-        serialisable.setAssignedTo(userSerialiser.serialise(action.getAssignedTo()));
+        serialisable.setAssignedTo(userNameSerialiser.serialise(action.getAssignedTo()));
         serialisable.setAudit(auditSerialiser.serialise(action.getAudit()));
         serialisable.setId(action.getId());
         serialisable.setTicketAddress(action.getTicketAddress());
@@ -38,7 +38,7 @@ public class ActionSerialiser {
                 auditSerialiser.deserialise(action.getAudit()),
                 action.isDeleted(),
                 action.getTicketAddress(),
-                userSerialiser.deserialise(action.getAssignedTo()),
+                userNameSerialiser.deserialise(action.getAssignedTo()),
                 action.getFromActionId(),
                 action.getFromObservationId(),
                 action.isComplete());

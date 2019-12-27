@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import com.example.retrospect.core.repositories.UserRepository;
 
 @Service
-public class UserSerialiser {
+public class UserNameSerialiser {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserSerialiser(UserRepository userRepository) {
+    public UserNameSerialiser(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

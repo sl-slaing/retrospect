@@ -5,24 +5,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class RedisDataStorage<T> implements DataStorage<T> {
     private final Jedis jedis;
     private final String typeName;
-    private final Function<Map<String, Object>, T> deserialiseValue;
+    private final Class<T> clazz;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public RedisDataStorage(
             Jedis jedis,
             String typeName,
-            Function<Map<String, Object>, T> deserialiseValue) {
+            Class<T> clazz) {
         this.jedis = jedis;
         this.typeName = typeName;
-        this.deserialiseValue = deserialiseValue;
+        this.clazz = clazz;
     }
 
     private String getKey(String key){
@@ -43,8 +40,7 @@ public class RedisDataStorage<T> implements DataStorage<T> {
         }
 
         try {
-            Map<String, Object> map = objectMapper.readValue(json, HashMap.class);
-            return deserialiseValue.apply(map);
+            return objectMapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -58,9 +54,8 @@ public class RedisDataStorage<T> implements DataStorage<T> {
             }
 
             var json = objectMapper.writeValueAsString(value);
-            var redisKey = getKey(key);
 
-            jedis.set(redisKey, json);
+            jedis.set(getKey(key), json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -74,8 +69,6 @@ public class RedisDataStorage<T> implements DataStorage<T> {
 
     @Override
     public void remove(String key) {
-        var redisKey = getKey(key);
-
-        jedis.del(redisKey);
+        jedis.del(getKey(key));
     }
 }
