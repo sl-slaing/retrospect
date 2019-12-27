@@ -23,7 +23,7 @@ public class RetrospectiveRepository extends PersistenceRepository<SerialisableR
     public RetrospectiveRepository(RetrospectiveSerialiser serialiser) {
         this.serialiser = serialiser;
 
-        file = new FileStorage("retrospectives.json");
+        file = new FileStorage("retrospectives");
     }
 
     @Override

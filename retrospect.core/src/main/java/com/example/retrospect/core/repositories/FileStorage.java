@@ -8,7 +8,7 @@ public class FileStorage implements DataStorage {
 
     public FileStorage(String filename) {
         var dataStoragePath = System.getProperty("DataStoragePath");
-        file = Path.of(dataStoragePath).resolve(filename).toFile();
+        file = Path.of(dataStoragePath).resolve(filename + ".json").toFile();
     }
 
     @Override

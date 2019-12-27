@@ -11,7 +11,7 @@ public class UserRepository extends PersistenceRepository<User> {
     private final DataStorage file;
 
     public UserRepository() {
-        file = new FileStorage("users.json");
+        file = new FileStorage("users");
     }
 
     @Override
