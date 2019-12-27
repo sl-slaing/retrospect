@@ -11,6 +11,9 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -21,6 +24,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
@@ -30,6 +34,7 @@ import java.util.Map;
 
 @SpringBootApplication(scanBasePackages = "com.example.retrospect")
 @EnableOAuth2Client
+@EnableRedisHttpSession
 public class Application extends WebSecurityConfigurerAdapter {
 
     private final ClientResourcesManager clientResourcesManager;
@@ -105,6 +110,16 @@ public class Application extends WebSecurityConfigurerAdapter {
     public ClientResources facebook() {
         var facebook = new ClientResources(Application::createUserFromFacebook);
         return clientResourcesManager.add(facebook);
+    }
+
+    @SuppressWarnings("unused")
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory(){
+        var config = new RedisStandaloneConfiguration(
+                "localhost",
+                6379
+        );
+        return new LettuceConnectionFactory(config);
     }
 
     private static User createUserFromFacebook(Map<String, String> userDetails, String providerDisplayName){
