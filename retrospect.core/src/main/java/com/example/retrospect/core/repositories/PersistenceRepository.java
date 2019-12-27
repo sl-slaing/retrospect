@@ -42,7 +42,7 @@ public abstract class PersistenceRepository<T> {
         saveData();
     }
 
-    protected Map<String, T> loadDataFromFile(FileStorage storage){
+    protected Map<String, T> loadDataFromFile(DataStorage storage){
         if (!storage.canRead()){
             return new HashMap<>();
         }
@@ -57,7 +57,7 @@ public abstract class PersistenceRepository<T> {
         }
     }
 
-    protected void saveDataToFile(FileStorage storage, Map<String, T> data){
+    protected void saveDataToFile(DataStorage storage, Map<String, T> data){
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(storage.openWrite(), data);
         } catch (IOException e) {

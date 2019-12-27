@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 @Service
 public class UserRepository extends PersistenceRepository<User> {
-    private final FileStorage file;
+    private final DataStorage file;
 
     public UserRepository() {
         file = new FileStorage("users.json");

@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @Service
 public class RetrospectiveRepository extends PersistenceRepository<SerialisableRetrospective> {
     private final RetrospectiveSerialiser serialiser;
-    private final FileStorage file;
+    private final DataStorage file;
 
     @Autowired
     public RetrospectiveRepository(RetrospectiveSerialiser serialiser) {
