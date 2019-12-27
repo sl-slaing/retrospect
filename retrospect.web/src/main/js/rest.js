@@ -27,16 +27,35 @@ const error = (message, response) => {
 }
 
 const handleNotOkResponse = (response) => {
+    const contentLengthString = response.headers.get("Content-Length");
+    if (!contentLengthString || Number.parseInt(contentLengthString) === 0) {
+        return getNotOkRejectionPromise(response, null);
+    }
+
+    return response.text()
+        .then(
+            text => {
+                return getNotOkRejectionPromise(response, text);
+            },
+            err => {
+                return getNotOkRejectionPromise(response, `Unable to read error message: ${err}`);
+            }
+        );
+}
+
+const getNotOkRejectionPromise = (response, text) => {
+    const suffix = text ? `\n\nMessage: ${text}` : '';
+
     return new Promise((resolve, reject) => {
         if (response.status === 404) {
-            reject(error(`Requested URL ${response.url} was not found`, response));
+            reject(error(`Requested URL ${response.url} was not found${suffix}`, response));
         }
 
         if (response.status === 500) {
-            reject(error(`Requested URL ${response.url} failed`, response));
+            reject(error(`Requested URL ${response.url} failed${suffix}`, response));
         }
 
-        reject(error(`Requested URL ${response.url} returned ${response.status}`, response));
+        reject(error(`Requested URL ${response.url} returned ${response.status}${suffix}`, response));
     });
 }
 

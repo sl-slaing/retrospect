@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
@@ -27,5 +28,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(value = {NotPermittedException.class })
     protected ResponseEntity<Object> handleNotPermitted(NotPermittedException exc, WebRequest request) {
         return handleExceptionInternal(exc, exc.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler(value = {Exception.class })
+    protected ResponseEntity<Object> handleRuntimeException(RuntimeException exc, WebRequest request) {
+        return handleExceptionInternal(exc, exc.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 }
