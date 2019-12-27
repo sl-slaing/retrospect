@@ -88,8 +88,7 @@ public class Application extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-        FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(filter);
+        var registration = new FilterRegistrationBean<>(filter);
         registration.setOrder(-100);
         return registration;
     }
