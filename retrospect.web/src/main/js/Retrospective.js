@@ -133,7 +133,7 @@ const Retrospective = ({ heading, retrospective, setHeading, setMenuCallback, sw
                 const copiedToAnAction = Object.values(retrospective.actions).filter(a => a.fromObservationId === ob.id).length > 0;
 
                 if (copiedToAnAction && markerLookup) {
-                    const marker = getMarkerForObservation(markerLookup, ob.id);
+                    const marker = getMarkerForObservation(markerLookup, ob.id, true);
                     const markerTitle = `Observation copied to an action, see (${marker}) marker in 'Actions' column`;
 
                     return (<Observation key={ob.id} observation={ob} marker={marker} markerTitle={markerTitle} />);
