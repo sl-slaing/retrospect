@@ -7,10 +7,12 @@ import java.util.List;
 public class LoginProvidersViewModel {
     private final List<LoginProviderViewModel> loginProviders;
     private final LoggedInUser loggedInUser;
+    private final boolean showSystemAdministration;
 
-    public LoginProvidersViewModel(List<LoginProviderViewModel> loginProviders, LoggedInUser loggedInUser) {
+    public LoginProvidersViewModel(List<LoginProviderViewModel> loginProviders, LoggedInUser loggedInUser, boolean showSystemAdministration) {
         this.loginProviders = loginProviders;
         this.loggedInUser = loggedInUser;
+        this.showSystemAdministration = showSystemAdministration;
     }
 
     public List<LoginProviderViewModel> getLoginProviders() {
@@ -19,5 +21,9 @@ public class LoginProvidersViewModel {
 
     public LoggedInUser getLoggedInUser() {
         return loggedInUser;
+    }
+
+    public boolean getShowSystemAdministration() {
+        return showSystemAdministration;
     }
 }

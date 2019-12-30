@@ -1,8 +1,9 @@
 import { LOGIN, LOGOUT, SET_HEADING, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL } from './actionTypes'
 
-export const login = (user) => ({
+export const login = (user, showSystemAdministration) => ({
     type: LOGIN,
-    user
+    user,
+    showSystemAdministration
 });
 
 export const logout = () => ({

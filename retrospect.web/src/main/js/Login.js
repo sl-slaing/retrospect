@@ -21,7 +21,7 @@ const Login = ({ login }) => {
                 .then(
                     entity => {
                         if (entity.loggedInUser){
-                            login(entity.loggedInUser)
+                            login(entity.loggedInUser, entity.showSystemAdministration)
                         } else {
                             setLoginProviders(entity.loginProviders);
                             rememberDocumentHash();

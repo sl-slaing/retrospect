@@ -37,7 +37,6 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
     const [ members, setMembers ] = useState(retrospective.members);
     const [ mode, setMode ] = useState("edit");
     const [ error, setError ] = useState(null);
-    const [ importResult, setImportResult ] = useState(null);
 
     const getReadableIdClassName = () => {
         if (retrospectives === null) {
@@ -167,75 +166,6 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
             )
     }
 
-    const importRetrospective = (e) => {
-        e.preventDefault();
-        setImportResult(null);
-
-        openFile('.json', false)
-            .then(
-                files => {
-                    const versions = {};
-                    const retrospectives = [];
-                    Object.values(files).forEach(file => {
-                        var fileContent = JSON.parse(file.content);
-                        if (!fileContent.retrospectives) {
-                            return;
-                        }
-
-                        if (versions[fileContent.version]) {
-                            versions[fileContent.version] = versions[fileContent.version] + 1
-                        } else {
-                            versions[fileContent.version] = 1;
-                        }
-
-                        fileContent.retrospectives.forEach(retroJson => {
-                            retrospectives.push(retroJson);
-                        });
-                    });
-
-                    if (Object.keys(versions).length > 1) {
-                        setError({ message: "Unable to import with different versions of exported data" });
-                        return;
-                    }
-
-                    const request = {
-                        version: Object.keys(versions)[0],
-                        retrospectives: retrospectives,
-                        settings: {
-                            permitMerge: true,
-                            restoreData: false,
-                            restoreDeleted: false,
-                            dryRun: !confirm(`Click OK to import this data, or Cancel to view a dry run of the import\nThere are ${retrospectives.length} retrospective/s to import`)
-                        }
-                    };
-
-                    setMode("importing");
-
-                    Post(
-                        '/import',
-                        request)
-                        .then(
-                            importResultJson => {
-                                setImportResult(importResultJson);
-                                setMode('view-import-result');
-                            },
-                            err => {
-                                setError(err);
-                            });
-                },
-                noFiles => {
-                    setMode("edit");
-                });  
-    }
-
-    const backToAdministration = (e) => {
-        e.preventDefault();
-
-        setRetrospectiveById(retrospective.id, true); //to invalidate the cached data for this retrospective
-        setRetrospectives(null);
-        setMode("edit");
-    }
-
     if (error !== null) {
         return (<Error error={error} recover={recover} recoverText="Review settings..." />);
     }
@@ -246,29 +176,6 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
 
     if (mode === "exporting") {
         return (<Working message="Exporting data..." />);
-    }
-
-    if (mode === "importing") {
-        return (<Working message="Importing data..." />);
-    }
-
-    if (mode === "view-import-result") {
-        return (<div className="vertically-centered visible-overflow">
-                    <div className="white-panel">
-                        <h3>Import result</h3>
-                        <h5>General messages</h5>
-                        <ol>
-                            {importResult.generalMessages.map((msg, index) => (<li key={index}>{msg}</li>))}
-                        </ol>
-                        <h5>Per retrospective messages</h5>
-                        <ol>
-                            {Object.keys(importResult.messages).map((key) => (<li key={key}>{importResult.messages[key]}</li>))}
-                        </ol>
-                        <div className="buttons green-top-border ">
-                            <a className="button clickable" onClick={backToAdministration}>Back to administration</a>
-                        </div>
-                    </div>
-                </div>);
     }
 
 	return (<div className="vertically-centered visible-overflow">
@@ -305,7 +212,6 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
                         <a className="button clickable" onClick={deleteRetrospective}>Delete retrospective</a>
                         <a className="button clickable" onClick={returnToRetrospective}>Return to retrospective</a>
                         <a className="button clickable" onClick={exportRetrospective}>Export</a>
-                        <a className="button clickable" onClick={importRetrospective}>Import</a>
                     </div>
                 </div>
             </div>);

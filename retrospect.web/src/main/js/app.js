@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE, ADMINISTER_RETROSPECTIVE } from './redux/uiModes';
+import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE, ADMINISTER_RETROSPECTIVE, ADMINISTER_SYSTEM } from './redux/uiModes';
 import { setActiveControl } from './redux/sessionActions';
 import { defineHelperFunctions } from './helpers';
 
@@ -14,6 +14,7 @@ import LoadRetrospectives from './LoadRetrospectives';
 import Login from './Login';
 import Retrospectives from './Retrospectives';
 import Retrospective from './Retrospective';
+import SystemAdministration from './SystemAdministration';
 
 const App = ({ displayMode, loggedInUser, setActiveControl }) => {
 	const getComponent = () => {
@@ -36,6 +37,9 @@ const App = ({ displayMode, loggedInUser, setActiveControl }) => {
 				return (<LoadRetrospective>
 							<AdministerRetrospective />
 						</LoadRetrospective>);
+			}
+			case ADMINISTER_SYSTEM: {
+				return (<SystemAdministration />);
 			}
 			default: 
 				throw { message: "Unknown display mode: " + displayMode };

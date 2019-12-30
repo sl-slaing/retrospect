@@ -22,7 +22,8 @@ const initialState = {
     continueEditing: null,
     heading: defaultHeading,
     displayMode: getInitialDisplayMode(),
-    activeControlId: null
+    activeControlId: null,
+    showSystemAdministration: false
 };
 
 export default (state = initialState, action) => {
@@ -30,7 +31,8 @@ export default (state = initialState, action) => {
         case LOGIN: {
             return {
                 ...state,
-                loggedInUser: action.user
+                loggedInUser: action.user,
+                showSystemAdministration: action.showSystemAdministration
             };
         }
         case SET_ACTIVE_CONTROL : {

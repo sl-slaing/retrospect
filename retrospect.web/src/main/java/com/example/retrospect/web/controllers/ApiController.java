@@ -1,6 +1,7 @@
 package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
+import com.example.retrospect.core.managers.ActionPermissionManager;
 import com.example.retrospect.core.models.User;
 import com.example.retrospect.core.repositories.UserRepository;
 import com.example.retrospect.core.services.RetrospectiveService;
@@ -26,6 +27,7 @@ public class ApiController {
     private final ClientResourcesManager clientResourcesManager;
     private final UserRepository userRepository;
     private final ImportExportService importExportService;
+    private final ActionPermissionManager actionPermissionManager;
 
     @Autowired
     public ApiController(
@@ -33,12 +35,14 @@ public class ApiController {
             UserSessionManager userSessionManager,
             ClientResourcesManager clientResourcesManager,
             UserRepository userRepository,
-            ImportExportService importExportService) {
+            ImportExportService importExportService,
+            ActionPermissionManager actionPermissionManager) {
         this.service = service;
         this.userSessionManager = userSessionManager;
         this.clientResourcesManager = clientResourcesManager;
         this.userRepository = userRepository;
         this.importExportService = importExportService;
+        this.actionPermissionManager = actionPermissionManager;
     }
 
     @GetMapping("/retrospective")
@@ -157,11 +161,17 @@ public class ApiController {
 
     @GetMapping("/loginProviders")
     public LoginProvidersViewModel loginProviders(){
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
         return new LoginProvidersViewModel(
                 clientResourcesManager.getAllClientResources()
                     .map(LoginProviderViewModel::new)
                     .collect(Collectors.toList()),
-                userSessionManager.getLoggedInUser());
+                loggedInUser,
+            loggedInUser != null &&
+                    (actionPermissionManager.canRestore(loggedInUser)
+                    || actionPermissionManager.canImport(loggedInUser)
+                    || actionPermissionManager.canExport(loggedInUser)));
     }
 
     @PostMapping("/action/update")
