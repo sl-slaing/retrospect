@@ -20,6 +20,10 @@ public class ImmutableList<T> {
         return items.size();
     }
 
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+
     public Stream<T> stream(){
         return items.stream();
     }
