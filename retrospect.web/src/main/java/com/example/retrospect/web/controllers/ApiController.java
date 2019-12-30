@@ -7,6 +7,11 @@ import com.example.retrospect.core.services.RetrospectiveService;
 import com.example.retrospect.web.managers.ClientResourcesManager;
 import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.web.models.*;
+import com.example.retrospect.web.models.import_export.ExportRequest;
+import com.example.retrospect.web.models.import_export.ImportRequest;
+import com.example.retrospect.web.models.import_export.ImportableData;
+import com.example.retrospect.web.services.ImportExportService;
+import com.example.retrospect.web.services.import_export.ImportResult;
 import com.example.retrospect.web.viewmodels.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +25,20 @@ public class ApiController {
     private final UserSessionManager userSessionManager;
     private final ClientResourcesManager clientResourcesManager;
     private final UserRepository userRepository;
+    private final ImportExportService importExportService;
 
     @Autowired
     public ApiController(
             RetrospectiveService service,
             UserSessionManager userSessionManager,
             ClientResourcesManager clientResourcesManager,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            ImportExportService importExportService) {
         this.service = service;
         this.userSessionManager = userSessionManager;
         this.clientResourcesManager = clientResourcesManager;
         this.userRepository = userRepository;
+        this.importExportService = importExportService;
     }
 
     @GetMapping("/retrospective")
@@ -182,5 +190,15 @@ public class ApiController {
                 request.getRetrospectiveId(),
                 request.getActionId(),
                 loggedInUser);
+    }
+
+    @PostMapping("/export")
+    public ImportableData exportData(@RequestBody ExportRequest request) {
+        return this.importExportService.exportData(request);
+    }
+
+    @PostMapping("/import")
+    public ImportResult importData(@RequestBody ImportRequest request) {
+        return this.importExportService.importData(request);
     }
 }

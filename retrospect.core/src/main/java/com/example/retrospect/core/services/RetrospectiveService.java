@@ -3,6 +3,7 @@ package com.example.retrospect.core.services;
 import com.example.retrospect.core.exceptions.NotFoundException;
 import com.example.retrospect.core.exceptions.NotPermittedException;
 import com.example.retrospect.core.exceptions.ValidationException;
+import com.example.retrospect.core.managers.ActionPermissionManager;
 import com.example.retrospect.core.managers.RetrospectiveSecurityManager;
 import com.example.retrospect.core.models.*;
 import com.example.retrospect.core.repositories.RetrospectiveRepository;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,16 +24,19 @@ import java.util.stream.Stream;
 public class RetrospectiveService {
     private final RetrospectiveRepository repository;
     private final RetrospectiveSecurityManager securityManager;
+    private final ActionPermissionManager actionPermissionManager;
     private final UserRepository userRepository;
 
     @Autowired
     public RetrospectiveService(
             UserRepository userRepository,
             RetrospectiveSecurityManager securityManager,
-            RetrospectiveRepository repository) {
+            RetrospectiveRepository repository,
+            ActionPermissionManager actionPermissionManager) {
         this.userRepository = userRepository;
         this.securityManager = securityManager;
         this.repository = repository;
+        this.actionPermissionManager = actionPermissionManager;
     }
 
     public Retrospective getRetrospective(String retrospectiveId, LoggedInUser user){
@@ -338,35 +344,39 @@ public class RetrospectiveService {
 
     public Retrospective applyAdministrationDetails(RetrospectiveAdministrationDetails request, LoggedInUser loggedInUser) {
         return administerRetrospective(request.getId(), loggedInUser, retrospective -> {
-                if (request.getAdministrators().isEmpty()) {
-                    throw new ValidationException("A retrospective must have some administrators");
-                }
-
-                if (request.getAdministrators().stream().noneMatch(admin -> admin.equalsIgnoreCase(loggedInUser.getUsername()))) {
-                    throw new ValidationException("You cannot remove yourself from the list of administrators");
-                }
-
-                if (request.getReadableId().equals("") || request.getReadableId() == null) {
-                    throw new ValidationException("A retrospective cannot have a null/empty readable id");
-                }
-
-                if (this.repository.getAll().anyMatch(r -> r.getReadableId().equalsIgnoreCase(request.getReadableId()) && !r.getId().equals(request.getId()))) {
-                    throw new ValidationException("Readable id is already in-use");
-                }
-
-                if (request.getPreviousRetrospectiveId() != null && this.repository.getAll().noneMatch(r -> r.getId().equals(request.getPreviousRetrospectiveId()))) {
-                    throw new ValidationException("Unable to find previous retrospective");
-                }
-
-                if (request.getPreviousRetrospectiveId() != null && request.getPreviousRetrospectiveId().equals(retrospective.getId())) {
-                    throw new ValidationException("Retrospective cannot have itself as a previous retrospective");
-                }
-
                 retrospective.setAdministrators(request.getAdministrators().stream().map(this::getUserOrNotFound).collect(Collectors.toList()));
                 retrospective.setMembers(request.getMembers().stream().map(this::getUserOrNotFound).collect(Collectors.toList()));
                 retrospective.setReadableId(request.getReadableId());
                 retrospective.setPreviousRetrospectiveId(request.getPreviousRetrospectiveId());
+
+                validateRetrospective(loggedInUser, retrospective);
         });
+    }
+
+    private void validateRetrospective(LoggedInUser loggedInUser, Retrospective retrospective) {
+        if (retrospective.getAdministrators().isEmpty()) {
+            throw new ValidationException("A retrospective must have some administrators");
+        }
+
+        if (retrospective.getAdministrators().stream().noneMatch(admin -> admin.getUsername().equalsIgnoreCase(loggedInUser.getUsername()))) {
+            throw new ValidationException("You cannot remove yourself from the list of administrators");
+        }
+
+        if (retrospective.getReadableId().equals("") || retrospective.getReadableId() == null) {
+            throw new ValidationException("A retrospective cannot have a null/empty readable id");
+        }
+
+        if (this.repository.getAll().anyMatch(r -> r.getReadableId().equalsIgnoreCase(retrospective.getReadableId()) && !r.getId().equals(retrospective.getId()))) {
+            throw new ValidationException("Readable id is already in-use");
+        }
+
+        if (retrospective.getPreviousRetrospectiveId() != null && this.repository.getAll().noneMatch(r -> r.getId().equals(retrospective.getPreviousRetrospectiveId()))) {
+            throw new ValidationException("Unable to find previous retrospective");
+        }
+
+        if (retrospective.getPreviousRetrospectiveId() != null && retrospective.getPreviousRetrospectiveId().equals(retrospective.getId())) {
+            throw new ValidationException("Retrospective cannot have itself as a previous retrospective");
+        }
     }
 
     private User getUserOrNotFound(String username) {
@@ -376,5 +386,87 @@ public class RetrospectiveService {
         }
 
         return new NotFoundUser(username);
+    }
+
+    public boolean retrospectiveExists(String id) {
+        return this.repository.getAll().anyMatch(r -> r.getId().equals(id));
+    }
+
+    public Set<Retrospective> removeAllRetrospectives(LoggedInUser loggedInUser) {
+        if (!actionPermissionManager.canRestore(loggedInUser)) {
+            throw new NotPermittedException("You're not permitted to restore data");
+        }
+
+        return this.repository.removeAll();
+    }
+
+    public Set<User> removeAllUnreferencedUsers(boolean keepUsersFromDeletedItems, LoggedInUser loggedInUser) {
+        if (!actionPermissionManager.canRestore(loggedInUser)) {
+            throw new NotPermittedException("You're not permitted to restore data");
+        }
+
+        var referencedUsers = new HashSet<>(getReferencedUsernames(keepUsersFromDeletedItems));
+        referencedUsers.add(loggedInUser.getUsername());
+
+        var usersToRemove = userRepository.getAllUsers()
+                .filter(user -> !referencedUsers.contains(user.getUsername()))
+                .collect(Collectors.toSet());
+
+        usersToRemove.forEach(user -> {
+            userRepository.removeUser(user.getUsername());
+        });
+
+        return usersToRemove;
+    }
+
+    public Set<String> getReferencedUsernames(boolean includeDeleted) {
+        var referencedUsers = new HashSet<String>();
+
+        this.repository.getAll().forEach(retrospective -> {
+            referencedUsers.add(retrospective.getAudit().getCreatedBy().getUsername());
+            referencedUsers.add(retrospective.getAudit().getLastUpdatedBy().getUsername());
+
+            var observations = Stream.concat(
+                    retrospective.getWentWell(includeDeleted).stream(),
+                    retrospective.getCouldBeBetter(includeDeleted).stream()
+            );
+
+            observations.forEach(
+                    ob -> {
+                        referencedUsers.add(ob.getAudit().getCreatedBy().getUsername());
+                        referencedUsers.add(ob.getAudit().getLastUpdatedBy().getUsername());
+                    });
+
+            retrospective.getActions(includeDeleted).stream().forEach(
+                    action -> {
+                        referencedUsers.add(action.getAudit().getCreatedBy().getUsername());
+                        referencedUsers.add(action.getAudit().getLastUpdatedBy().getUsername());
+                        if (action.getAssignedTo() != null) {
+                            referencedUsers.add(action.getAssignedTo().getUsername());
+                        }
+                    });
+        });
+
+        return referencedUsers;
+    }
+
+    public void restoreRetrospective(Retrospective retrospective, LoggedInUser loggedInUser) {
+        if (!actionPermissionManager.canRestore(loggedInUser)) {
+            throw new NotPermittedException("You're not permitted to restore data");
+        }
+
+        validateRetrospective(loggedInUser, retrospective);
+
+        this.repository.addOrReplace(retrospective);
+    }
+
+    public void updateRetrospective(Retrospective retrospective, LoggedInUser loggedInUser) {
+        if (!actionPermissionManager.canImport(loggedInUser)) {
+            throw new NotPermittedException("You're not permitted to import data");
+        }
+
+        validateRetrospective(loggedInUser, retrospective);
+
+        this.repository.addOrReplace(retrospective);
     }
 }

@@ -6,6 +6,8 @@ import com.example.retrospect.core.serialisers.RetrospectiveSerialiser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -40,7 +42,9 @@ public class RetrospectiveRepository {
         storage.remove(retrospectiveId);
     }
 
-    public void removeAll() {
+    public Set<Retrospective> removeAll() {
+        var existing = getAll().collect(Collectors.toSet());
         storage.clear();
+        return existing;
     }
 }
