@@ -9,8 +9,9 @@ import Error from './Error';
 import Working from './Working';
 
 const Login = ({ login }) => {
-    const [loginProviders, setLoginProviders] = useState(null);
+    const [ loginProviders, setLoginProviders ] = useState(null);
     const [ error, setError ] = useState(null);
+    const [ mode, setMode ] = useState("loading");
 
     useEffect(() => {
             if (!loginProviders) {
@@ -22,6 +23,7 @@ const Login = ({ login }) => {
                             } else {
                                 setLoginProviders(entity.loginProviders);
                                 rememberDocumentHash();
+                                setMode("select-provider");
                             }
                         },
                         err => setError(err));
@@ -29,16 +31,25 @@ const Login = ({ login }) => {
         }, 
         [ loginProviders ]);
 
+    const useLoginProvider = (e) => {
+        setMode("logging-in");
+        document.location.href = e.currentTarget.href;
+    }
+
     if (error) {
         return (<Error error={error} />);
     }
+
+    if (mode === "logging-in"){
+        return (<Working message="Logging in..." />);
+    }
     
-    if (!loginProviders){
+    if (mode === "loading"){
         return (<Working />);
     }
 
     const loginOptions = loginProviders.map(loginProvider => (
-        <a key={loginProvider.loginPath} href={loginProvider.loginPath} className={'login-with ' + loginProvider.className}>
+        <a key={loginProvider.loginPath} href={loginProvider.loginPath} className={'login-with ' + loginProvider.className} onClick={useLoginProvider}>
             {loginProvider.displayName}
         </a>)
     );
