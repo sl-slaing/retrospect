@@ -36,4 +36,8 @@ public class UserRepository {
         return storage.getAll()
                 .map(serialiser::deserialise);
     }
+
+    public void removeUser(String username) {
+        storage.remove(username);
+    }
 }

@@ -39,4 +39,8 @@ public class RetrospectiveRepository {
     public void remove(String retrospectiveId) {
         storage.remove(retrospectiveId);
     }
+
+    public void removeAll() {
+        storage.clear();
+    }
 }

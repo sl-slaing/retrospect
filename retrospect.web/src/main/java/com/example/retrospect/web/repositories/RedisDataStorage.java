@@ -71,4 +71,10 @@ public class RedisDataStorage<T> implements DataStorage<T> {
     public void remove(String key) {
         jedis.del(getKey(key));
     }
+
+    @Override
+    public void clear() {
+        var keys = jedis.keys(typeName + "*");
+        keys.forEach(jedis::del);
+    }
 }
