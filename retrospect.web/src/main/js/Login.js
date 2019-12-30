@@ -5,32 +5,34 @@ import { Get } from './rest';
 import { login } from "./redux/sessionActions";
 import { rememberDocumentHash } from './helpers';
 
+import Error from './Error';
 import Working from './Working';
 
 const Login = ({ login }) => {
     const [loginProviders, setLoginProviders] = useState(null);
     const [ error, setError ] = useState(null);
 
+    useEffect(() => {
+            if (!loginProviders) {
+                Get('/loginProviders')
+                    .then(
+                        entity => {
+                            if (entity.loggedInUser){
+                                login(entity.loggedInUser, entity.showSystemAdministration)
+                            } else {
+                                setLoginProviders(entity.loginProviders);
+                                rememberDocumentHash();
+                            }
+                        },
+                        err => setError(err));
+            }
+        }, 
+        [ loginProviders ]);
+
     if (error) {
         return (<Error error={error} />);
     }
     
-    useEffect(() => {
-        if (!loginProviders) {
-            Get('/loginProviders')
-                .then(
-                    entity => {
-                        if (entity.loggedInUser){
-                            login(entity.loggedInUser, entity.showSystemAdministration)
-                        } else {
-                            setLoginProviders(entity.loginProviders);
-                            rememberDocumentHash();
-                        }
-                    },
-                    err => setError(err));
-        }
-    });
-
     if (!loginProviders){
         return (<Working />);
     }
