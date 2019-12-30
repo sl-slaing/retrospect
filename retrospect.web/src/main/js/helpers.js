@@ -112,3 +112,17 @@ export const defineHelperFunctions = () => {
         return copyOfArray;
     };
 }
+
+export const saveFile = (filename, fileContent, fileType) => {
+    const file = new Blob([ fileContent ], { type: fileType });
+    const a = document.createElement("A");
+    const objectUrl = URL.createObjectURL(file);
+    a.href = objectUrl;
+    a.download = filename;
+    document.body.append(a);
+    a.click();
+    setTimeout(function() {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(objectUrl);
+    });
+}

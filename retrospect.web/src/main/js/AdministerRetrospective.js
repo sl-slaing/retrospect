@@ -6,7 +6,7 @@ import { EDIT_RETROSPECTIVE, MANAGE_RETROSPECTIVES } from './redux/uiModes';
 import { switchUiMode, showAvatarMenu } from './redux/sessionActions';
 import { setRetrospectiveById } from './redux/retrospectiveActions';
 import { setRetrospectives, removeRetrospective } from './redux/retrospectivesActions';
-import { removeFromDocumentHash } from './helpers';
+import { removeFromDocumentHash, saveFile } from './helpers';
 
 import Error from './Error';
 import RetrospectiveSelection from './RetrospectiveSelection';
@@ -136,12 +136,47 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
         setError(null);
     }
 
+    const exportRetrospective = (e) => {
+        e.preventDefault(e);
+        setMode("exporting");
+
+        Post('/export',
+            {
+                ids: [ retrospective.id ],
+                version: '1.0',
+                settings: {
+                    includeDeleted: true
+                }
+            },
+            true)
+            .then(
+                response => {
+                    response.text().then(
+                        text => {
+                            saveFile(`${retrospective.readableId}.json`, text, 'text/plain');
+
+                            setMode("edit");
+                        },
+                        err => {
+                            setError(err);
+                        });
+                },
+                err => {
+                    setError(err);
+                }
+            )
+    }
+
     if (error !== null) {
         return (<Error error={error} recover={recover} recoverText="Review settings..." />);
     }
 
     if (mode === "saving") {
         return (<Working message="Saving changes..." />);
+    }
+
+    if (mode === "exporting") {
+        return (<Working message="Exporting data..." />);
     }
 
 	return (<div className="vertically-centered visible-overflow">
@@ -177,6 +212,7 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
                         <a className="button clickable" onClick={saveChanges}>Save changes</a>
                         <a className="button clickable" onClick={deleteRetrospective}>Delete retrospective</a>
                         <a className="button clickable" onClick={returnToRetrospective}>Return to retrospective</a>
+                        <a className="button clickable" onClick={exportRetrospective}>Export</a>
                     </div>
                 </div>
             </div>);
