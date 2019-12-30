@@ -65,5 +65,12 @@ public class Observation {
     public boolean hasVoted(User user){
         return votes.stream().anyMatch(voter -> voter.equals(user));
     }
+
+    public void setData(String title, ImmutableList<User> votes, boolean deleted, LoggedInUser loggedInUser) {
+        this.title = title;
+        this.votes = votes;
+        this.deleted = deleted;
+        audit.update(loggedInUser, "Bulk update data");
+    }
 }
 

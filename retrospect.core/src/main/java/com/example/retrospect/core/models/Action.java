@@ -98,5 +98,15 @@ public class Action {
     public void setFromObservationId(String fromObservationId) {
         this.fromObservationId = fromObservationId;
     }
+
+    public void setData(String title, User assignedTo, String ticketAddress, String fromObservationId, String fromActionId, boolean complete, LoggedInUser loggedInUser) {
+        this.title = title;
+        this.assignedTo = assignedTo;
+        this.ticketAddress = ticketAddress;
+        this.fromObservationId = fromObservationId;
+        this.fromActionId = fromActionId;
+        this.complete = complete;
+        this.audit.update(loggedInUser, "Bulk update data");
+    }
 }
 
