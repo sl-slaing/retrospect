@@ -1,5 +1,6 @@
 package com.example.retrospect.core.serialisers;
 
+import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.Observation;
 import com.example.retrospect.core.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,13 @@ public class ObservationSerialiser {
         return serialisable;
     }
 
-    public Observation deserialise(SerialisableObservation observation){
+    public Observation deserialise(LoggedInUser loggedInUser, SerialisableObservation observation){
         return new Observation(
                 observation.getId(),
                 observation.getTitle(),
-                auditSerialiser.deserialise(observation.getAudit()),
+                auditSerialiser.deserialise(loggedInUser, observation.getAudit()),
                 observation.isDeleted(),
-                observation.getVotes().stream().map(userNameSerialiser::deserialise).collect(Collectors.toList())
+                observation.getVotes().stream().map(user -> userNameSerialiser.deserialise(loggedInUser, user)).collect(Collectors.toList())
         );
     }
 }

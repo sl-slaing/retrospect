@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,7 +41,7 @@ public class RetrospectiveService {
     }
 
     public Retrospective getRetrospective(String retrospectiveId, LoggedInUser user){
-        var retrospective = repository.getRetrospective(retrospectiveId);
+        var retrospective = repository.getRetrospective(user, retrospectiveId);
         if (retrospective != null && securityManager.canViewRetrospective(retrospective, user)) {
             return retrospective;
         } else {
@@ -50,9 +51,12 @@ public class RetrospectiveService {
 
     public Retrospective addRetrospective(String previousRetrospectiveId, String readableId, List<String> members, List<String> administrators, LoggedInUser user) {
         var newId = Guid.next();
+
+        Function<String, User> getUserOrNotFound = (username) -> this.getUserOrNotFound(user, username);
+
         Stream<User> administratorsSet = administrators == null
                 ? Stream.empty()
-                : administrators.stream().map(this::getUserOrNotFound);
+                : administrators.stream().map(getUserOrNotFound);
         administratorsSet = Stream.concat(
                 administratorsSet,
                 administrators == null || administrators.stream().anyMatch(username -> user.getUsername().equals(username))
@@ -61,12 +65,12 @@ public class RetrospectiveService {
 
         Stream<User> memberSet = members == null
                 ? Stream.empty()
-                : members.stream().map(this::getUserOrNotFound);
+                : members.stream().map(getUserOrNotFound);
 
         var retrospective = new Retrospective(
                 newId,
                 readableId == null || readableId.equals("")
-                        ? getReadableId(newId, 3)
+                        ? getReadableId(user, newId, 3)
                         : readableId,
                 previousRetrospectiveId,
                 new Audit(OffsetDateTime.now(), user),
@@ -75,13 +79,13 @@ public class RetrospectiveService {
                 new ImmutableList<>(Stream.empty()),
                 new ImmutableList<>(administratorsSet),
                 new ImmutableList<>(memberSet));
-        repository.addOrReplace(retrospective);
+        repository.addOrReplace(user, retrospective);
 
         return retrospective;
     }
 
-    private String getReadableId(String fullId, int minLength) {
-        var reservedIds = repository.getAll()
+    private String getReadableId(LoggedInUser loggedInUser, String fullId, int minLength) {
+        var reservedIds = repository.getAll(loggedInUser)
                 .filter(r -> !r.getId().equals(fullId))
                 .map(r -> r.getReadableId() != null ? r.getReadableId() : r.getId())
                 .collect(Collectors.toSet());
@@ -106,7 +110,7 @@ public class RetrospectiveService {
             throw new NotPermittedException("You're not permitted to administer this retrospective");
         }
 
-        repository.remove(retrospectiveId);
+        repository.remove(loggedInUser, retrospectiveId);
     }
 
     public Observation addObservation(String retrospectiveId, String type, String title, LoggedInUser user) {
@@ -175,7 +179,7 @@ public class RetrospectiveService {
     public Action addAction(ActionDetails actionDetails, LoggedInUser user) {
         var audit = new Audit(OffsetDateTime.now(), user);
         var assignedTo = actionDetails.getAssignedToUsername() != null
-                ? userRepository.getUser(actionDetails.getAssignedToUsername())
+                ? userRepository.getUser(user, actionDetails.getAssignedToUsername())
                 : null;
         var action = new Action(
                 Guid.next(),
@@ -188,9 +192,11 @@ public class RetrospectiveService {
                 actionDetails.getFromObservationId(),
                 actionDetails.isComplete());
 
-        return editRetrospective(actionDetails.getRetrospectiveId(), user, retrospective -> {
-            retrospective.addAction(action, user);
-        }).getAction(action.getId());
+        return editRetrospective(
+                actionDetails.getRetrospectiveId(),
+                user,
+                retrospective -> retrospective.addAction(action, user))
+            .getAction(action.getId());
     }
 
     public Action updateAction(ActionDetails actionDetails, LoggedInUser user){
@@ -203,7 +209,7 @@ public class RetrospectiveService {
             action.setTitle(actionDetails.getTitle(), user);
             action.setTicketAddress(actionDetails.getTicketAddress(), user);
             var assignedTo = actionDetails.getAssignedToUsername() != null
-                    ? userRepository.getUser(actionDetails.getAssignedToUsername())
+                    ? userRepository.getUser(user, actionDetails.getAssignedToUsername())
                     : null;
             action.setAssignedTo(assignedTo, user);
             action.setComplete(actionDetails.isComplete(), user);
@@ -250,7 +256,7 @@ public class RetrospectiveService {
                 throw new NotFoundException("Observation not found");
             }
 
-            var observation = observations.stream().findFirst().get();
+            var observation = observations.stream().findFirst().orElseThrow();
             observation.toggleVote(user);
         }).getObservation(observationId, type);
     }
@@ -263,7 +269,7 @@ public class RetrospectiveService {
                 return;
             }
 
-            var member = this.userRepository.getUser(memberUserId);
+            var member = this.userRepository.getUser(user, memberUserId);
             if (member == null){
                 throw new NotFoundException("Unable to find member");
             }
@@ -288,7 +294,7 @@ public class RetrospectiveService {
                 return;
             }
 
-            var administrator = this.userRepository.getUser(administratorUserId);
+            var administrator = this.userRepository.getUser(user, administratorUserId);
             if (administrator == null){
                 throw new NotFoundException("Unable to find administrator");
             }
@@ -317,7 +323,7 @@ public class RetrospectiveService {
 
         edit.accept(retrospective);
 
-        repository.addOrReplace(retrospective);
+        repository.addOrReplace(user, retrospective);
         return retrospective;
     }
 
@@ -333,19 +339,21 @@ public class RetrospectiveService {
 
         administer.accept(retrospective);
 
-        repository.addOrReplace(retrospective);
+        repository.addOrReplace(user, retrospective);
         return retrospective;
     }
 
     public Stream<Retrospective> getAllRetrospectives(LoggedInUser user) {
-        return repository.getAll()
+        return repository.getAll(user)
                 .filter(retro -> this.securityManager.canViewRetrospective(retro, user));
     }
 
     public Retrospective applyAdministrationDetails(RetrospectiveAdministrationDetails request, LoggedInUser loggedInUser) {
+        Function<String, User> getUserOrNotFound = (username) -> this.getUserOrNotFound(loggedInUser, username);
+
         return administerRetrospective(request.getId(), loggedInUser, retrospective -> {
-                retrospective.setAdministrators(request.getAdministrators().stream().map(this::getUserOrNotFound).collect(Collectors.toList()));
-                retrospective.setMembers(request.getMembers().stream().map(this::getUserOrNotFound).collect(Collectors.toList()));
+                retrospective.setAdministrators(request.getAdministrators().stream().map(getUserOrNotFound).collect(Collectors.toList()));
+                retrospective.setMembers(request.getMembers().stream().map(getUserOrNotFound).collect(Collectors.toList()));
                 retrospective.setReadableId(request.getReadableId());
                 retrospective.setPreviousRetrospectiveId(request.getPreviousRetrospectiveId());
 
@@ -366,11 +374,11 @@ public class RetrospectiveService {
             throw new ValidationException("A retrospective cannot have a null/empty readable id");
         }
 
-        if (this.repository.getAll().anyMatch(r -> r.getReadableId().equalsIgnoreCase(retrospective.getReadableId()) && !r.getId().equals(retrospective.getId()))) {
+        if (this.repository.getAll(loggedInUser).anyMatch(r -> r.getReadableId().equalsIgnoreCase(retrospective.getReadableId()) && !r.getId().equals(retrospective.getId()))) {
             throw new ValidationException("Readable id is already in-use");
         }
 
-        if (retrospective.getPreviousRetrospectiveId() != null && this.repository.getAll().noneMatch(r -> r.getId().equals(retrospective.getPreviousRetrospectiveId()))) {
+        if (retrospective.getPreviousRetrospectiveId() != null && this.repository.getAll(loggedInUser).noneMatch(r -> r.getId().equals(retrospective.getPreviousRetrospectiveId()))) {
             throw new ValidationException("Unable to find previous retrospective");
         }
 
@@ -379,8 +387,8 @@ public class RetrospectiveService {
         }
     }
 
-    private User getUserOrNotFound(String username) {
-        var user = this.userRepository.getUser(username);
+    private User getUserOrNotFound(LoggedInUser loggedInUser, String username) {
+        var user = this.userRepository.getUser(loggedInUser, username);
         if (user != null){
             return user;
         }
@@ -389,7 +397,7 @@ public class RetrospectiveService {
     }
 
     public boolean retrospectiveExists(String id) {
-        return this.repository.getAll().anyMatch(r -> r.getId().equals(id));
+        return this.repository.getAll(RetrospectiveRepository.NO_TENANT).anyMatch(r -> r.getId().equals(id));
     }
 
     public Set<Retrospective> removeAllRetrospectives(LoggedInUser loggedInUser) {
@@ -397,7 +405,7 @@ public class RetrospectiveService {
             throw new NotPermittedException("You're not permitted to restore data");
         }
 
-        return this.repository.removeAll();
+        return this.repository.removeAll(loggedInUser);
     }
 
     public Set<User> removeAllUnreferencedUsers(boolean keepUsersFromDeletedItems, LoggedInUser loggedInUser) {
@@ -405,24 +413,22 @@ public class RetrospectiveService {
             throw new NotPermittedException("You're not permitted to restore data");
         }
 
-        var referencedUsers = new HashSet<>(getReferencedUsernames(keepUsersFromDeletedItems));
+        var referencedUsers = new HashSet<>(getReferencedUsernames(loggedInUser, keepUsersFromDeletedItems));
         referencedUsers.add(loggedInUser.getUsername());
 
-        var usersToRemove = userRepository.getAllUsers()
+        var usersToRemove = userRepository.getAllUsers(loggedInUser)
                 .filter(user -> !referencedUsers.contains(user.getUsername()))
                 .collect(Collectors.toSet());
 
-        usersToRemove.forEach(user -> {
-            userRepository.removeUser(user.getUsername());
-        });
+        usersToRemove.forEach(user -> userRepository.removeUser(loggedInUser, user.getUsername()));
 
         return usersToRemove;
     }
 
-    public Set<String> getReferencedUsernames(boolean includeDeleted) {
+    public Set<String> getReferencedUsernames(LoggedInUser user, boolean includeDeleted) {
         var referencedUsers = new HashSet<String>();
 
-        this.repository.getAll().forEach(retrospective -> {
+        this.repository.getAll(user).forEach(retrospective -> {
             referencedUsers.add(retrospective.getAudit().getCreatedBy().getUsername());
             referencedUsers.add(retrospective.getAudit().getLastUpdatedBy().getUsername());
 
@@ -457,7 +463,7 @@ public class RetrospectiveService {
 
         validateRetrospective(loggedInUser, retrospective);
 
-        this.repository.addOrReplace(retrospective);
+        this.repository.addOrReplace(loggedInUser, retrospective);
     }
 
     public void updateRetrospective(Retrospective retrospective, LoggedInUser loggedInUser) {
@@ -467,6 +473,6 @@ public class RetrospectiveService {
 
         validateRetrospective(loggedInUser, retrospective);
 
-        this.repository.addOrReplace(retrospective);
+        this.repository.addOrReplace(loggedInUser, retrospective);
     }
 }

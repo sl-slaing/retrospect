@@ -1,10 +1,14 @@
 package com.example.retrospect.core.serialisers;
 
-import com.example.retrospect.core.models.*;
+import com.example.retrospect.core.models.ImmutableList;
+import com.example.retrospect.core.models.LoggedInUser;
+import com.example.retrospect.core.models.Retrospective;
+import com.example.retrospect.core.models.User;
+import com.example.retrospect.core.serialisable.SerialisableRetrospective;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.retrospect.core.serialisable.SerialisableRetrospective;
 
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,17 +42,19 @@ public class RetrospectiveSerialiser {
         return serialisable;
     }
 
-    public Retrospective deserialise(SerialisableRetrospective retrospective){
+    public Retrospective deserialise(SerialisableRetrospective retrospective, LoggedInUser loggedInUser){
+        Function<String, User> deserialiseUsername = (username) -> userNameSerialiser.deserialise(loggedInUser, username);
+
         return new Retrospective(
                 retrospective.getId(),
                 retrospective.getReadableId(),
                 retrospective.getPreviousRetrospectiveId(),
-                auditSerialiser.deserialise(retrospective.getAudit()),
-                new ImmutableList<>(retrospective.getActions().stream().map(actionSerialiser::deserialise)),
-                new ImmutableList<>(retrospective.getWentWell().stream().map(observationSerialiser::deserialise)),
-                new ImmutableList<>(retrospective.getCouldBeBetter().stream().map(observationSerialiser::deserialise)),
-                new ImmutableList<>(retrospective.getAdministrators().stream().map(userNameSerialiser::deserialise)),
-                new ImmutableList<>(retrospective.getMembers().stream().map(userNameSerialiser::deserialise))
+                auditSerialiser.deserialise(loggedInUser, retrospective.getAudit()),
+                new ImmutableList<>(retrospective.getActions().stream().map(action -> actionSerialiser.deserialise(loggedInUser, action))),
+                new ImmutableList<>(retrospective.getWentWell().stream().map(user -> observationSerialiser.deserialise(loggedInUser, user))),
+                new ImmutableList<>(retrospective.getCouldBeBetter().stream().map(user -> observationSerialiser.deserialise(loggedInUser, user))),
+                new ImmutableList<>(retrospective.getAdministrators().stream().map(deserialiseUsername)),
+                new ImmutableList<>(retrospective.getMembers().stream().map(deserialiseUsername))
         );
     }
 }

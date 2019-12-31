@@ -91,7 +91,7 @@ public class ImportExportService {
 
         if (result.isSuccess() && settings.isRestoreData()) {
             var purgedUsers = settings.isDryRun()
-                    ? addLoggedInUser(service.getReferencedUsernames(true), loggedInUser)
+                    ? addLoggedInUser(service.getReferencedUsernames(loggedInUser, true), loggedInUser)
                     : service.removeAllUnreferencedUsers(true, loggedInUser)
                             .stream().map(User::getUsername).collect(Collectors.toSet());
 

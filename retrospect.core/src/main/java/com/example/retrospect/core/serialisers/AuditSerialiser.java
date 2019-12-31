@@ -1,6 +1,7 @@
 package com.example.retrospect.core.serialisers;
 
 import com.example.retrospect.core.models.Audit;
+import com.example.retrospect.core.models.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.retrospect.core.serialisable.SerialisableAudit;
@@ -27,12 +28,12 @@ public class AuditSerialiser {
         return serialisable;
     }
 
-    public Audit deserialise(SerialisableAudit audit){
+    public Audit deserialise(LoggedInUser loggedInUser, SerialisableAudit audit){
         return new Audit(
                 OffsetDateTime.parse(audit.getCreatedOn()),
-                userNameSerialiser.deserialise(audit.getCreatedBy()),
+                userNameSerialiser.deserialise(loggedInUser, audit.getCreatedBy()),
                 OffsetDateTime.parse(audit.getLastUpdatedOn()),
-                userNameSerialiser.deserialise(audit.getLastUpdatedBy()),
+                userNameSerialiser.deserialise(loggedInUser, audit.getLastUpdatedBy()),
                 audit.getLastChange()
         );
     }

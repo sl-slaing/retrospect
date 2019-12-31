@@ -1,6 +1,5 @@
 package com.example.retrospect.web.services.import_export.v1_0;
 
-import com.example.retrospect.core.managers.ActionPermissionManager;
 import com.example.retrospect.core.models.*;
 import com.example.retrospect.core.repositories.UserRepository;
 import com.example.retrospect.core.services.RetrospectiveService;
@@ -70,7 +69,7 @@ public class V1_0_RetrospectiveImporter implements RetrospectiveImporter {
     }
 
     private void mergeRetrospective(V1_0_ImportableRetrospective importable, Retrospective existingRetrospective, ImportResult result, LoggedInUser loggedInUser, ImportSettings settings) {
-        var importableRetrospective = adaptToRetrospective(importable, loggedInUser, settings);
+        var importableRetrospective = adaptToRetrospective(importable, loggedInUser);
 
         existingRetrospective.setReadableId(importableRetrospective.getReadableId());
         existingRetrospective.setPreviousRetrospectiveId(importableRetrospective.getPreviousRetrospectiveId());
@@ -138,7 +137,7 @@ public class V1_0_RetrospectiveImporter implements RetrospectiveImporter {
     }
 
     private static <T> List<T> unionLists(ImmutableList<T> existing, ImmutableList<T> other, Function<T, String> identifierFunc) {
-        var existingMap = existing.stream().collect(Collectors.toMap(identifierFunc::apply, item -> item));
+        var existingMap = existing.stream().collect(Collectors.toMap(identifierFunc, item -> item));
 
         var resultList = new ArrayList<>(existingMap.values());
         other.stream().forEach(item -> {
@@ -151,7 +150,7 @@ public class V1_0_RetrospectiveImporter implements RetrospectiveImporter {
     }
 
     private void createRetrospective(V1_0_ImportableRetrospective importable, ImportResult result, LoggedInUser loggedInUser, ImportSettings settings) {
-        var retrospective = adaptToRetrospective(importable, loggedInUser, settings);
+        var retrospective = adaptToRetrospective(importable, loggedInUser);
 
         if (settings.applyChanges()) {
             retrospectiveService.restoreRetrospective(retrospective, loggedInUser);
@@ -163,27 +162,27 @@ public class V1_0_RetrospectiveImporter implements RetrospectiveImporter {
                         : "Retrospective created");
     }
 
-    private Retrospective adaptToRetrospective(V1_0_ImportableRetrospective importable, LoggedInUser loggedInUser, ImportSettings settings) {
+    private Retrospective adaptToRetrospective(V1_0_ImportableRetrospective importable, LoggedInUser loggedInUser) {
         return new Retrospective(
                 importable.getId(),
                 importable.getReadableId(),
                 importable.getPreviousRetrospectiveId(),
                 new Audit(OffsetDateTime.now(), loggedInUser),
-                adaptToActions(importable.getActions(), loggedInUser, settings),
-                adaptToObservations(importable.getObservations(), loggedInUser, settings, Observation.WENT_WELL),
-                adaptToObservations(importable.getObservations(), loggedInUser, settings, Observation.COULD_BE_BETTER),
-                adaptToUsers(importable.getAdministrators(), loggedInUser, settings),
-                adaptToUsers(importable.getMembers(), loggedInUser, settings)
+                adaptToActions(importable.getActions(), loggedInUser),
+                adaptToObservations(importable.getObservations(), loggedInUser, Observation.WENT_WELL),
+                adaptToObservations(importable.getObservations(), loggedInUser, Observation.COULD_BE_BETTER),
+                adaptToUsers(importable.getAdministrators(), loggedInUser),
+                adaptToUsers(importable.getMembers(), loggedInUser)
         );
     }
 
-    private ImmutableList<User> adaptToUsers(List<String> users, LoggedInUser loggedInUser, ImportSettings settings) {
+    private ImmutableList<User> adaptToUsers(List<String> users, LoggedInUser loggedInUser) {
         return new ImmutableList<>(
-                users.stream().map(this::getUserOrNotFound)
+                users.stream().map(user -> getUserOrNotFound(loggedInUser, user))
         );
     }
 
-    private ImmutableList<Observation> adaptToObservations(List<V1_0_ImportableObservation> observations, LoggedInUser loggedInUser, ImportSettings settings, String observationType) {
+    private ImmutableList<Observation> adaptToObservations(List<V1_0_ImportableObservation> observations, LoggedInUser loggedInUser, String observationType) {
         return new ImmutableList<>(
                 observations.stream()
                         .filter(ob -> ob.getType().equals(observationType))
@@ -192,11 +191,11 @@ public class V1_0_RetrospectiveImporter implements RetrospectiveImporter {
                                 ob.getTitle(),
                                 new Audit(OffsetDateTime.now(), loggedInUser),
                                 ob.getDeleted(),
-                                ob.getVotes().stream().map(this::getUserOrNotFound).collect(Collectors.toList())))
+                                ob.getVotes().stream().map(user -> getUserOrNotFound(loggedInUser, user)).collect(Collectors.toList())))
         );
     }
 
-    private ImmutableList<Action> adaptToActions(List<V1_0_ImportableAction> actions, LoggedInUser loggedInUser, ImportSettings settings) {
+    private ImmutableList<Action> adaptToActions(List<V1_0_ImportableAction> actions, LoggedInUser loggedInUser) {
         return new ImmutableList<>(
                 actions.stream().map(action -> new Action(
                         action.getId(),
@@ -205,7 +204,7 @@ public class V1_0_RetrospectiveImporter implements RetrospectiveImporter {
                         action.isDeleted(),
                         action.getTicketAddress(),
                         action.getAssignedTo() != null
-                                ? getUserOrNotFound(action.getAssignedTo())
+                                ? getUserOrNotFound(loggedInUser, action.getAssignedTo())
                                 : null,
                         action.getFromActionId(),
                         action.getFromObservationId(),
@@ -214,8 +213,8 @@ public class V1_0_RetrospectiveImporter implements RetrospectiveImporter {
         );
     }
 
-    private User getUserOrNotFound(String username) {
-        var user = userRepositority.getUser(username);
+    private User getUserOrNotFound(LoggedInUser loggedInUser, String username) {
+        var user = userRepositority.getUser(loggedInUser, username);
         return user != null ? user : new NotFoundUser(username);
     }
 }

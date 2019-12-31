@@ -21,9 +21,9 @@ public class TenantService {
         this.repository = repository;
     }
 
-    public List<Tenant> getTenantsForLoggedInUser(LoggedInUser loggedInUser) {
+    public List<Tenant> getTenantsForLoggedInUser(User user) {
         var allTenants = this.repository.getAllTenants();
-        return allTenants.stream().filter(t -> isRegistered(t, loggedInUser)).collect(Collectors.toList());
+        return allTenants.stream().filter(t -> isRegistered(t, user)).collect(Collectors.toList());
     }
 
     public void addUserToTenant(String tenantId, User user, LoggedInUser loggedInUser) {

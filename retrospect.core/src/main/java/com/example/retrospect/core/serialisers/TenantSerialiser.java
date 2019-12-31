@@ -1,8 +1,6 @@
 package com.example.retrospect.core.serialisers;
 
-import com.example.retrospect.core.models.ImmutableList;
-import com.example.retrospect.core.models.Tenant;
-import com.example.retrospect.core.models.TenantState;
+import com.example.retrospect.core.models.*;
 import com.example.retrospect.core.serialisable.SerialisableTenant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,13 +35,17 @@ public class TenantSerialiser {
     }
 
     public Tenant deserialise(SerialisableTenant serialisable) {
+        var userForThisTennant = new LoggedInUser(
+                new User("", "", "", ""),
+                serialisable.getId());
+
         return new Tenant(
                 serialisable.getId(),
                 serialisable.getName(),
-                new ImmutableList<>(serialisable.getUsers().stream().map(userNameSerialiser::deserialise)),
-                new ImmutableList<>(serialisable.getAdministrators().stream().map(userNameSerialiser::deserialise)),
+                new ImmutableList<>(serialisable.getUsers().stream().map(user -> userNameSerialiser.deserialise(userForThisTennant, user))),
+                new ImmutableList<>(serialisable.getAdministrators().stream().map(user -> userNameSerialiser.deserialise(userForThisTennant, user))),
                 TenantState.valueOf(serialisable.getState()),
-                auditSerialiser.deserialise(serialisable.getAudit())
+                auditSerialiser.deserialise(userForThisTennant, serialisable.getAudit())
         );
     }
 }

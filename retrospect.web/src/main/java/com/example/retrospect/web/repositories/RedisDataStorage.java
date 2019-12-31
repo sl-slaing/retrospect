@@ -22,13 +22,13 @@ public class RedisDataStorage<T> implements DataStorage<T> {
         this.clazz = clazz;
     }
 
-    private String getKey(String key){
-        return typeName + "/" + key;
+    private String getKey(String tenantId, String id) {
+        return tenantId + "/" + typeName + "/" + id;
     }
 
     @Override
-    public T getOne(String key) {
-        var redisKey = getKey(key);
+    public T getOne(String tenantId, String key) {
+        var redisKey = getKey(tenantId, key);
         return getFromRedis(redisKey);
     }
 
@@ -47,7 +47,7 @@ public class RedisDataStorage<T> implements DataStorage<T> {
     }
 
     @Override
-    public void addOrUpdate(String key, T value) {
+    public void addOrUpdate(String tenantId, String key, T value) {
         try {
             if (value == null){
                 throw new IllegalArgumentException("Value cannot be null");
@@ -55,26 +55,26 @@ public class RedisDataStorage<T> implements DataStorage<T> {
 
             var json = objectMapper.writeValueAsString(value);
 
-            jedis.set(getKey(key), json);
+            jedis.set(getKey(tenantId, key), json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public Stream<T> getAll() {
-        var keys = jedis.keys(typeName + "*");
+    public Stream<T> getAll(String tenantId) {
+        var keys = jedis.keys(getKey(tenantId, "*"));
         return keys.stream().map(this::getFromRedis);
     }
 
     @Override
-    public void remove(String key) {
-        jedis.del(getKey(key));
+    public void remove(String tenantId, String key) {
+        jedis.del(getKey(tenantId, key));
     }
 
     @Override
-    public void clear() {
-        var keys = jedis.keys(typeName + "*");
+    public void clear(String tenantId) {
+        var keys = jedis.keys(getKey(tenantId, "*"));
         keys.forEach(jedis::del);
     }
 }

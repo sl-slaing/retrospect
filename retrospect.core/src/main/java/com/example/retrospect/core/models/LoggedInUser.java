@@ -1,7 +1,14 @@
 package com.example.retrospect.core.models;
 
 public class LoggedInUser extends User {
-    public LoggedInUser(User user) {
+    private String tenantId;
+
+    public LoggedInUser(User user, String tenantId) {
         super(user.getUsername(), user.getDisplayName(), user.getAvatarUrl(), user.getProvider());
+        this.tenantId = tenantId;
+    }
+
+    public String getTenantId() {
+        return tenantId;
     }
 }

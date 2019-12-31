@@ -5,6 +5,7 @@ import com.example.retrospect.core.managers.ActionPermissionManager;
 import com.example.retrospect.core.models.User;
 import com.example.retrospect.core.repositories.UserRepository;
 import com.example.retrospect.core.services.RetrospectiveService;
+import com.example.retrospect.core.services.TenantService;
 import com.example.retrospect.web.managers.ClientResourcesManager;
 import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.web.models.*;
@@ -22,7 +23,8 @@ import java.util.stream.Collectors;
 
 @RestController
 public class ApiController {
-    private final RetrospectiveService service;
+    private final RetrospectiveService retrospectiveService;
+    private final TenantService tenantService;
     private final UserSessionManager userSessionManager;
     private final ClientResourcesManager clientResourcesManager;
     private final UserRepository userRepository;
@@ -31,13 +33,15 @@ public class ApiController {
 
     @Autowired
     public ApiController(
-            RetrospectiveService service,
+            RetrospectiveService retrospectiveService,
+            TenantService tenantService,
             UserSessionManager userSessionManager,
             ClientResourcesManager clientResourcesManager,
             UserRepository userRepository,
             ImportExportService importExportService,
             ActionPermissionManager actionPermissionManager) {
-        this.service = service;
+        this.retrospectiveService = retrospectiveService;
+        this.tenantService = tenantService;
         this.userSessionManager = userSessionManager;
         this.clientResourcesManager = clientResourcesManager;
         this.userRepository = userRepository;
@@ -49,7 +53,7 @@ public class ApiController {
     public Map<String, RetrospectiveOverview> index(){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        return this.service.getAllRetrospectives(loggedInUser)
+        return this.retrospectiveService.getAllRetrospectives(loggedInUser)
                 .map(retro -> new RetrospectiveOverview(retro, loggedInUser))
                 .collect(Collectors.toMap(RetrospectiveOverview::getId, r -> r));
     }
@@ -58,13 +62,13 @@ public class ApiController {
     public RetrospectiveViewModel index(@PathVariable String id){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var retrospective = this.service.getRetrospective(id, loggedInUser);
+        var retrospective = this.retrospectiveService.getRetrospective(id, loggedInUser);
         if (retrospective == null) {
             throw new NotFoundException("Retrospective not found");
         }
 
         var previousRetrospective = retrospective.getPreviousRetrospectiveId() != null
-                ? this.service.getRetrospective(retrospective.getPreviousRetrospectiveId(), loggedInUser)
+                ? this.retrospectiveService.getRetrospective(retrospective.getPreviousRetrospectiveId(), loggedInUser)
                 : null;
 
         return new RetrospectiveViewModel(retrospective, previousRetrospective, loggedInUser);
@@ -74,7 +78,7 @@ public class ApiController {
     public ObservationViewModel vote(@RequestBody(required = false) VoteRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var observation = this.service.applyVote(
+        var observation = this.retrospectiveService.applyVote(
                 request.getRetrospectiveId(),
                 request.getObservationId(),
                 request.getObservationType(),
@@ -87,7 +91,7 @@ public class ApiController {
     public ObservationViewModel updateObservation(@RequestBody(required = false) UpdateObservationRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var observation = this.service.updateObservation(
+        var observation = this.retrospectiveService.updateObservation(
                 request.getRetrospectiveId(),
                 request.getObservationId(),
                 request.getObservationType(),
@@ -101,7 +105,7 @@ public class ApiController {
     public ObservationViewModel createObservation(@RequestBody(required = false) UpdateObservationRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var observation = this.service.addObservation(
+        var observation = this.retrospectiveService.addObservation(
                 request.getRetrospectiveId(),
                 request.getObservationType(),
                 request.getTitle(),
@@ -114,7 +118,7 @@ public class ApiController {
     public void deleteObservation(@RequestBody(required = false) UpdateObservationRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        this.service.removeObservation(
+        this.retrospectiveService.removeObservation(
                 request.getRetrospectiveId(),
                 request.getObservationId(),
                 request.getObservationType(),
@@ -125,7 +129,7 @@ public class ApiController {
     public RetrospectiveOverview createRetrospective(@RequestBody(required = false) UpdateRetrospectiveRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var retrospective = this.service.addRetrospective(
+        var retrospective = this.retrospectiveService.addRetrospective(
                 request.getPreviousRetrospectiveId(),
                 request.getReadableId(),
                 request.getMembers(),
@@ -139,7 +143,7 @@ public class ApiController {
     public RetrospectiveOverview administerRetrospective(@RequestBody(required = false) AdministerRetrospectiveRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var retrospective = this.service.applyAdministrationDetails(request, loggedInUser);
+        var retrospective = this.retrospectiveService.applyAdministrationDetails(request, loggedInUser);
 
         return new RetrospectiveOverview(retrospective, loggedInUser);
     }
@@ -148,14 +152,16 @@ public class ApiController {
     public void deleteRetrospective(@RequestBody(required = false) UpdateRetrospectiveRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        this.service.removeRetrospective(
+        this.retrospectiveService.removeRetrospective(
                 request.getId(),
                 loggedInUser);
     }
 
     @GetMapping("/users")
     public Map<String, UserViewModel> users(){
-        return userRepository.getAllUsers()
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        return userRepository.getAllUsers(loggedInUser)
                 .collect(Collectors.toMap(User::getUsername, UserViewModel::new));
     }
 
@@ -168,6 +174,8 @@ public class ApiController {
                     .map(LoginProviderViewModel::new)
                     .collect(Collectors.toList()),
                 loggedInUser,
+                tenantService.getTenantsForLoggedInUser(loggedInUser)
+                    .stream().map(TenantViewModel::new).collect(Collectors.toList()),
             loggedInUser != null &&
                     (actionPermissionManager.canRestore(loggedInUser)
                     || actionPermissionManager.canImport(loggedInUser)
@@ -178,7 +186,7 @@ public class ApiController {
     public ActionViewModel updateAction(@RequestBody(required = false) UpdateActionRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var action = this.service.updateAction(request, loggedInUser);
+        var action = this.retrospectiveService.updateAction(request, loggedInUser);
 
         return new ActionViewModel(action);
     }
@@ -187,7 +195,7 @@ public class ApiController {
     public ActionViewModel createAction(@RequestBody(required = false) UpdateActionRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        var action = this.service.addAction(request, loggedInUser);
+        var action = this.retrospectiveService.addAction(request, loggedInUser);
 
         return new ActionViewModel(action);
     }
@@ -196,7 +204,7 @@ public class ApiController {
     public void deleteAction(@RequestBody(required = false) UpdateActionRequest request){
         var loggedInUser = userSessionManager.getLoggedInUser();
 
-        this.service.removeAction(
+        this.retrospectiveService.removeAction(
                 request.getRetrospectiveId(),
                 request.getActionId(),
                 loggedInUser);

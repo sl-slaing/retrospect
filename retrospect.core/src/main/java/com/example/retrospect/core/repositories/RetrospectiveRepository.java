@@ -1,5 +1,7 @@
 package com.example.retrospect.core.repositories;
 
+import com.example.retrospect.core.models.LoggedInUser;
+import com.example.retrospect.core.models.NotFoundUser;
 import com.example.retrospect.core.models.Retrospective;
 import com.example.retrospect.core.serialisable.SerialisableRetrospective;
 import com.example.retrospect.core.serialisers.RetrospectiveSerialiser;
@@ -12,6 +14,10 @@ import java.util.stream.Stream;
 
 @Service
 public class RetrospectiveRepository {
+    public static final LoggedInUser NO_TENANT = new LoggedInUser(
+            new NotFoundUser("NO_TENANT"),
+            "NO_TENANT");
+
     private final RetrospectiveSerialiser serialiser;
     private final DataStorage<SerialisableRetrospective> storage;
 
@@ -22,29 +28,29 @@ public class RetrospectiveRepository {
         storage = storageFactory.getStorage(SerialisableRetrospective.class);
     }
 
-    public Retrospective getRetrospective(String id){
-        var serialisable = storage.getOne(id);
+    public Retrospective getRetrospective(LoggedInUser loggedInUser, String id){
+        var serialisable = storage.getOne(loggedInUser.getTenantId(), id);
         return serialisable != null
-                ? serialiser.deserialise(serialisable)
+                ? serialiser.deserialise(serialisable, loggedInUser)
                 : null;
     }
 
-    public void addOrReplace(Retrospective retrospective){
-        storage.addOrUpdate(retrospective.getId(), serialiser.serialise(retrospective));
+    public void addOrReplace(LoggedInUser loggedInUser, Retrospective retrospective){
+        storage.addOrUpdate(loggedInUser.getTenantId(), retrospective.getId(), serialiser.serialise(retrospective));
     }
 
-    public Stream<Retrospective> getAll() {
-        return storage.getAll()
-                .map(serialiser::deserialise);
+    public Stream<Retrospective> getAll(LoggedInUser loggedInUser) {
+        return storage.getAll(loggedInUser.getTenantId())
+                .map(retrospective -> serialiser.deserialise(retrospective, loggedInUser));
     }
 
-    public void remove(String retrospectiveId) {
-        storage.remove(retrospectiveId);
+    public void remove(LoggedInUser loggedInUser, String retrospectiveId) {
+        storage.remove(loggedInUser.getTenantId(), retrospectiveId);
     }
 
-    public Set<Retrospective> removeAll() {
-        var existing = getAll().collect(Collectors.toSet());
-        storage.clear();
+    public Set<Retrospective> removeAll(LoggedInUser loggedInUser) {
+        var existing = getAll(loggedInUser).collect(Collectors.toSet());
+        storage.clear(loggedInUser.getTenantId());
         return existing;
     }
 }

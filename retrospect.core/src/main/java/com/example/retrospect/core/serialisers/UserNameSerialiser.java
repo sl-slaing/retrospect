@@ -1,5 +1,6 @@
 package com.example.retrospect.core.serialisers;
 
+import com.example.retrospect.core.models.LoggedInUser;
 import com.example.retrospect.core.models.NotFoundUser;
 import com.example.retrospect.core.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,12 @@ public class UserNameSerialiser {
         return user.getUsername();
     }
 
-    public User deserialise(String id){
+    public User deserialise(LoggedInUser loggedInUser, String id){
         if (id == null){
             return null;
         }
 
-        var user = userRepository.getUser(id);
+        var user = userRepository.getUser(loggedInUser, id);
 
         if (user == null){
             return new NotFoundUser(id);

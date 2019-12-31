@@ -1,6 +1,7 @@
 package com.example.retrospect.core.serialisers;
 
 import com.example.retrospect.core.models.Action;
+import com.example.retrospect.core.models.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.retrospect.core.serialisable.SerialisableAction;
@@ -31,14 +32,14 @@ public class ActionSerialiser {
         return serialisable;
     }
 
-    public Action deserialise(SerialisableAction action){
+    public Action deserialise(LoggedInUser loggedInUser, SerialisableAction action){
         return new Action(
                 action.getId(),
                 action.getTitle(),
-                auditSerialiser.deserialise(action.getAudit()),
+                auditSerialiser.deserialise(loggedInUser, action.getAudit()),
                 action.isDeleted(),
                 action.getTicketAddress(),
-                userNameSerialiser.deserialise(action.getAssignedTo()),
+                userNameSerialiser.deserialise(loggedInUser, action.getAssignedTo()),
                 action.getFromActionId(),
                 action.getFromObservationId(),
                 action.isComplete());
