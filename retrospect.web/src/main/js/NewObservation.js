@@ -5,7 +5,7 @@ import { Post } from './rest';
 import { showAvatarMenu, setContinueEditing } from './redux/sessionActions';
 import { addObservation } from './redux/retrospectiveActions';
 
-const NewObservation = ({ retrospectiveId, observationType, showAvatarMenu, continueEditing, setContinueEditing, addObservation }) => {
+const NewObservation = ({ tenant, retrospectiveId, observationType, showAvatarMenu, continueEditing, setContinueEditing, addObservation }) => {
     const [ updating, setUpdating ] = useState(false);
     const [ editing, setEditing ] = useState(continueEditing === observationType);
     const [ title, setTitle ] = useState("");
@@ -37,7 +37,7 @@ const NewObservation = ({ retrospectiveId, observationType, showAvatarMenu, cont
         }
 
         setUpdating(true);
-        Post('/observation/create',
+        Post(tenant, '/observation/create',
             {
                 retrospectiveId: retrospectiveId,
                 observationType: observationType,
@@ -82,7 +82,8 @@ const NewObservation = ({ retrospectiveId, observationType, showAvatarMenu, cont
 const mapStateToProps = (state) => {
     return {
         continueEditing: state.session.continueEditing,
-        retrospectiveId: state.retrospective.id
+        retrospectiveId: state.retrospective.id,
+        tenant: state.session.selectedTenant
     }
 }
 

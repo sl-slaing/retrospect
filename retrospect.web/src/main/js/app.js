@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE, ADMINISTER_RETROSPECTIVE, ADMINISTER_SYSTEM } from './redux/uiModes';
+import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE, ADMINISTER_RETROSPECTIVE, ADMINISTER_SYSTEM, MANAGE_TENANTS } from './redux/uiModes';
 import { setActiveControl } from './redux/sessionActions';
 import { defineHelperFunctions } from './helpers';
 
@@ -12,14 +12,19 @@ import Heading from './Heading';
 import LoadRetrospective from './LoadRetrospective';
 import LoadRetrospectives from './LoadRetrospectives';
 import Login from './Login';
+import ManageTenants from './ManageTenants';
 import Retrospectives from './Retrospectives';
 import Retrospective from './Retrospective';
 import SystemAdministration from './SystemAdministration';
 
-const App = ({ displayMode, loggedInUser, setActiveControl }) => {
+const App = ({ displayMode, loggedInUser, setActiveControl, selectedTenant }) => {
 	const getComponent = () => {
 		if (!loggedInUser){
 			return (<Login />);
+		}
+
+		if (!selectedTenant) {
+			return (<ManageTenants />);
 		}
 
 		switch (displayMode){
@@ -40,6 +45,9 @@ const App = ({ displayMode, loggedInUser, setActiveControl }) => {
 			}
 			case ADMINISTER_SYSTEM: {
 				return (<SystemAdministration />);
+			}
+			case MANAGE_TENANTS: {
+				return (<ManageTenants />);
 			}
 			default: 
 				throw { message: "Unknown display mode: " + displayMode };
@@ -66,7 +74,8 @@ const App = ({ displayMode, loggedInUser, setActiveControl }) => {
 const mapStateToProps = (state) => {
 	return {
 		loggedInUser: state.session.loggedInUser,
-		displayMode: state.session.displayMode
+		displayMode: state.session.displayMode,
+		selectedTenant: state.session.selectedTenant
 	}
 }
 

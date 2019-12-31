@@ -8,7 +8,7 @@ import { saveFile, openFile } from './helpers';
 import Error from './Error';
 import Working from './Working';
 
-const SystemAdministration = ({ setRetrospectives }) => {
+const SystemAdministration = ({ tenant, setRetrospectives }) => {
     const [ mode, setMode ] = useState("main");
     const [ error, setError ] = useState(null);
     const [ importResult, setImportResult ] = useState(null);
@@ -29,7 +29,7 @@ const SystemAdministration = ({ setRetrospectives }) => {
         e.preventDefault(e);
         setMode("exporting");
 
-        Post('/export',
+        Post(tenant, '/export',
             {
                 ids: [ ],
                 version: '1.0',
@@ -128,8 +128,7 @@ const SystemAdministration = ({ setRetrospectives }) => {
         setImportRequest(request);
         setMode("importing");
 
-        Post(
-            '/import',
+        Post(tenant, '/import',
             request)
             .then(
                 importResultJson => {
@@ -219,4 +218,12 @@ const SystemAdministration = ({ setRetrospectives }) => {
             </div>);
 }
 
-export default connect(null, { setRetrospectives })(SystemAdministration);
+
+
+const mapStateToProps = (state) => {
+	return {
+        tenant: state.session.selectedTenant
+	}
+}
+
+export default connect(mapStateToProps, { setRetrospectives })(SystemAdministration);

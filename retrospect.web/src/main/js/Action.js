@@ -7,7 +7,7 @@ import { updateAction, deleteAction } from './redux/retrospectiveActions';
 
 import UserSelection from './UserSelection';
 
-const Action = ({ action, overrideRetrospectiveId, retrospectiveId, readonly, copyAction, copyText, marker, markerTitle, allowCompletion, showAvatarMenu, updateAction, deleteAction }) => {
+const Action = ({ tenant, action, overrideRetrospectiveId, retrospectiveId, readonly, copyAction, copyText, marker, markerTitle, allowCompletion, showAvatarMenu, updateAction, deleteAction }) => {
     const [ updating, setUpdating ] = useState(false);
     const [ editing, setEditing ] = useState(false);
     const [ displayHeight, setDisplayHeight ] = useState(0);
@@ -62,7 +62,7 @@ const Action = ({ action, overrideRetrospectiveId, retrospectiveId, readonly, co
     const saveChanges = () => {
         setUpdating(true);
 
-        Post('/action/update',
+        Post(tenant, '/action/update',
             {
                 retrospectiveId: overrideRetrospectiveId || retrospectiveId,
                 actionId: action.id,
@@ -93,7 +93,7 @@ const Action = ({ action, overrideRetrospectiveId, retrospectiveId, readonly, co
         }
 
         setUpdating(true);
-        Delete('/action',
+        Delete(tenant, '/action',
             {
                 retrospectiveId: overrideRetrospectiveId || retrospectiveId,
                 actionId: action.id
@@ -181,7 +181,8 @@ const Action = ({ action, overrideRetrospectiveId, retrospectiveId, readonly, co
 
 const mapStateToProps = (state) => {
     return {
-        retrospectiveId: state.retrospective.id
+        retrospectiveId: state.retrospective.id,
+        tenant: state.session.selectedTenant
     }
 }
 

@@ -14,7 +14,7 @@ import NewObservation from './NewObservation';
 import RetrospectiveMenuItems from './RetrospectiveMenuItems';
 import Observation from './Observation';
 
-const Retrospective = ({ heading, retrospective, setHeading, setMenuCallback, switchUiMode, setRetrospectiveById, addAction }) => {
+const Retrospective = ({ tenant, heading, retrospective, setHeading, setMenuCallback, switchUiMode, setRetrospectiveById, addAction }) => {
     if (!retrospective){
         throw { message: "No retrospective provided" };
     }
@@ -155,7 +155,7 @@ const Retrospective = ({ heading, retrospective, setHeading, setMenuCallback, sw
     }
 
     const createActionFromCouldBeBetter = (observation) => {
-        Post('/action/create',
+        Post(tenant, '/action/create',
             {
                 title: observation.title,
                 retrospectiveId: retrospective.id,
@@ -171,7 +171,7 @@ const Retrospective = ({ heading, retrospective, setHeading, setMenuCallback, sw
     }
 
     const copyActionFromPreviousRetrospective = (action) => {
-        Post('/action/create',
+        Post(tenant, '/action/create',
             {
                 ...action,
                 retrospectiveId: retrospective.id,
@@ -340,7 +340,8 @@ const Retrospective = ({ heading, retrospective, setHeading, setMenuCallback, sw
 const mapStateToProps = (state) => {
 	return {
         retrospective: state.retrospective,
-        heading: state.session.heading
+        heading: state.session.heading,
+        tenant: state.session.selectedTenant
 	}
 }
 

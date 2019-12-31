@@ -13,7 +13,7 @@ import UserSelection from './UserSelection';
 import Working from './Working';
 import { setDocumentHash } from './helpers';
 
-const Retrospectives = ({ loggedInUser, retrospectives, addRetrospective, setRetrospectiveById, switchUiMode }) => {
+const Retrospectives = ({ tenant, loggedInUser, retrospectives, addRetrospective, setRetrospectiveById, switchUiMode }) => {
     const getInitialAdministrators = () => {
         let administrators = {};
 
@@ -50,7 +50,7 @@ const Retrospectives = ({ loggedInUser, retrospectives, addRetrospective, setRet
             return;
         }
 
-        Get('/retrospective/' + id)
+        Get(tenant, '/retrospective/' + id)
             .then(viewModel => {
                 const copyOfMembers = viewModel.members;
                 const copyOfAdministrators = viewModel.administrators;
@@ -88,7 +88,7 @@ const Retrospectives = ({ loggedInUser, retrospectives, addRetrospective, setRet
 
         setMode("creating");
 
-        Post('/retrospective/create',
+        Post(tenant, '/retrospective/create',
             {
                 previousRetrospectiveId: Object.keys(previousRetrospectiveId).length === 0 ? null : Object.keys(previousRetrospectiveId)[0],
                 readableId: readableId,
@@ -199,7 +199,8 @@ const Retrospectives = ({ loggedInUser, retrospectives, addRetrospective, setRet
 const mapStateToProps = (state) => {
 	return {
         retrospectives: state.retrospectives,
-        loggedInUser: state.session.loggedInUser
+        loggedInUser: state.session.loggedInUser,
+        tenant: state.session.selectedTenant
 	}
 }
 

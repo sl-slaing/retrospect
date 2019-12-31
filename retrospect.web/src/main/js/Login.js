@@ -8,18 +8,18 @@ import { rememberDocumentHash } from './helpers';
 import Error from './Error';
 import Working from './Working';
 
-const Login = ({ login }) => {
+const Login = ({ tenant, login }) => {
     const [ loginProviders, setLoginProviders ] = useState(null);
     const [ error, setError ] = useState(null);
     const [ mode, setMode ] = useState("loading");
 
     useEffect(() => {
             if (!loginProviders) {
-                Get('/loginProviders')
+                Get(tenant, '/loginProviders')
                     .then(
                         entity => {
                             if (entity.loggedInUser){
-                                login(entity.loggedInUser, entity.showSystemAdministration)
+                                login(entity.loggedInUser, entity.showSystemAdministration, entity.tenantsForLoggedInUser);
                             } else {
                                 setLoginProviders(entity.loginProviders);
                                 rememberDocumentHash();
@@ -64,4 +64,10 @@ const Login = ({ login }) => {
             </div>);
 }
 
-export default connect(null, { login })(Login);
+const mapStateToProps = (state) => {
+    return {
+        tenant: state.session.selectedTenant
+    }
+}
+
+export default connect(mapStateToProps, { login })(Login);

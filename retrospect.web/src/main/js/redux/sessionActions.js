@@ -1,9 +1,10 @@
-import { LOGIN, LOGOUT, SET_HEADING, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL } from './actionTypes'
+import { LOGIN, LOGOUT, SET_HEADING, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL, SET_SELECTED_TENANT, ADD_TENANT } from './actionTypes'
 
-export const login = (user, showSystemAdministration) => ({
+export const login = (user, showSystemAdministration, tenants) => ({
     type: LOGIN,
     user,
-    showSystemAdministration
+    showSystemAdministration,
+    tenants
 });
 
 export const logout = () => ({
@@ -38,4 +39,14 @@ export const switchUiMode = (mode) => ({
 export const setActiveControl = (controlId) => ({
     type: SET_ACTIVE_CONTROL,
     controlId
+});
+
+export const setSelectedTenant = (tenant) => ({
+    type: SET_SELECTED_TENANT,
+    tenant
+});
+
+export const addTenant = (tenant) => ({
+    type: ADD_TENANT,
+    tenant
 });

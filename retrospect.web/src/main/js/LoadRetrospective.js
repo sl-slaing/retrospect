@@ -26,7 +26,7 @@ const LoadRetrospective = ({ children, retrospective, setRetrospective, switchUi
     const [ error, setError ] = useState(null);
 
     const loadRetrospective = (id) => {
-        Get('/retrospective/' + id)
+        Get(tenant, '/retrospective/' + id)
             .then(
                 viewModel => {
                     setRetrospective(viewModel);
@@ -97,7 +97,8 @@ const LoadRetrospective = ({ children, retrospective, setRetrospective, switchUi
 
 const mapStateToProps = (state) => {
 	return {
-		retrospective: state.retrospective
+        retrospective: state.retrospective,
+        tenant: state.session.selectedTenant
 	}
 }
 

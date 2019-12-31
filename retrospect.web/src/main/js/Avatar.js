@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 
 import { Post } from './rest'; 
 import { logout, showAvatarMenu, switchUiMode } from "./redux/sessionActions";
-import { ADMINISTER_SYSTEM } from './redux/uiModes';
+import { ADMINISTER_SYSTEM, MANAGE_TENANTS, MANAGE_RETROSPECTIVES } from './redux/uiModes';
 
-const Avatar = ({ menuVisible, loggedInUser, dynamicMenu, showAvatarMenu, logout, switchUiMode, showSystemAdministration }) => {
+const Avatar = ({ tenant, menuVisible, loggedInUser, dynamicMenu, showAvatarMenu, logout, switchUiMode, showSystemAdministration }) => {
     const toggleMenu = (e) => {
         e.preventDefault();
         showAvatarMenu(!menuVisible);
@@ -15,7 +15,7 @@ const Avatar = ({ menuVisible, loggedInUser, dynamicMenu, showAvatarMenu, logout
         e.preventDefault();
         const logoutUri = e.target.getAttribute("href");
 
-        Post(logoutUri,
+        Post(tenant, logoutUri,
             { },
             true)
             .then(
@@ -34,6 +34,11 @@ const Avatar = ({ menuVisible, loggedInUser, dynamicMenu, showAvatarMenu, logout
         switchUiMode(ADMINISTER_SYSTEM);
     }
 
+    const onManageTenants = (e) => {
+        e.preventDefault();
+        switchUiMode(MANAGE_TENANTS);
+    }
+
     if (loggedInUser == null){
         return null;
     }
@@ -42,6 +47,7 @@ const Avatar = ({ menuVisible, loggedInUser, dynamicMenu, showAvatarMenu, logout
             <span className="menu-item menu-item-heading">{loggedInUser.displayName}</span>
             {dynamicMenu()}
             { showSystemAdministration ? (<a className="menu-item clickable" onClick={administerSystem}>System administration</a>) :  null }
+            <a onClick={onManageTenants} className="menu-item clickable">Tenant: {tenant.name}</a>
             <span className="menu-item menu-item-note">{'Logged in with ' + loggedInUser.provider}</span>
             <a href="/logout" onClick={onLogout} className="menu-item clickable">Logout</a>
         </div>);
@@ -57,7 +63,8 @@ const mapStateToProps = (state) => {
         loggedInUser: state.session.loggedInUser,
         dynamicMenu: state.session.menu,
         menuVisible: state.session.menuVisible,
-        showSystemAdministration: state.session.showSystemAdministration
+        showSystemAdministration: state.session.showSystemAdministration,
+        tenant: state.session.selectedTenant
     }
 }
 

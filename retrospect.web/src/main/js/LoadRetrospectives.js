@@ -7,7 +7,7 @@ import { setRetrospectives } from "./redux/retrospectivesActions";
 import Error from './Error';
 import Working from './Working';
 
-const LoadRetrospectives = ({ children, retrospectives, setRetrospectives }) => {
+const LoadRetrospectives = ({ tenant, children, retrospectives, setRetrospectives }) => {
    const getInitialState = (retrospectives) => {
         if (!retrospectives || Object.keys(retrospectives).length === 0) {
             return "unloaded"; //start getting the retros
@@ -20,7 +20,7 @@ const LoadRetrospectives = ({ children, retrospectives, setRetrospectives }) => 
     const [ error, setError ] = useState(null);
 
     const loadRetrospectives = () => {
-        Get('/retrospective')
+        Get(tenant, '/retrospective')
             .then(
                 overviews => {
                     setRetrospectives(overviews);
@@ -58,7 +58,8 @@ const LoadRetrospectives = ({ children, retrospectives, setRetrospectives }) => 
 
 const mapStateToProps = (state) => {
 	return {
-		retrospectives: state.retrospectives
+        retrospectives: state.retrospectives,
+        tenant: state.session.selectedTenant
 	}
 }
 

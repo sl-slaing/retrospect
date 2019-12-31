@@ -2,6 +2,7 @@ package com.example.retrospect.web.controllers;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
 import com.example.retrospect.core.managers.ActionPermissionManager;
+import com.example.retrospect.core.models.TenantState;
 import com.example.retrospect.core.models.User;
 import com.example.retrospect.core.repositories.UserRepository;
 import com.example.retrospect.core.services.RetrospectiveService;
@@ -218,5 +219,16 @@ public class ApiController {
     @PostMapping("/import")
     public ImportResult importData(@RequestBody ImportRequest request) {
         return this.importExportService.importData(request);
+    }
+
+    @PostMapping("/createTenant")
+    public TenantViewModel createTenant(@RequestBody CreateTenantRequest request) {
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        return new TenantViewModel(
+                this.tenantService.addTenant(
+                        request.getName(),
+                        TenantState.ACTIVE,
+                        loggedInUser));
     }
 }

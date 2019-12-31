@@ -5,7 +5,7 @@ import { Post, Delete } from './rest';
 import { showAvatarMenu } from './redux/sessionActions';
 import { updateObservation, deleteObservation } from './redux/retrospectiveActions';
 
-const Observation = ({ observation, retrospectiveId, copyAction, copyText, marker, markerTitle, showAvatarMenu, updateObservation, deleteObservation }) => {
+const Observation = ({ tenant, observation, retrospectiveId, copyAction, copyText, marker, markerTitle, showAvatarMenu, updateObservation, deleteObservation }) => {
     const [ updating, setUpdating ] = useState(false);
     const [ editing, setEditing ] = useState(false);
     const [ displayHeight, setDisplayHeight ] = useState(0);
@@ -22,7 +22,7 @@ const Observation = ({ observation, retrospectiveId, copyAction, copyText, marke
         }
 
         setUpdating(true);
-        Post('/observation/vote',
+        Post(tenant, '/observation/vote',
             {
                 retrospectiveId: retrospectiveId,
                 observationId: observation.id,
@@ -72,7 +72,7 @@ const Observation = ({ observation, retrospectiveId, copyAction, copyText, marke
         e.preventDefault(true);
         setUpdating(true);
 
-        Post('/observation/update',
+        Post(tenant, '/observation/update',
             {
                 retrospectiveId: retrospectiveId,
                 observationId: observation.id,
@@ -99,7 +99,7 @@ const Observation = ({ observation, retrospectiveId, copyAction, copyText, marke
         }
 
         setUpdating(true);
-        Delete('/observation',
+        Delete(tenant, '/observation',
             {
                 retrospectiveId: retrospectiveId,
                 observationId: observation.id,
@@ -149,7 +149,8 @@ const Observation = ({ observation, retrospectiveId, copyAction, copyText, marke
 
 const mapStateToProps = (state) => {
     return {
-        retrospectiveId: state.retrospective.id
+        retrospectiveId: state.retrospective.id,
+        tenant: state.session.selectedTenant
     }
 }
 

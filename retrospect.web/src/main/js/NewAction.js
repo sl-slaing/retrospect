@@ -5,7 +5,7 @@ import { Post } from './rest';
 import { showAvatarMenu, setContinueEditing } from './redux/sessionActions';
 import { addAction } from './redux/retrospectiveActions';
 
-const NewAction = ({ retrospectiveId, showAvatarMenu, continueEditing, setContinueEditing, addAction }) => {
+const NewAction = ({ tenant, retrospectiveId, showAvatarMenu, continueEditing, setContinueEditing, addAction }) => {
     const [ updating, setUpdating ] = useState(false);
     const [ editing, setEditing ] = useState(continueEditing === "action");
     const [ title, setTitle ] = useState("");
@@ -37,7 +37,7 @@ const NewAction = ({ retrospectiveId, showAvatarMenu, continueEditing, setContin
         }
 
         setUpdating(true);
-        Post('/action/create',
+        Post(tenant, '/action/create',
             {
                 retrospectiveId: retrospectiveId,
                 title: title.trim()
@@ -81,7 +81,8 @@ const NewAction = ({ retrospectiveId, showAvatarMenu, continueEditing, setContin
 const mapStateToProps = (state) => {
     return {
         continueEditing: state.session.continueEditing,
-        retrospectiveId: state.retrospective.id
+        retrospectiveId: state.retrospective.id,
+        tenant: state.session.selectedTenant
     }
 }
 

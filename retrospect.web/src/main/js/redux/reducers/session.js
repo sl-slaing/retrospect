@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SET_HEADING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL } from '../actionTypes';
+import { LOGIN, LOGOUT, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SET_HEADING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL, SET_SELECTED_TENANT, ADD_TENANT } from '../actionTypes';
 import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE, ADMINISTER_RETROSPECTIVE } from '../uiModes';
 import { getDocumentHash, removeFromDocumentHash, setDocumentHash } from '../../helpers';
 
@@ -23,7 +23,9 @@ const initialState = {
     heading: defaultHeading,
     displayMode: getInitialDisplayMode(),
     activeControlId: null,
-    showSystemAdministration: false
+    showSystemAdministration: false,
+    tenants: [],
+    selectedTenant: null
 };
 
 export default (state = initialState, action) => {
@@ -32,8 +34,25 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 loggedInUser: action.user,
-                showSystemAdministration: action.showSystemAdministration
+                showSystemAdministration: action.showSystemAdministration,
+                tenants: action.tenants,
+                selectedTenant: action.tenants.length === 1 ? action.tenants[0] : null
             };
+        }
+        case SET_SELECTED_TENANT: {
+            return {
+                ...state,
+                selectedTenant: action.tenant
+            }
+        }
+        case ADD_TENANT: {
+            const newState = {
+                ...state
+            };
+
+            newState.tenants.push(action.tenant);
+
+            return newState;
         }
         case SET_ACTIVE_CONTROL : {
             return {
@@ -66,7 +85,10 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 loggedInUser: null,
-                activeControlId: null
+                activeControlId: null,
+                showSystemAdministration: false,
+                tenants: [],
+                selectedTenant: null
             };
         }
         case SET_MENU_CALLBACK: {

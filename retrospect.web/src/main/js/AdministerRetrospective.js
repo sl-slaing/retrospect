@@ -13,7 +13,7 @@ import RetrospectiveSelection from './RetrospectiveSelection';
 import UserSelection from './UserSelection';
 import Working from './Working';
 
-const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, switchUiMode, setRetrospectiveById, setRetrospectives, removeRetrospective, showAvatarMenu }) => {
+const AdministerRetrospective = ({ tenant, retrospective, loggedInUser, retrospectives, switchUiMode, setRetrospectiveById, setRetrospectives, removeRetrospective, showAvatarMenu }) => {
     const getInitialPreviousRetrospectiveSelection = () => {
         const previousRetrospectiveId = retrospective.previousRetrospectiveId;
 
@@ -54,7 +54,7 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
     }
 
     const loadRetrospectives = () => {
-        Get('/retrospective')
+        Get(tenant, '/retrospective')
             .then(
                 overviews => {
                     setRetrospectives(overviews);
@@ -82,7 +82,7 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
 
         setMode("saving");
 
-        Post('/retrospective/administration',
+        Post(tenant, '/retrospective/administration',
             retrospectiveDetails)
             .then(response => {
                 setRetrospectiveById(retrospective.id, true); //to invalidate the cached data for this retrospective
@@ -116,7 +116,7 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
             return;
         }
 
-        Delete('/retrospective',
+        Delete(tenant, '/retrospective',
             {
                 id: retrospective.id
             })
@@ -140,7 +140,7 @@ const AdministerRetrospective = ({ retrospective, loggedInUser, retrospectives, 
         e.preventDefault(e);
         setMode("exporting");
 
-        Post('/export',
+        Post(tenant, '/export',
             {
                 ids: [ retrospective.id ],
                 version: '1.0',
@@ -221,7 +221,8 @@ const mapStateToProps = (state) => {
 	return {
         retrospective: state.retrospective,
         retrospectives: state.retrospectives,
-        loggedInUser: state.session.loggedInUser
+        loggedInUser: state.session.loggedInUser,
+        tenant: state.session.selectedTenant
 	}
 }
 

@@ -59,13 +59,14 @@ const getNotOkRejectionPromise = (response, text) => {
     });
 }
 
-export const Post = (url, body, ignoreResponse = false) => {
+export const Post = (tenant, url, body, ignoreResponse = false) => {
     return fetch(url,
         {
             method: "POST",
             headers: {
                 "X-XSRF-TOKEN": cookie.parse(document.cookie)["XSRF-TOKEN"],
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-Tenant-Id": tenant ? tenant.id : ""
             },
             body: JSON.stringify(body)
         })
@@ -87,13 +88,14 @@ export const Post = (url, body, ignoreResponse = false) => {
             handleRequestError)
 }
 
-export const Delete = (url, body) => {
+export const Delete = (tenant, url, body) => {
     return fetch(url,
         {
             method: "DELETE",
             headers: {
                 "X-XSRF-TOKEN": cookie.parse(document.cookie)["XSRF-TOKEN"],
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-Tenant-Id": tenant ? tenant.id : ""
             },
             body: JSON.stringify(body)
         })
@@ -108,8 +110,13 @@ export const Delete = (url, body) => {
             handleRequestError);
 };
 
-export const Get = (url) => {
-    return fetch(url)
+export const Get = (tenant, url) => {
+    return fetch(url, 
+        {
+            headers: {
+                "X-Tenant-Id": tenant ? tenant.id : ""
+            }
+        })
         .then(
             response => {
                 if (!response.ok) {

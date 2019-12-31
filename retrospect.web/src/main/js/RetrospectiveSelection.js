@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import { setActiveControl } from './redux/sessionActions';
 import { Get } from './rest';
 
-const RetrospectiveSelection = ({ currentRetrospectives, setCurrentRetrospectives, requiredRetrospectives, maxRetrospectives, controlId, activeControlId, setActiveControl }) => {
+const RetrospectiveSelection = ({ tenant, currentRetrospectives, setCurrentRetrospectives, requiredRetrospectives, maxRetrospectives, controlId, activeControlId, setActiveControl }) => {
     const [ expanded, setExpanded ] = useState(false);
     const [ allRetrospectives, setAllRetrospectives ] = useState(null);
     const [ error, setError ] = useState(null);
 
     const loadRetrospectives = () => {
-        Get('/retrospective')
+        Get(tenant, '/retrospective')
             .then(json => {
                 //add in Retrospectives that have been selected but cannot be found
                 Object.values(currentRetrospectives).forEach(currentRetrospective => {
@@ -189,7 +189,8 @@ const RetrospectiveSelection = ({ currentRetrospectives, setCurrentRetrospective
 
 const mapStateToProps = (state) => {
 	return {
-        activeControlId: state.session.activeControlId
+        activeControlId: state.session.activeControlId,
+        tenant: state.session.selectedTenant
 	}
 }
 

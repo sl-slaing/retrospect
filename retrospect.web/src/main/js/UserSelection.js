@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import { setActiveControl } from './redux/sessionActions';
 import { Get } from './rest';
 
-const UserSelection = ({ currentUsers, setCurrentUsers, maxUsers, requiredUsers, userType, controlId, activeControlId, setActiveControl, noSelectionText }) => {
+const UserSelection = ({ tenant, currentUsers, setCurrentUsers, maxUsers, requiredUsers, userType, controlId, activeControlId, setActiveControl, noSelectionText }) => {
     const [ expanded, setExpanded ] = useState(false);
     const [ allUsers, setAllUsers ] = useState(null);
     const [ error, setError ] = useState(null);
 
     const loadUsers = () => {
-        Get('/users')
+        Get(tenant, '/users')
             .then(json => {
                 //add in users that have been selected but cannot be found
                 Object.values(currentUsers).forEach(currentUser => {
@@ -209,7 +209,8 @@ const UserSelection = ({ currentUsers, setCurrentUsers, maxUsers, requiredUsers,
 
 const mapStateToProps = (state) => {
 	return {
-        activeControlId: state.session.activeControlId
+        activeControlId: state.session.activeControlId,
+        tenant: state.session.selectedTenant
 	}
 }
 

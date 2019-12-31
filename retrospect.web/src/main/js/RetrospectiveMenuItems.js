@@ -7,7 +7,7 @@ import { showAvatarMenu, switchUiMode } from './redux/sessionActions';
 import { removeRetrospective } from './redux/retrospectivesActions';
 import { removeFromDocumentHash } from './helpers';
 
-const RetrospectiveMenuItems = ({ retrospective, showAvatarMenu, removeRetrospective, switchUiMode }) => {
+const RetrospectiveMenuItems = ({ tenant, retrospective, showAvatarMenu, removeRetrospective, switchUiMode }) => {
 
     if (!retrospective.administrator) {
         return (<></>);
@@ -27,7 +27,7 @@ const RetrospectiveMenuItems = ({ retrospective, showAvatarMenu, removeRetrospec
             return;
         }
 
-        Delete('/retrospective',
+        Delete(tenant, '/retrospective',
             {
                 id: retrospective.id
             })
@@ -50,7 +50,8 @@ const RetrospectiveMenuItems = ({ retrospective, showAvatarMenu, removeRetrospec
 
 const mapStateToProps = (state) => {
 	return {
-        retrospective: state.retrospective
+        retrospective: state.retrospective,
+        tenant: state.session.selectedTenant
 	}
 }
 
