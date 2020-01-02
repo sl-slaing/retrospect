@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { Post } from './rest'; 
 import { logout, showAvatarMenu, switchUiMode } from "./redux/sessionActions";
-import { ADMINISTER_SYSTEM, MANAGE_TENANTS, MANAGE_RETROSPECTIVES } from './redux/uiModes';
+import { ADMINISTER_SYSTEM, MANAGE_TENANTS } from './redux/uiModes';
 
 const Avatar = ({ tenant, menuVisible, loggedInUser, dynamicMenu, showAvatarMenu, logout, switchUiMode, showSystemAdministration }) => {
     const toggleMenu = (e) => {
@@ -47,7 +47,7 @@ const Avatar = ({ tenant, menuVisible, loggedInUser, dynamicMenu, showAvatarMenu
             <span className="menu-item menu-item-heading">{loggedInUser.displayName}</span>
             {dynamicMenu()}
             { showSystemAdministration ? (<a className="menu-item clickable" onClick={administerSystem}>System administration</a>) :  null }
-            <a onClick={onManageTenants} className="menu-item clickable">Tenant: {tenant.name}</a>
+            <a onClick={onManageTenants} className="menu-item clickable">Tenant: {tenant ? tenant.name : 'Select tenant'}</a>
             <span className="menu-item menu-item-note">{'Logged in with ' + loggedInUser.provider}</span>
             <a href="/logout" onClick={onLogout} className="menu-item clickable">Logout</a>
         </div>);
