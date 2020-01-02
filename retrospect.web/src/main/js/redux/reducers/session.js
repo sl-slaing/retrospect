@@ -1,6 +1,6 @@
 import { LOGIN, LOGOUT, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SET_HEADING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL, SET_SELECTED_TENANT, ADD_TENANT } from '../actionTypes';
-import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE, ADMINISTER_RETROSPECTIVE } from '../uiModes';
-import { getDocumentHash, removeFromDocumentHash, setDocumentHash } from '../../helpers';
+import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE } from '../uiModes';
+import { getDocumentHash, removeFromDocumentHash, setDocumentHash, rememberTenant, forgetTenant, retrieveRememberedTenant } from '../../helpers';
 
 const getInitialDisplayMode = () => {
     const documentHash = getDocumentHash() || { };
@@ -14,6 +14,26 @@ const getInitialDisplayMode = () => {
         : MANAGE_RETROSPECTIVES;
 }
 
+const getInitialTenant = (loginAction) => {
+    if (loginAction === null) {
+        return null;
+    }
+
+    if (!loginAction.tenants || loginAction.tenants.length === 0) {
+        forgetTenant(loginAction.user.username);
+        return null;
+    }
+
+    if (loginAction.tenants.length === 1) {
+        const tenant = loginAction.tenants[0];
+        rememberTenant(loginAction.user.username, tenant);
+        return tenant;
+    }
+
+    const rememberedTenant = retrieveRememberedTenant(loginAction.user.username);
+    return rememberedTenant;
+}
+
 const defaultHeading = "Retrospect";
 const initialState = {
     loggedInUser: null,
@@ -24,7 +44,7 @@ const initialState = {
     displayMode: getInitialDisplayMode(),
     activeControlId: null,
     showSystemAdministration: false,
-    tenants: [],
+    tenants: getInitialTenant(null),
     selectedTenant: null
 };
 
@@ -36,10 +56,12 @@ export default (state = initialState, action) => {
                 loggedInUser: action.user,
                 showSystemAdministration: action.showSystemAdministration,
                 tenants: action.tenants,
-                selectedTenant: action.tenants.length === 1 ? action.tenants[0] : null
+                selectedTenant: getInitialTenant(action)
             };
         }
         case SET_SELECTED_TENANT: {
+            rememberTenant(state.loggedInUser.username, action.tenant);
+
             return {
                 ...state,
                 selectedTenant: action.tenant

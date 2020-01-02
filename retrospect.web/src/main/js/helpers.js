@@ -1,4 +1,5 @@
-export const PRE_LOGIN_HASH_KEY = "pre-login-hash";
+const PRE_LOGIN_HASH_KEY = "pre-login-hash";
+const TENANT_KEY_PREFIX = "tenant-selection";
 
 export const getDocumentHash = () => {
     if (!document.location.hash){
@@ -174,4 +175,26 @@ export const openFile = (accept, multiple) => {
             document.body.removeChild(input);
         });
     });
+}
+
+const getTenantStorageKey = (username) => {
+    return `${TENANT_KEY_PREFIX}:${username}`;
+}
+
+export const rememberTenant = (username, tenant) => {
+    const storageKey = getTenantStorageKey(username);
+    window.localStorage.setItem(storageKey, JSON.stringify(tenant));
+}
+
+export const forgetTenant = (username) => {
+    const storageKey = getTenantStorageKey(username);
+    window.localStorage.removeItem(storageKey);
+}
+
+export const retrieveRememberedTenant = (username) => {
+    const storageKey = getTenantStorageKey(username);
+    const tenantJson = window.localStorage.getItem(storageKey);
+    return tenantJson
+        ? JSON.parse(tenantJson)
+        : null;
 }
