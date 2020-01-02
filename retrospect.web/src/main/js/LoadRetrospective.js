@@ -9,7 +9,7 @@ import { switchUiMode } from './redux/sessionActions';
 import Error from './Error';
 import Working from './Working';
 
-const LoadRetrospective = ({ children, retrospective, setRetrospective, switchUiMode }) => {
+const LoadRetrospective = ({ tenant, children, retrospective, setRetrospective, switchUiMode }) => {
    const getInitialState = (retrospective) => {
         if (!retrospective.id) {
             return "unknown";
