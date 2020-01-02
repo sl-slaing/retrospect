@@ -24,8 +24,8 @@ const getInitialTenant = (loginAction) => {
         return null;
     }
 
-    if (loginAction.tenants.length === 1) {
-        const tenant = loginAction.tenants[0];
+    if (Object.values(loginAction.tenants).length === 1) {
+        const tenant = Object.values(loginAction.tenants)[0];
         rememberTenant(loginAction.user.username, tenant);
         return tenant;
     }
