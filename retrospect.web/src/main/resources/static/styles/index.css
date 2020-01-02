@@ -689,3 +689,9 @@ vertically-stretched{
 ::placeholder {
     color: #dddddd;
 }
+
+.username-text-area {
+    width: 200px;
+    height: 80px;
+    resize: vertical;
+}

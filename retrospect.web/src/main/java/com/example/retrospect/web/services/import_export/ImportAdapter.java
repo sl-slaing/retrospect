@@ -9,17 +9,34 @@ import java.util.function.Function;
 
 @Service
 public class ImportAdapter {
-    private static final Map<String, Function<String, ImportableRetrospective>> versionMappings = getVersionMappings();
+    private static final Map<String, Function<String, ImportableDataItem>> retrospectiveVersionMappings = getRetrospectiveVersionMappings();
+    private static final Map<String, Function<String, ImportableDataItem>> tenantVersionMappings = getTenantVersionMappings();
 
-    private static Map<String, Function<String, ImportableRetrospective>> getVersionMappings() {
-        var map = new HashMap<String, Function<String, ImportableRetrospective>>();
+    private static Map<String, Function<String, ImportableDataItem>> getRetrospectiveVersionMappings() {
+        var map = new HashMap<String, Function<String, ImportableDataItem>>();
         map.put("1.0", V1_0ImportExportAdapter::adaptRetrospective);
 
         return map;
     }
 
-    public ImportableRetrospective adaptSingleRetrospective(String importableJson, String version) {
-        var versionMapping = versionMappings.getOrDefault(version, null);
+    private static Map<String, Function<String, ImportableDataItem>> getTenantVersionMappings() {
+        var map = new HashMap<String, Function<String, ImportableDataItem>>();
+        map.put("1.0", V1_0ImportExportAdapter::adaptTenant);
+
+        return map;
+    }
+
+    public ImportableDataItem adaptSingleRetrospective(String importableJson, String version) {
+        var versionMapping = retrospectiveVersionMappings.getOrDefault(version, null);
+        if (versionMapping == null) {
+            throw new RuntimeException("Version mapping not found");
+        }
+
+        return versionMapping.apply(importableJson);
+    }
+
+    public ImportableDataItem adaptSingleTenant(String importableJson, String version) {
+        var versionMapping = tenantVersionMappings.getOrDefault(version, null);
         if (versionMapping == null) {
             throw new RuntimeException("Version mapping not found");
         }

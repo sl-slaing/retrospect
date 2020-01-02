@@ -255,13 +255,13 @@ const ManageTenants = ({ loggedInUser, displayMode, tenant, tenants, showSystemA
                                 <div>
                                     <label>
                                         Administrators: (one username per line)<br />
-                                        <textarea value={tenantAdministrators.join('\n')} disabled={!canEditTenant()} onChange={onChangeOfAdministrators}></textarea>
+                                        <textarea className="username-text-area" value={tenantAdministrators.join('\n')} disabled={!canEditTenant()} onChange={onChangeOfAdministrators}></textarea>
                                     </label>
                                 </div>
                                 <div>
                                     <label>
                                         Users: (one username per line)<br/>
-                                        <textarea value={tenantUsers.join('\n')} disabled={!canEditTenant()} onChange={onChangeOfUsers}></textarea>
+                                        <textarea className="username-text-area" value={tenantUsers.join('\n')} disabled={!canEditTenant()} onChange={onChangeOfUsers}></textarea>
                                     </label>
                                 </div>
                                 <div className="buttons green-top-border">

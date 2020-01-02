@@ -12,7 +12,7 @@ import com.example.retrospect.web.managers.UserSessionManager;
 import com.example.retrospect.web.models.*;
 import com.example.retrospect.web.models.import_export.ExportRequest;
 import com.example.retrospect.web.models.import_export.ImportRequest;
-import com.example.retrospect.web.models.import_export.ImportableData;
+import com.example.retrospect.web.models.import_export.DataExport;
 import com.example.retrospect.web.services.ImportExportService;
 import com.example.retrospect.web.services.import_export.ImportResult;
 import com.example.retrospect.web.viewmodels.*;
@@ -212,7 +212,7 @@ public class ApiController {
     }
 
     @PostMapping("/export")
-    public ImportableData exportData(@RequestBody ExportRequest request) {
+    public DataExport exportData(@RequestBody ExportRequest request) {
         return this.importExportService.exportData(request);
     }
 

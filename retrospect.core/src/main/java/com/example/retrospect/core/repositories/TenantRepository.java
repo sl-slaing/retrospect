@@ -34,18 +34,11 @@ public class TenantRepository {
                 : null;
     }
 
-    public void updateTenant(Tenant tenant) {
-        storage.addOrUpdate(
-                TenantRepository.STORAGE_CONTAINER,
-                tenant.getId(),
-                serialiser.serialise(tenant));
-    }
-
     public void deleteTenant(String id) {
         storage.remove(TenantRepository.STORAGE_CONTAINER, id);
     }
 
-    public void add(Tenant tenant) {
+    public void addOrUpdate(Tenant tenant) {
         storage.addOrUpdate(
                 TenantRepository.STORAGE_CONTAINER,
                 tenant.getId(),

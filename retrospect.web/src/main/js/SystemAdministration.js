@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
-import { Post } from './rest'; 
+import { Get, Post } from './rest'; 
 import { setRetrospectives } from './redux/retrospectivesActions';
+import { login } from './redux/sessionActions';
 import { saveFile, openFile } from './helpers';
 
 import Error from './Error';
 import Working from './Working';
 
-const SystemAdministration = ({ tenant, setRetrospectives }) => {
+const SystemAdministration = ({ tenant, setRetrospectives, login }) => {
     const [ mode, setMode ] = useState("main");
     const [ error, setError ] = useState(null);
     const [ importResult, setImportResult ] = useState(null);
     const [ exportDeleted, setExportDeleted ] = useState(false);
+    const [ importExportDataType, setImportExportDataType ] = useState('RETROSPECTIVE');
     const [ importDeleted, setImportDeleted ] = useState(false);
     const [ importDryRun, setImportDryRun ] = useState(true);
     const [ restoreMode, setRestoreMode ] = useState(false);
@@ -34,15 +36,17 @@ const SystemAdministration = ({ tenant, setRetrospectives }) => {
                 ids: [ ],
                 version: '1.0',
                 settings: {
-                    includeDeleted: true
-                }
+                    includeDeleted: exportDeleted
+                },
+                type: importExportDataType
             },
             true)
             .then(
                 response => {
                     response.text().then(
                         text => {
-                            saveFile(`Retrospect.json`, text, 'text/plain');
+                            const fileName = importExportDataType.substring(0, 1).toUpperCase() + importExportDataType.substring(1).toLocaleLowerCase() + 's.json';
+                            saveFile(fileName, text, 'text/plain');
                             setMode('main');
                         },
                         err => {
@@ -63,10 +67,10 @@ const SystemAdministration = ({ tenant, setRetrospectives }) => {
             .then(
                 files => {
                     const versions = {};
-                    const retrospectives = [];
+                    const dataItems = [];
                     Object.values(files).forEach(file => {
                         var fileContent = JSON.parse(file.content);
-                        if (!fileContent.retrospectives) {
+                        if (!fileContent.dataItems) {
                             return;
                         }
 
@@ -76,8 +80,8 @@ const SystemAdministration = ({ tenant, setRetrospectives }) => {
                             versions[fileContent.version] = 1;
                         }
 
-                        fileContent.retrospectives.forEach(retroJson => {
-                            retrospectives.push(retroJson);
+                        fileContent.dataItems.forEach(retroJson => {
+                            dataItems.push(retroJson);
                         });
                     });
 
@@ -88,13 +92,14 @@ const SystemAdministration = ({ tenant, setRetrospectives }) => {
 
                     const request = {
                         version: Object.keys(versions)[0],
-                        retrospectives: retrospectives,
+                        dataItems: dataItems,
                         settings: {
                             permitMerge: true,
                             restoreData: restoreMode,
                             restoreDeleted: importDeleted,
                             dryRun: importDryRun
-                        }
+                        },
+                        type: importExportDataType
                     };
 
                     executeImportRequest(request);
@@ -124,6 +129,10 @@ const SystemAdministration = ({ tenant, setRetrospectives }) => {
         setRestoreMode(e.currentTarget.checked);
     }
 
+    const onImportExportDataTypeChange = (e) => {
+        setImportExportDataType(e.currentTarget.value);
+    }
+
     const executeImportRequest = (request) => {
         setImportRequest(request);
         setMode("importing");
@@ -133,15 +142,33 @@ const SystemAdministration = ({ tenant, setRetrospectives }) => {
             .then(
                 importResultJson => {
                     setImportResult(importResultJson);
-                    setMode('view-import-result');
+
+                    if (importExportDataType === 'TENANT') {
+                        reloadTenants();
+                    } else {
+                        setMode('view-import-result');
+                    }
                 },
                 err => {
                     setError(err);
                 });
     }
 
+    const reloadTenants = () => {
+        Get(tenant, '/loginProviders')
+            .then(
+                entity => {
+                    if (entity.loggedInUser){
+                        login(entity.loggedInUser, entity.showSystemAdministration, entity.tenantsForLoggedInUser);
+                    }
+
+                    setMode('view-import-result');
+                },
+                err => setError(err));
+    }
+
     if (error !== null) {
-        return (<Error error={error} recover={recover} recoverText="Review settings..." />);
+        return (<Error error={error} />);
     }
 
     if (mode === "exporting") {
@@ -175,6 +202,15 @@ const SystemAdministration = ({ tenant, setRetrospectives }) => {
     return (<div className="vertically-centered visible-overflow">
                 <div className="white-panel">
                     <h3>System Administration</h3>
+                    <div>
+                        <label>
+                            Data type:
+                            <select onChange={onImportExportDataTypeChange} value={importExportDataType}>
+                                <option value="RETROSPECTIVE">Retrospectives</option>
+                                <option value="TENANT">Tenants</option>
+                            </select>
+                        </label>
+                    </div>
                     <div>
                         <h4>Export</h4>
                         <div>
@@ -226,4 +262,4 @@ const mapStateToProps = (state) => {
 	}
 }
 
-export default connect(mapStateToProps, { setRetrospectives })(SystemAdministration);
+export default connect(mapStateToProps, { setRetrospectives, login })(SystemAdministration);

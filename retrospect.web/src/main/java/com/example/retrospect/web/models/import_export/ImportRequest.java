@@ -1,18 +1,21 @@
 package com.example.retrospect.web.models.import_export;
 
+import com.example.retrospect.web.services.import_export.ImportableData;
+
 import java.util.List;
 
-public class ImportRequest {
-    private List<String> retrospectives;
+public class ImportRequest implements ImportableData {
+    private List<String> dataItems;
     private String version;
     private ImportSettings settings;
+    private ImportExportDataType type;
 
-    public List<String> getRetrospectives() {
-        return retrospectives;
+    public List<String> getDataItems() {
+        return dataItems;
     }
 
-    public void setRetrospectives(List<String> retrospectives) {
-        this.retrospectives = retrospectives;
+    public void setDataItems(List<String> dataItems) {
+        this.dataItems = dataItems;
     }
 
     public void setVersion(String version) {
@@ -29,5 +32,13 @@ public class ImportRequest {
 
     public void setSettings(ImportSettings settings) {
         this.settings = settings;
+    }
+
+    public ImportExportDataType getType() {
+        return type;
+    }
+
+    public void setType(ImportExportDataType type) {
+        this.type = type;
     }
 }

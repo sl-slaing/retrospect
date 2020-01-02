@@ -1,10 +1,10 @@
 package com.example.retrospect.web.models.import_export.v1_0;
 
-import com.example.retrospect.web.services.import_export.ImportableRetrospective;
+import com.example.retrospect.web.services.import_export.ImportableDataItem;
 
 import java.util.List;
 
-public class V1_0_ImportableRetrospective implements ImportableRetrospective {
+public class V1_0_ImportableRetrospective implements ImportableDataItem {
     private String id;
     private List<String> administrators;
     private List<String> members;

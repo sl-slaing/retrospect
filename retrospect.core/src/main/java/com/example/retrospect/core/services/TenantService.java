@@ -2,11 +2,11 @@ package com.example.retrospect.core.services;
 
 import com.example.retrospect.core.exceptions.NotFoundException;
 import com.example.retrospect.core.exceptions.NotPermittedException;
+import com.example.retrospect.core.exceptions.ValidationException;
 import com.example.retrospect.core.managers.ActionPermissionManager;
 import com.example.retrospect.core.models.*;
 import com.example.retrospect.core.repositories.TenantRepository;
 import com.example.retrospect.core.repositories.UserRepository;
-import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TenantService {
@@ -52,7 +53,7 @@ public class TenantService {
 
         tenant.setUsers(tenant.getUsers().concat(user), loggedInUser, "Add " + user.getUsername());
 
-        repository.updateTenant(tenant);
+        repository.addOrUpdate(tenant);
     }
 
     public void removeUserFromTenant(String tenantId, User user, LoggedInUser loggedInUser) {
@@ -71,7 +72,7 @@ public class TenantService {
 
         tenant.setUsers(tenant.getUsers().except(user), loggedInUser, "Remove " + user.getUsername());
 
-        repository.updateTenant(tenant);
+        repository.addOrUpdate(tenant);
     }
 
     public Tenant addTenant(String name, TenantState state, LoggedInUser loggedInUser) {
@@ -91,7 +92,7 @@ public class TenantService {
             throw new RuntimeException("Tenant must have at least one user");
         }
 
-        this.repository.add(tenant);
+        this.repository.addOrUpdate(tenant);
         return tenant;
     }
 
@@ -107,7 +108,7 @@ public class TenantService {
 
         tenant.setState(state, loggedInUser, "Update state to " + state.name());
 
-        repository.updateTenant(tenant);
+        repository.addOrUpdate(tenant);
     }
 
     public Tenant updateTenant(TenantDetails details, LoggedInUser loggedInUser) {
@@ -137,7 +138,7 @@ public class TenantService {
             throw new RuntimeException("Tenant must have at least one user");
         }
 
-        repository.updateTenant(tenant);
+        repository.addOrUpdate(tenant);
         return tenant;
     }
 
@@ -182,6 +183,38 @@ public class TenantService {
             throw new NotPermittedException("You're not permitted to edit this tenant");
         }
 
-        this.repository.deleteTenant(id);
+        tenant.setState(TenantState.DELETED, loggedInUser, "Tenant deleted");
+        this.repository.addOrUpdate(tenant);
+    }
+
+    public Tenant getTenant(String id, LoggedInUser loggedInUser) {
+        var allTenants = this.repository.getAllTenants();
+        var matchingTenant = allTenants.stream()
+                .filter(t -> t.getId().equals(id))
+                .filter(t -> isRegistered(t, loggedInUser) || isAdministrator(t, loggedInUser))
+                .findFirst();
+
+        return matchingTenant.orElse(null);
+    }
+
+    public boolean tenantExists(String id) {
+        var allTenants = this.repository.getAllTenants();
+        return allTenants.stream().anyMatch(t -> t.getId().equals(id));
+    }
+
+    public void restoreTenant(Tenant tenant, LoggedInUser loggedInUser) {
+        if (!this.actionPermissionManager.canRestore(loggedInUser)) {
+            throw new NotPermittedException("You're not permitted to restore data");
+        }
+
+        if (tenant.getAdministrators().isEmpty()) {
+            throw new ValidationException("A tenant must have some administrators");
+        }
+
+        if (tenant.getName().equals("") || tenant.getName() == null) {
+            throw new ValidationException("A tenant cannot have a null/empty name");
+        }
+
+        this.repository.addOrUpdate(tenant);
     }
 }

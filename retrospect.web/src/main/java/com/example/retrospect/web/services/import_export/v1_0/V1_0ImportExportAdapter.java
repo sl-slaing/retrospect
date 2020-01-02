@@ -1,14 +1,12 @@
 package com.example.retrospect.web.services.import_export.v1_0;
 
-import com.example.retrospect.core.models.Action;
-import com.example.retrospect.core.models.Observation;
-import com.example.retrospect.core.models.Retrospective;
-import com.example.retrospect.core.models.User;
+import com.example.retrospect.core.models.*;
 import com.example.retrospect.web.models.import_export.ExportSettings;
 import com.example.retrospect.web.models.import_export.v1_0.V1_0_ImportableRetrospective;
 import com.example.retrospect.web.models.import_export.v1_0.V1_0_ImportableAction;
 import com.example.retrospect.web.models.import_export.v1_0.V1_0_ImportableObservation;
-import com.example.retrospect.web.services.import_export.ImportableRetrospective;
+import com.example.retrospect.web.models.import_export.v1_0.V1_0_ImportableTenant;
+import com.example.retrospect.web.services.import_export.ImportableDataItem;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,9 +16,17 @@ import java.util.stream.Stream;
 public class V1_0ImportExportAdapter {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static ImportableRetrospective adaptRetrospective(String json){
+    public static ImportableDataItem adaptRetrospective(String json){
         try {
             return mapper.readValue(json, V1_0_ImportableRetrospective.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static ImportableDataItem adaptTenant(String json) {
+        try {
+            return mapper.readValue(json, V1_0_ImportableTenant.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -43,7 +49,7 @@ public class V1_0ImportExportAdapter {
         return serialise(importable);
     }
 
-    private static String serialise(V1_0_ImportableRetrospective importable) {
+    private static <T> String serialise(T importable) {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(importable);
         } catch (JsonProcessingException e) {
@@ -82,5 +88,16 @@ public class V1_0ImportExportAdapter {
         importable.setDeleted(action.isDeleted());
 
         return importable;
+    }
+
+    public static String exportTenant(Tenant tenant, ExportSettings exportSettings) {
+        var importable = new V1_0_ImportableTenant();
+        importable.setId(tenant.getId());
+        importable.setName(tenant.getName());
+        importable.setState(tenant.getState().name());
+        importable.setAdministrators(tenant.getAdministrators().stream().map(User::getUsername).collect(Collectors.toList()));
+        importable.setUsers(tenant.getUsers().stream().map(User::getUsername).collect(Collectors.toList()));
+
+        return serialise(importable);
     }
 }

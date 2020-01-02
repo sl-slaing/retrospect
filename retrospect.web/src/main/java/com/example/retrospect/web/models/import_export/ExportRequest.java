@@ -6,6 +6,7 @@ public class ExportRequest {
     private List<String> ids;
     private String version;
     private ExportSettings settings;
+    private ImportExportDataType type;
 
     public List<String> getIds() {
         return ids;
@@ -29,6 +30,14 @@ public class ExportRequest {
 
     public void setSettings(ExportSettings settings) {
         this.settings = settings;
+    }
+
+    public ImportExportDataType getType() {
+        return type;
+    }
+
+    public void setType(ImportExportDataType type) {
+        this.type = type;
     }
 }
 
