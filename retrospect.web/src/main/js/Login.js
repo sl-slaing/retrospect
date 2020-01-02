@@ -26,7 +26,7 @@ const Login = ({ tenant, login }) => {
                                 setMode("select-provider");
                             }
                         },
-                        err => setError(err));
+                        setError);
             }
         }, 
         [ loginProviders ]);

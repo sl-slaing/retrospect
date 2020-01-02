@@ -99,7 +99,7 @@ const Retrospective = ({ tenant, heading, retrospective, setHeading, setMenuCall
         }
     }
     
-    const navigateToPreviousRetrospective = (e) => {
+    const navigateToPreviousRetrospective = () => {
         try {
             switchUiMode(EDIT_RETROSPECTIVE);
             removeFromDocumentHash("mode");

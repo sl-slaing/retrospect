@@ -31,7 +31,7 @@ const Action = ({ tenant, action, overrideRetrospectiveId, retrospectiveId, read
         setEditing(true);
     }
 
-    const onTextualChangeComplete = (e) => {
+    const onTextualChangeComplete = () => {
         setTitle(title.trim());
         setSaveRequired(true);
     }

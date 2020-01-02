@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { MANAGE_RETROSPECTIVES } from './redux/uiModes';
 import { Get } from './rest';
+import { MANAGE_RETROSPECTIVES } from './redux/uiModes';
 import { setRetrospective } from './redux/retrospectiveActions';
 import { switchUiMode } from './redux/sessionActions';
 
@@ -42,7 +42,7 @@ const LoadRetrospective = ({ tenant, children, retrospective, setRetrospective, 
                 });
     }
 
-    const backToList = (e) => {
+    const backToList = () => {
         switchUiMode(MANAGE_RETROSPECTIVES);
     }
 

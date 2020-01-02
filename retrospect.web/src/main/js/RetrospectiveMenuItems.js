@@ -37,9 +37,7 @@ const RetrospectiveMenuItems = ({ tenant, retrospective, showAvatarMenu, removeR
                     removeRetrospective(retrospective.id);
                     switchUiMode(MANAGE_RETROSPECTIVES);
                 },
-                err => {
-                    setError(err);
-                });
+                setError);
     }
 
     return (<>

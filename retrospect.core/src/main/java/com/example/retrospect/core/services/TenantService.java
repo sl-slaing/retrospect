@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class TenantService {
@@ -35,44 +34,6 @@ public class TenantService {
     public List<Tenant> getTenantsForLoggedInUser(User user) {
         var allTenants = this.repository.getAllTenants();
         return allTenants.stream().filter(t -> isRegistered(t, user) || isAdministrator(t, user)).collect(Collectors.toList());
-    }
-
-    public void addUserToTenant(String tenantId, User user, LoggedInUser loggedInUser) {
-        var tenant = this.repository.getTenant(tenantId);
-        if (tenant == null) {
-            throw new NotFoundException("Tenant not found");
-        }
-
-        if (!isAdministrator(tenant, loggedInUser)) {
-            throw new NotPermittedException("You're not permitted to edit this tenant");
-        }
-
-        if (isRegistered(tenant, user)) {
-            return; //already registered
-        }
-
-        tenant.setUsers(tenant.getUsers().concat(user), loggedInUser, "Add " + user.getUsername());
-
-        repository.addOrUpdate(tenant);
-    }
-
-    public void removeUserFromTenant(String tenantId, User user, LoggedInUser loggedInUser) {
-        var tenant = this.repository.getTenant(tenantId);
-        if (tenant == null) {
-            throw new NotFoundException("Tenant not found");
-        }
-
-        if (!isAdministrator(tenant, loggedInUser)) {
-            throw new NotPermittedException("You're not permitted to edit this tenant");
-        }
-
-        if (!isRegistered(tenant, user)) {
-            return; //already registered
-        }
-
-        tenant.setUsers(tenant.getUsers().except(user), loggedInUser, "Remove " + user.getUsername());
-
-        repository.addOrUpdate(tenant);
     }
 
     public Tenant addTenant(String name, TenantState state, LoggedInUser loggedInUser) {
@@ -94,21 +55,6 @@ public class TenantService {
 
         this.repository.addOrUpdate(tenant);
         return tenant;
-    }
-
-    public void setTenantState(String tenantId, TenantState state, LoggedInUser loggedInUser) {
-        var tenant = this.repository.getTenant(tenantId);
-        if (tenant == null) {
-            throw new NotFoundException("Tenant not found");
-        }
-
-        if (!isAdministrator(tenant, loggedInUser)) {
-            throw new NotPermittedException("You're not permitted to edit this tenant");
-        }
-
-        tenant.setState(state, loggedInUser, "Update state to " + state.name());
-
-        repository.addOrUpdate(tenant);
     }
 
     public Tenant updateTenant(TenantDetails details, LoggedInUser loggedInUser) {

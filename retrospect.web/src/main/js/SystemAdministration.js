@@ -53,9 +53,7 @@ const SystemAdministration = ({ tenant, setRetrospectives, login }) => {
                             setError(err);
                         });
                 },
-                err => {
-                    setError(err);
-                }
+                setError
             )
     }
 
@@ -106,7 +104,7 @@ const SystemAdministration = ({ tenant, setRetrospectives, login }) => {
                 });  
     }
 
-    const repeatImportWithoutDryRun = (e) => {
+    const repeatImportWithoutDryRun = () => {
         const request = { ...importRequest };
         request.settings.dryRun = false;
 
@@ -149,9 +147,7 @@ const SystemAdministration = ({ tenant, setRetrospectives, login }) => {
                         setMode('view-import-result');
                     }
                 },
-                err => {
-                    setError(err);
-                });
+                setError);
     }
 
     const reloadTenants = () => {
@@ -164,7 +160,7 @@ const SystemAdministration = ({ tenant, setRetrospectives, login }) => {
 
                     setMode('view-import-result');
                 },
-                err => setError(err));
+                setError);
     }
 
     if (error !== null) {

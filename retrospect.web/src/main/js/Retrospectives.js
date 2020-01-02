@@ -6,12 +6,12 @@ import { EDIT_RETROSPECTIVE } from './redux/uiModes';
 import { switchUiMode } from "./redux/sessionActions";
 import { setRetrospectiveById } from "./redux/retrospectiveActions";
 import { addRetrospective } from "./redux/retrospectivesActions";
+import { setDocumentHash } from './helpers';
 
 import Error from './Error';
 import RetrospectiveSelection from './RetrospectiveSelection';
 import UserSelection from './UserSelection';
 import Working from './Working';
-import { setDocumentHash } from './helpers';
 
 const Retrospectives = ({ tenant, loggedInUser, retrospectives, addRetrospective, setRetrospectiveById, switchUiMode }) => {
     const getInitialAdministrators = () => {
@@ -80,7 +80,7 @@ const Retrospectives = ({ tenant, loggedInUser, retrospectives, addRetrospective
         }
     }
 
-    const createRetrospective = (e) => {
+    const createRetrospective = () => {
         if (getReadableIdClassName() != null) {
             alert('Cannot save, the provided readable-id is already in use.');
             return;
@@ -102,9 +102,7 @@ const Retrospectives = ({ tenant, loggedInUser, retrospectives, addRetrospective
                     setDocumentHash({ mode: "REVIEW_PREVIOUS_ACTIONS" });
                     switchUiMode(EDIT_RETROSPECTIVE);
                 },
-                err => {
-                    setError(err)
-                });
+                setError);
     }
 
     const onAddRetrospective = (e) => {

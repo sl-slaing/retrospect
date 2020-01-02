@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { setActiveControl } from './redux/sessionActions';
 import { Get } from './rest';
+import { setActiveControl } from './redux/sessionActions';
 
 const UserSelection = ({ tenant, currentUsers, setCurrentUsers, maxUsers, requiredUsers, userType, controlId, activeControlId, setActiveControl, noSelectionText }) => {
     const [ expanded, setExpanded ] = useState(false);
@@ -22,9 +22,7 @@ const UserSelection = ({ tenant, currentUsers, setCurrentUsers, maxUsers, requir
 
                 setAllUsers(json);
             },
-            err => {
-                setError(err);
-            })
+            setError)
     }
     
     useEffect(

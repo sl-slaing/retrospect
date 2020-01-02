@@ -108,9 +108,7 @@ const ManageTenants = ({ loggedInUser, displayMode, tenant, tenants, showSystemA
                         setManageTenant(viewModel);
                     }
                 }, 
-                err => {
-                    setError(err);
-                });
+                setError);
     }
 
     const onUpdateTenant = (e) => {
@@ -132,9 +130,7 @@ const ManageTenants = ({ loggedInUser, displayMode, tenant, tenants, showSystemA
                     setManageTenant(viewModel);
                     setMode("main");
                 }, 
-                err => {
-                    setError(err);
-                });
+                setError);
     }
 
     const onDeleteTenant = (e) => {
@@ -156,9 +152,7 @@ const ManageTenants = ({ loggedInUser, displayMode, tenant, tenants, showSystemA
                     removeTenant(manageTenant.id);
                     setMode("main");
                 }, 
-                err => {
-                    setError(err);
-                });
+                setError);
     }
 
     const getTenantItemClassName = (tenant) => {

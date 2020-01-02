@@ -6,7 +6,7 @@ import { EDIT_RETROSPECTIVE, MANAGE_RETROSPECTIVES } from './redux/uiModes';
 import { switchUiMode, showAvatarMenu } from './redux/sessionActions';
 import { setRetrospectiveById } from './redux/retrospectiveActions';
 import { setRetrospectives, removeRetrospective } from './redux/retrospectivesActions';
-import { removeFromDocumentHash, saveFile, openFile } from './helpers';
+import { removeFromDocumentHash, saveFile } from './helpers';
 
 import Error from './Error';
 import RetrospectiveSelection from './RetrospectiveSelection';
@@ -66,7 +66,7 @@ const AdministerRetrospective = ({ tenant, retrospective, loggedInUser, retrospe
         setReadableId(e.currentTarget.value);
     }
 
-    const saveChanges = (e) => {
+    const saveChanges = () => {
         const retrospectiveDetails = {
             id: retrospective.id,
             readableId: readableId,
@@ -84,7 +84,7 @@ const AdministerRetrospective = ({ tenant, retrospective, loggedInUser, retrospe
 
         Post(tenant, '/retrospective/administration',
             retrospectiveDetails)
-            .then(response => {
+            .then(() => {
                 setRetrospectiveById(retrospective.id, true); //to invalidate the cached data for this retrospective
                 setRetrospectives(null);
                 switchUiMode(EDIT_RETROSPECTIVE);
@@ -96,7 +96,7 @@ const AdministerRetrospective = ({ tenant, retrospective, loggedInUser, retrospe
                             message => {
                                 setError("Unable to save: " + message);
                             },
-                            parseError => setError(parseError));
+                            setError);
                 } else {
                     setError(err);
                 }
@@ -104,7 +104,7 @@ const AdministerRetrospective = ({ tenant, retrospective, loggedInUser, retrospe
 
     }
 
-    const returnToRetrospective = (e) => {
+    const returnToRetrospective = () => {
         switchUiMode(EDIT_RETROSPECTIVE);
     }
 
@@ -126,9 +126,7 @@ const AdministerRetrospective = ({ tenant, retrospective, loggedInUser, retrospe
                     removeRetrospective(retrospective.id);
                     switchUiMode(MANAGE_RETROSPECTIVES);
                 },
-                err => {
-                    setError(err);
-                });
+                setError);
     }
 
     const recover = (e) => {
@@ -160,10 +158,7 @@ const AdministerRetrospective = ({ tenant, retrospective, loggedInUser, retrospe
                             setError(err);
                         });
                 },
-                err => {
-                    setError(err);
-                }
-            )
+                setError)
     }
 
     if (error !== null) {

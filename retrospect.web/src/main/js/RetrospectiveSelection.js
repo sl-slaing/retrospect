@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { setActiveControl } from './redux/sessionActions';
 import { Get } from './rest';
+import { setActiveControl } from './redux/sessionActions';
 
 const RetrospectiveSelection = ({ tenant, currentRetrospectives, setCurrentRetrospectives, requiredRetrospectives, maxRetrospectives, controlId, activeControlId, setActiveControl }) => {
     const [ expanded, setExpanded ] = useState(false);
@@ -22,9 +22,7 @@ const RetrospectiveSelection = ({ tenant, currentRetrospectives, setCurrentRetro
 
                 setAllRetrospectives(json);
             },
-            err => {
-                setError(err);
-            })
+            setError)
     }
     
     useEffect(

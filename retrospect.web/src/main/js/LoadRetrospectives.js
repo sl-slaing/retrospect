@@ -26,9 +26,7 @@ const LoadRetrospectives = ({ tenant, children, retrospectives, setRetrospective
                     setRetrospectives(overviews);
                     setCondition("loaded");
                 },
-                err => {
-                    setError(err);
-                });
+                setError);
     }
 
     useEffect(

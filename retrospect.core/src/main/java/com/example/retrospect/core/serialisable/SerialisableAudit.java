@@ -1,7 +1,5 @@
 package com.example.retrospect.core.serialisable;
 
-import java.util.Map;
-
 public class SerialisableAudit {
     private String createdOn;
     private String lastUpdatedOn;

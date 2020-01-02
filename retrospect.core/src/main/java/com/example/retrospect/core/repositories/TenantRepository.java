@@ -34,10 +34,6 @@ public class TenantRepository {
                 : null;
     }
 
-    public void deleteTenant(String id) {
-        storage.remove(TenantRepository.STORAGE_CONTAINER, id);
-    }
-
     public void addOrUpdate(Tenant tenant) {
         storage.addOrUpdate(
                 TenantRepository.STORAGE_CONTAINER,

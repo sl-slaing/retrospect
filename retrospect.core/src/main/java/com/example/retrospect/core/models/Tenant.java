@@ -5,7 +5,7 @@ public class Tenant {
     private String name;
     private ImmutableList<User> users;
     private ImmutableList<User> administrators;
-    private TenantState state = TenantState.ACTIVE;
+    private TenantState state;
     private Audit audit;
 
     public Tenant(String id, String name, ImmutableList<User> users, ImmutableList<User> administrators, TenantState state, Audit audit) {
