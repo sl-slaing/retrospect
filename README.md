@@ -25,3 +25,11 @@ These technologies are also used, but not related to the primary purpose of gain
 - Node (npm)
 - Docker
 - Redis
+
+### Future direction
+1. Create AWS instance of Redis (ElastiCache) - start gaining experience in AWS
+1. Build the app (and bundle resources) from within a CI tool (e.g. Circle CI)
+1. Host Spring Boot app from within AWS - gain further experience in AWS, notably:
+   1. Hosting of a Spring Boot APP
+   1. Deployment of files from the build pipeline
+   1. Configuration of the APP within AWS
