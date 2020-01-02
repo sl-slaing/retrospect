@@ -1,4 +1,4 @@
-Project to study and learn the following technologies whilst also providing a useful product.
+Project to study and gain experience in the following technologies whilst also providing a useful product.
 
 * Java - 11
 * Spring Boot
@@ -16,3 +16,12 @@ Project to study and learn the following technologies whilst also providing a us
    1. Run `npm install` (first time only)
    1. Run `npm run-script watch` (will watch for any changes to the React source files and compile them as required)
 1. Open http://localhost:8080 in the browser and login using your GitHub account
+
+
+### Other technologies
+These technologies are also used, but not related to the primary purpose of gaining experience
+
+- IntelliJ
+- Node (npm)
+- Docker
+- Redis
