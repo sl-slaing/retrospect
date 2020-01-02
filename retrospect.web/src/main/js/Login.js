@@ -49,7 +49,7 @@ const Login = ({ tenant, login }) => {
     }
 
     const loginOptions = loginProviders.map(loginProvider => (
-        <a key={loginProvider.loginPath} href={loginProvider.loginPath} className={'login-with ' + loginProvider.className} onClick={useLoginProvider}>
+        <a key={loginProvider.loginPath} href={loginProvider.loginPath} className={'list-item ' + loginProvider.className} onClick={useLoginProvider}>
             {loginProvider.displayName}
         </a>)
     );

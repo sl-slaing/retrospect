@@ -156,7 +156,7 @@ vertically-stretched{
     margin: 5px;
 }
 
-.login-with{
+.list-item{
     display: block;
     border: 1px solid #dddddd;
     line-height: 40px;
@@ -166,7 +166,8 @@ vertically-stretched{
     margin: 2px 0px;
 }
 
-.login-with:hover{
+.list-item:hover,
+.list-item-selected{
     border: 1px solid #008800;
 }
 

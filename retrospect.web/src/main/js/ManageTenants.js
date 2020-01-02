@@ -54,7 +54,7 @@ const ManageTenants = ({ tenant, tenants, addTenant, setSelectedTenant, switchUi
     }
 
     const tenantOptions = tenants.map(t => (
-        <a key={t.id} className={'clickable' + (tenant && tenant.id === t.id) ? ' selected' : ''``} onClick={selectTenant} data-tenant-id={t.id}>
+        <a key={t.id} className={'list-item clickable' + (tenant && tenant.id === t.id ? ' list-item-selected' : '')} onClick={selectTenant} data-tenant-id={t.id}>
             {t.name}
         </a>)
     );
