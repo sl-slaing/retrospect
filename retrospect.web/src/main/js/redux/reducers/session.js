@@ -1,6 +1,6 @@
-import { LOGIN, LOGOUT, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SET_HEADING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL, SET_SELECTED_TENANT, ADD_TENANT } from '../actionTypes';
+import { LOGIN, LOGOUT, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SET_HEADING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL, SET_SELECTED_TENANT, ADD_TENANT, UPDATE_TENANT, REMOVE_TENANT } from '../actionTypes';
 import { MANAGE_RETROSPECTIVES, EDIT_RETROSPECTIVE } from '../uiModes';
-import { getDocumentHash, removeFromDocumentHash, setDocumentHash, rememberTenant, forgetTenant, retrieveRememberedTenant } from '../../helpers';
+import { getDocumentHash, removeFromDocumentHash, setDocumentHash, rememberTenant, forgetTenant, retrieveRememberedTenant as retrieveRememberedTenantId } from '../../helpers';
 
 const getInitialDisplayMode = () => {
     const documentHash = getDocumentHash() || { };
@@ -30,8 +30,13 @@ const getInitialTenant = (loginAction) => {
         return tenant;
     }
 
-    const rememberedTenant = retrieveRememberedTenant(loginAction.user.username);
-    return rememberedTenant;
+    const rememberedTenantId = retrieveRememberedTenantId(loginAction.user.username);
+    const tenant = loginAction.tenants[rememberedTenantId];
+    if (!tenant || tenant.state !== 'ACTIVE') {
+        return null;
+    }
+
+    return tenant;
 }
 
 const defaultHeading = "Retrospect";
@@ -44,8 +49,8 @@ const initialState = {
     displayMode: getInitialDisplayMode(),
     activeControlId: null,
     showSystemAdministration: false,
-    tenants: getInitialTenant(null),
-    selectedTenant: null
+    tenants: {},
+    selectedTenant: getInitialTenant(null)
 };
 
 export default (state = initialState, action) => {
@@ -72,7 +77,39 @@ export default (state = initialState, action) => {
                 ...state
             };
 
-            newState.tenants.push(action.tenant);
+            newState.tenants[action.tenant.id] = action.tenant;
+
+            return newState;
+        }
+        case UPDATE_TENANT: {
+            const newState = {
+                ...state
+            };
+
+            newState.tenants[action.tenant.id] = action.tenant;
+
+            const rememberedTenantId = retrieveRememberedTenantId(state.loggedInUser.username);
+            if (rememberedTenantId && rememberedTenantId === action.tenant.id && action.tenant.state !== 'ACTIVE') {
+                forgetTenant(state.loggedInUser.username); //tenant is now inactive
+                newState.selectedTenant = null;
+            }
+
+            return newState;
+        }
+        case REMOVE_TENANT: {
+            const newState = {
+                ...state
+            };
+
+            delete newState.tenants[action.id];
+            if (newState.selectedTenant && newState.selectedTenant.id === action.id) {
+                newState.selectedTenant = null;
+            }
+
+            const rememberedTenantId = retrieveRememberedTenantId(state.loggedInUser.username);
+            if (rememberedTenantId && rememberedTenantId === action.id) {
+                forgetTenant(state.loggedInUser.username);
+            }
 
             return newState;
         }

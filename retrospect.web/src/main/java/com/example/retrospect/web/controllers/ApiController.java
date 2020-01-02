@@ -231,4 +231,23 @@ public class ApiController {
                         TenantState.ACTIVE,
                         loggedInUser));
     }
+
+    @PostMapping("/updateTenant")
+    public TenantViewModel updateTenant(@RequestBody UpdateTenantRequest request) {
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        return new TenantViewModel(
+                this.tenantService.updateTenant(
+                        request,
+                        loggedInUser));
+    }
+
+    @PostMapping("/deleteTenant")
+    public void deleteTenant(@RequestBody UpdateTenantRequest request) {
+        var loggedInUser = userSessionManager.getLoggedInUser();
+
+        this.tenantService.removeTenant(
+                request.getId(),
+                loggedInUser);
+    }
 }

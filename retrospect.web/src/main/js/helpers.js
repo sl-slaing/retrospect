@@ -183,7 +183,7 @@ const getTenantStorageKey = (username) => {
 
 export const rememberTenant = (username, tenant) => {
     const storageKey = getTenantStorageKey(username);
-    window.localStorage.setItem(storageKey, JSON.stringify(tenant));
+    window.localStorage.setItem(storageKey, tenant.id);
 }
 
 export const forgetTenant = (username) => {
@@ -193,8 +193,6 @@ export const forgetTenant = (username) => {
 
 export const retrieveRememberedTenant = (username) => {
     const storageKey = getTenantStorageKey(username);
-    const tenantJson = window.localStorage.getItem(storageKey);
-    return tenantJson
-        ? JSON.parse(tenantJson)
-        : null;
+    const tenantId = window.localStorage.getItem(storageKey);
+    return tenantId;
 }

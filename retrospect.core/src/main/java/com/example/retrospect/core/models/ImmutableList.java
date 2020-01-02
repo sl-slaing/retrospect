@@ -58,13 +58,17 @@ public class ImmutableList<T> {
 
     @SafeVarargs
     public final ImmutableList<T> concat(T... additionalItems) {
-        var existing = new ArrayList<>(this.items);
-        existing.addAll(Arrays.asList(additionalItems));
-
-        return new ImmutableList<>(existing);
+        return union(Arrays.asList(additionalItems));
     }
 
     public static <T> ImmutableList<T> empty(){
         return new ImmutableList<>(Stream.empty());
+    }
+
+    public ImmutableList<T> union(Collection<T> additionalItems) {
+        var existing = new ArrayList<>(this.items);
+        existing.addAll(additionalItems);
+
+        return new ImmutableList<>(existing);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.retrospect.core.managers;
 
 import com.example.retrospect.core.models.LoggedInUser;
+import com.example.retrospect.core.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -39,5 +40,9 @@ public class ActionPermissionManager {
         return dataManagers.contains(user.getUsername())
                 || backupOperators.contains(user.getUsername())
                 || administrators.contains(user.getUsername());
+    }
+
+    public boolean canAdministerTenants(User user) {
+        return administrators.contains(user.getUsername());
     }
 }

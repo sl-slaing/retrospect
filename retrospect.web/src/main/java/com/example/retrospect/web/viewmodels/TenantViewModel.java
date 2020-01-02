@@ -2,6 +2,9 @@ package com.example.retrospect.web.viewmodels;
 
 import com.example.retrospect.core.models.*;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class TenantViewModel {
     private final Tenant tenant;
 
@@ -17,16 +20,16 @@ public class TenantViewModel {
         return tenant.getName();
     }
 
-    public ImmutableList<User> getUsers() {
-        return tenant.getUsers();
+    public Map<String, UserViewModel> getUsers() {
+        return tenant.getUsers().stream().collect(Collectors.toMap(User::getUsername, UserViewModel::new));
     }
 
     public TenantState getState() {
         return tenant.getState();
     }
 
-    public ImmutableList<User> getAdministrators() {
-        return tenant.getAdministrators();
+    public Map<String, UserViewModel> getAdministrators() {
+        return tenant.getAdministrators().stream().collect(Collectors.toMap(User::getUsername, UserViewModel::new));
     }
 
     public Audit getAudit() {

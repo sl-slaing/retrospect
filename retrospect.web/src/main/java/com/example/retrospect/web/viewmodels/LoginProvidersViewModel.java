@@ -1,9 +1,9 @@
 package com.example.retrospect.web.viewmodels;
 
 import com.example.retrospect.core.models.LoggedInUser;
-import com.example.retrospect.core.models.Tenant;
-
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LoginProvidersViewModel {
     private final List<LoginProviderViewModel> loginProviders;
@@ -34,7 +34,7 @@ public class LoginProvidersViewModel {
         return showSystemAdministration;
     }
 
-    public List<TenantViewModel> getTenantsForLoggedInUser() {
-        return tenantsForLoggedInUser;
+    public Map<String, TenantViewModel> getTenantsForLoggedInUser() {
+        return tenantsForLoggedInUser.stream().collect(Collectors.toMap(TenantViewModel::getId, t -> t));
     }
 }

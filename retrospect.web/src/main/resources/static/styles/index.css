@@ -156,6 +156,15 @@ vertically-stretched{
     margin: 5px;
 }
 
+.grey-panel {
+    background: #dddddd;
+    padding: 5px;
+}
+
+.stretch-panel {
+    flex-grow: 1;
+}
+
 .list-item{
     display: block;
     border: 1px solid #dddddd;
@@ -169,6 +178,44 @@ vertically-stretched{
 .list-item:hover,
 .list-item-selected{
     border: 1px solid #008800;
+}
+
+.list-item-right-arrow {
+    position: relative;
+}
+
+.list-item-right-arrow:before {
+    content: "";
+    display: block;
+    width: 30px;
+    background: #ffffff;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 2;
+}
+
+.list-item-right-arrow:after {
+    content: "";
+    display: block;
+    height: 30px;
+    width: 30px;
+    background: #dddddd;
+    transform:rotate(-45deg);
+    position: absolute;
+    right: -15px;
+    top: 5px;
+    z-index: 1;
+}
+
+.list-item-disabled, .list-item-disabled:hover {
+    color: #aaaaaa;
+    border-color: #aaaaaa;
+}
+
+.margin-left-for-list-arrow {
+    margin-left: 20px;
 }
 
 .github{

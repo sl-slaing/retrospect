@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT, SET_HEADING, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL, SET_SELECTED_TENANT, ADD_TENANT } from './actionTypes'
+import { LOGIN, LOGOUT, SET_HEADING, SET_MENU_CALLBACK, SHOW_AVATAR_MENU, CONTINUE_EDITING, SWITCH_UI_MODE, SET_ACTIVE_CONTROL, SET_SELECTED_TENANT, ADD_TENANT, UPDATE_TENANT, REMOVE_TENANT } from './actionTypes'
 
 export const login = (user, showSystemAdministration, tenants) => ({
     type: LOGIN,
@@ -49,4 +49,14 @@ export const setSelectedTenant = (tenant) => ({
 export const addTenant = (tenant) => ({
     type: ADD_TENANT,
     tenant
+});
+
+export const updateTenant = (tenant) => ({
+    type: UPDATE_TENANT,
+    tenant
+});
+
+export const removeTenant = (id) => ({
+    type: REMOVE_TENANT,
+    id
 });
